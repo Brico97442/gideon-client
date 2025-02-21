@@ -25,12 +25,25 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
   if (selectedSectionId !== null) {
     tombClones.forEach((clone) => {
       clone.traverse((child) => {
-        if (child.isMesh && child.userData.sectionId === selectedSectionId && child.name !== name) {
-          child.material = new THREE.MeshStandardMaterial({ color: 0x0000ff }); // Bleu par exemple
+        if (child.isMesh) {
+          // Si c'est la tombe sélectionnée, on ne change rien
+          if (child.name === name) return;
+  
+          // Réinitialiser la couleur à son matériau d'origine
+          if (child.userData.originalMaterial) {
+            child.material = child.userData.originalMaterial;
+          }
+  
+          // Colorer les tombes de la même section en bleu
+          if (child.userData.sectionId === selectedSectionId) {
+            child.material = child.material.clone();
+            child.material.color.set(0x0000ff); // Bleu
+          }
         }
       });
     });
   }
+  
 };
 
 const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
