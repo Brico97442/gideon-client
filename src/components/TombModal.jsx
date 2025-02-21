@@ -7,7 +7,7 @@ const TombModal = ({ isOpen, onClose, tombName }) => {
   
   if (!isOpen) return null;
   
-  const qrValue =`http://192.168.1.3:5173/?name=${encodeURIComponent(tombName)}`;
+  const qrValue =`https://gideon-lilac.vercel.app/?name=${encodeURIComponent(tombName)}`;
   console.log(qrValue)
 
   return (
