@@ -83,7 +83,7 @@ const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
       x: lookAtTarget.x,
       y: lookAtTarget.y,
       z: lookAtTarget.z,
-      duration: 1.5,
+      duration: 1,
       ease: "power2.out",
       onUpdate: () => {
         orbitControlRef.current.update();
