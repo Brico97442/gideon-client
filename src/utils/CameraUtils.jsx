@@ -38,7 +38,7 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
           // Appliquer une couleur aux tombes de la même section
           if (child.userData.sectionId === selectedSectionId) {
             child.material = child.material.clone();
-            child.material.color.set(0x0000ff); // Bleu
+            child.material.color.set('#9900FF'); 
           }
         }
       });
