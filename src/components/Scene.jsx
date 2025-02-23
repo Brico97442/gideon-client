@@ -54,14 +54,14 @@ function Scene() {
         <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} className="canvas-view">
           {/* <Ground />
           <Entrance /> */}
-          <Tombs 
-            setTombClones={setTombClones} 
+          <Tombs
+            setTombClones={setTombClones}
             onTombClick={handleTombClick}
-          />         
+          />
           <SceneCamera />
-   
+
           <ambientLight intensity={2} />
-          {/* <ParticleSystem /> */}
+          <ParticleSystem />
           {/* <color attach="background" args={["black"]} /> */}
 
           <ambientLight intensity={Math.PI / 2} />
@@ -71,7 +71,7 @@ function Scene() {
             position={[-10, -10, -10]}
             decay={0}
             intensity={Math.PI}
-          color='blue'
+            color='blue'
           />
           {/* <directionalLight position={[5, 5, 5]} intensity={3} /> */}
 
@@ -80,11 +80,11 @@ function Scene() {
           <color attach="background" args={['#030412']} />
 
           {/* <PerspectiveCamera makeDefault position={[0, 1.6, 5]} fov={70} /> */}
-          <Environment preset="city" />
+          {/* <Environment preset="city" /> */}
         </Canvas>
-        <TombModal 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)}       
+        <TombModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
           tombName={selectedTomb}
         />
       </div>

@@ -4,7 +4,7 @@ import * as THREE from 'three';
 
 const ParticleSystem = () => {
   const pointsRef = useRef();
-  const { viewport } = useThree();
+//   const { viewport } = useThree();
 
   const particleCount = 1500;
   const maxSpeed = 0.001;
@@ -51,7 +51,7 @@ const ParticleSystem = () => {
     const colors = new Float32Array(particleCount * 3);
 
     for (let i = 0; i < positions.length; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 100;
+      positions[i] = (Math.random() - 0.5) * 150;
       positions[i + 1] = (Math.random() - 0.5) * 100;
       positions[i + 2] = (Math.random() - 0.5) * 100;
 
@@ -104,7 +104,7 @@ const ParticleSystem = () => {
   });
 
   return (
-    <points ref={pointsRef} userData={{ velocities }}>
+    <points ref={pointsRef} userData={{ velocities }} position={[0,0,50]} scale={[3,3,3]}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
