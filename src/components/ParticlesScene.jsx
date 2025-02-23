@@ -21,7 +21,7 @@ const ParticleSystem = () => {
     const radius = canvas.width / 3;
     const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
     gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.5)');
     context.beginPath();
     context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     context.fillStyle = gradient;
