@@ -61,9 +61,7 @@ function Scene() {
           <SceneCamera />
    
           <ambientLight intensity={2} />
-          <directionalLight position={[5, 5, 5]} intensity={5} />
-
-          <ParticleSystem />
+          {/* <ParticleSystem /> */}
           {/* <color attach="background" args={["black"]} /> */}
 
           <ambientLight intensity={Math.PI / 2} />
@@ -73,16 +71,16 @@ function Scene() {
             position={[-10, -10, -10]}
             decay={0}
             intensity={Math.PI}
-          // color='blue'
+          color='blue'
           />
           {/* <directionalLight position={[5, 5, 5]} intensity={3} /> */}
 
 
           <OrbitControls ref={orbitControlRef} maxPolarAngle={Math.PI / 2} />
-          <color attach="background" args={['#f5efe6']} />
+          <color attach="background" args={['#030412']} />
 
           {/* <PerspectiveCamera makeDefault position={[0, 1.6, 5]} fov={70} /> */}
-          {/* <Environment preset="city" /> */}
+          <Environment preset="city" />
         </Canvas>
         <TombModal 
           isOpen={isModalOpen} 
