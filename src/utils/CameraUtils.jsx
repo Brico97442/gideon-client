@@ -35,7 +35,7 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
             child.material = child.userData.originalMaterial;
           }
   
-          // Appliquer une couleur bleue aux tombes de la même section
+          // Appliquer une couleur aux tombes de la même section
           if (child.userData.sectionId === selectedSectionId) {
             child.material = child.material.clone();
             child.material.color.set(0x0000ff); // Bleu
@@ -48,23 +48,24 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
 
 // Fonction pour mettre à jour la caméra et l'objet sélectionné
 const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
+  
   // Changer la couleur de la tombe sélectionnée
   mesh.material = mesh.material.clone();
-  mesh.material.color.set(0xff8200); // Orange
+  mesh.material.color.set(0xff8200);
 
-  const targetPosition = {
+  const targetPosition = {         // Placement de la caméra par rapport à la tombe 
     x: mesh.parent.position.x - 4,
     y: mesh.parent.position.y + 3,
     z: mesh.parent.position.z - 3,
   };
 
-  const lookAtTarget = {
+  const lookAtTarget = {     
     x: mesh.parent.position.x,
     y: mesh.parent.position.y,
     z: mesh.parent.position.z,
   };
 
-  // Animation fluide de la caméra avec GSAP
+  // Animation pour la caméra 
   gsap.to(camera.position, {
     x: targetPosition.x,
     y: targetPosition.y,
