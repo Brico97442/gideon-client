@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Environment, Float, OrbitControls, Text, useGLTF } from "@react-three/drei";
+import { isMobile } from "react-device-detect"; // Détecte si l'appareil est mobile
 
 import { useRef } from "react";
 import Entrance from "../models/Entrance";
@@ -62,7 +63,7 @@ function Scene() {
         x: initialCameraPosition.x,
         y: initialCameraPosition.y,
         z: initialCameraPosition.z,
-        duration: 1,
+        duration: 1.5,
         ease: "power2.out",
         onUpdate: () => {
           camera.lookAt(0, 0, 0);
@@ -74,7 +75,7 @@ function Scene() {
           x: 0,
           y: 0,
           z: 0,
-          duration: 1,
+          duration: 1.5,
           ease: "power2.out",
           onUpdate: () => {
             orbitControlRef.current.update();
@@ -133,7 +134,7 @@ function Scene() {
           <Suspense fallback={<Loading />}>
             <div>
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
-              <Canvas shadows camera={{ near: 0.2, position: [-15, 6, -55] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
+              <Canvas shadows   camera={{ near: 0.2, position: isMobile ? [0, 800, -200] : [-20, 100, -55], rotation: [0,Math.PI, 0]}}  id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
                 {/* <ambientLight intensity={2} /> */}
                 <Entrance />
                 <Wall/>

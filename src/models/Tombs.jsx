@@ -3,6 +3,8 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { GET_TOMBS } from "../config/api";
 
+
+
 const Tombs = ({ setTombClones, onTombClick }) => {
 
   const [tombs, setTombs] = useState([]);
@@ -48,7 +50,7 @@ const Tombs = ({ setTombClones, onTombClick }) => {
 
           tombClone.traverse((child) => {
             if (child.isMesh) {
-              child.name = `Tomb-${tomb.id}`;
+              child.name = `N°-${tomb.id}`;
               // child.material = new THREE.MeshStandardMaterial({
               //   map:texture,
               // })

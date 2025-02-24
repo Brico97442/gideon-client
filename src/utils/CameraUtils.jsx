@@ -1,3 +1,4 @@
+import { isMobile } from "react-device-detect"; // Détecte si l'appareil est mobile
 
 import * as THREE from "three";
 import gsap from "gsap";
@@ -60,44 +61,49 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
 // Fonction pour mettre à jour la caméra et l'objet sélectionné
 const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
   mesh.material = mesh.material.clone();
-  mesh.material.color.set(0xff8200); // Applique une couleur orange à la tombe sélectionnée
+  mesh.material.color.set(0xff8200); // Couleur orange pour la sélection
 
-  const targetPosition = {         // Placement de la caméra par rapport à la tombe 
-    x: mesh.parent.position.x - 4,
-    y: mesh.parent.position.y + 3,
-    z: mesh.parent.position.z - 3,
-  };
+  if (!isMobile) { // Sur PC, animation de la caméra
+    const targetPosition = {
+      x: mesh.parent.position.x - 4,
+      y: mesh.parent.position.y + 3,
+      z: mesh.parent.position.z - 3,
+    };
 
-  const lookAtTarget = {     
-    x: mesh.parent.position.x,
-    y: mesh.parent.position.y,
-    z: mesh.parent.position.z,
-  };
+    const lookAtTarget = {     
+      x: mesh.parent.position.x,
+      y: mesh.parent.position.y,
+      z: mesh.parent.position.z,
+    };
 
-  gsap.to(camera.position, {
-    x: targetPosition.x,
-    y: targetPosition.y,
-    z: targetPosition.z,
-    duration: 1.5,
-    ease: "power2.out",
-    onUpdate: () => {
-      camera.lookAt(lookAtTarget.x, lookAtTarget.y, lookAtTarget.z);
-    },
-  });
-
-  if (orbitControlRef.current) {
-    gsap.to(orbitControlRef.current.target, {
-      x: lookAtTarget.x,
-      y: lookAtTarget.y,
-      z: lookAtTarget.z,
-      duration: 1,
+    gsap.to(camera.position, {
+      x: targetPosition.x,
+      y: targetPosition.y,
+      z: targetPosition.z,
+      duration: 1.5,
       ease: "power2.out",
       onUpdate: () => {
-        orbitControlRef.current.update();
+        camera.lookAt(lookAtTarget.x, lookAtTarget.y, lookAtTarget.z);
       },
     });
+
+    if (orbitControlRef.current) {
+      gsap.to(orbitControlRef.current.target, {
+        x: lookAtTarget.x,
+        y: lookAtTarget.y,
+        z: lookAtTarget.z,
+        duration: 1,
+        ease: "power2.out",
+        onUpdate: () => {
+          orbitControlRef.current.update();
+        },
+      });
+    }
   }
 };
+
+
+
 
 // Exemple d'intégration avec ton JSON
 const processTombs = (jsonData) => {
@@ -129,3 +135,5 @@ const processTombs = (jsonData) => {
 // Exemple de récupération et traitement des données
 const jsonData = [ /* Ici tu insères le JSON complet de l'API que tu récupères */ ];
 processTombs(jsonData);
+
+

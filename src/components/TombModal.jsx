@@ -18,7 +18,7 @@ const TombModal = ({ isOpen, onClose, tombName }) => {
         </div>
         <div className='flex h-full justify-between flex-col'>
           <div className=''>
-            <h2 className="my-3 text-xs">Nom</h2>
+            <h2 className="my-3 text-xs">Numéro d'emplacement</h2>
             <p className="mb-4 uppercase">{tombName}</p>
           </div>
           <button
