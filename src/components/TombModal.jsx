@@ -23,12 +23,11 @@ const TombModal = ({ isOpen, onClose, tombName }) => {
           </div>
           <button
             onClick={onClose}
-            className="h-[76px] w-full bg-green-300 rounded-lg text-white hover:bg-gray-700"
+            className="h-[76px] w-full bg-green-400 uppercase rounded-lg text-white hover:bg-gray-700"
           >
-            Fermer
+            Retourner à l'Accueil 
           </button>
         </div>
-
       </div>
     </div>
   );

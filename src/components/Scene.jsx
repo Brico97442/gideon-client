@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Environment, Float, OrbitControls } from "@react-three/drei";
+import { Environment, Float, OrbitControls, Text, useGLTF } from "@react-three/drei";
 
 import { useRef } from "react";
-import Ground from "../models/Ground";
 import Entrance from "../models/Entrance";
 import UserInterface from "./UserInterface";
 import Tombs from "../models/Tombs";
@@ -13,16 +12,15 @@ import { useSearchParams } from "react-router-dom";
 import { PI } from "three/tsl";
 import ParticleSystem from './ParticlesScene'
 import MainOrbitControl from '../utils/MainOrbitControl'
-import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing";
+// import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing";
 import playIcon from '../assets/play_arrow.svg'
-
+import gsap from "gsap";
 import { Suspense } from "react";
 
 function Scene() {
   const [searchParams] = useSearchParams();
   const tombNameFromURL = searchParams.get("name");
-  const particleRenderTarget = useRef();
-
+  const [initialCameraPosition, setInitialCameraPosition] = useState(null); 
   const [tombClones, setTombClones] = useState([]);
   const [tombName, setTombName] = useState("");
   const [camera, setCamera] = useState();
@@ -46,6 +44,42 @@ function Scene() {
   const SceneCamera = () => {
     const { camera } = useThree();
     setCamera(camera);
+
+    useEffect(() => {
+      if (!initialCameraPosition) {
+        setInitialCameraPosition(camera.position.clone());
+      }
+    }, [camera]);
+
+    return null;
+  };
+
+  const resetCameraPosition = () => {
+    if (initialCameraPosition) {
+      gsap.to(camera.position, {
+        x: initialCameraPosition.x,
+        y: initialCameraPosition.y,
+        z: initialCameraPosition.z,
+        duration: 1,
+        ease: "power2.out",
+        onUpdate: () => {
+          camera.lookAt(0, 0, 0);
+        },
+      });
+
+      if (orbitControlRef.current) {
+        gsap.to(orbitControlRef.current.target, {
+          x: 0,
+          y: 0,
+          z: 0,
+          duration: 1,
+          ease: "power2.out",
+          onUpdate: () => {
+            orbitControlRef.current.update();
+          },
+        });
+      }
+    }
   };
 
   useEffect(() => {
@@ -59,12 +93,13 @@ function Scene() {
       <div className="bg-amber-600 z-50 h-full w-full">Chargement de la carte en cours</div>
     )
   }
+
   return (
     <>
       <div className="main">
         <div className="fixed h-full w-full">
           <div className="absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50">
-            <div className={`${applicationStart ? 'hidden':'flex'} flex-col items-center h-full justify-center relative`}>
+            <div className={`${applicationStart ? 'hidden' : 'flex'} flex-col items-center h-full justify-center relative`}>
               <h1 className="text-white tracking-[0.5em] font-bold uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
               <div className="flex flex-col items-center absolute bottom-[20px] lg:bottom-[161px]">
                 <h2 className="text-xl text-white whitespace-nowrap">Lancer l'application</h2>
@@ -74,7 +109,7 @@ function Scene() {
               </div>
             </div>
           </div>
-          <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
+          <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -55] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
             <group>
               <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
                 <ParticleSystem />
@@ -84,7 +119,8 @@ function Scene() {
                   intensity={8}
                   color='yellow'
                 />
-                <ambientLight intensity={1}/>
+                <ambientLight intensity={1} />
+                <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" />
 
               </Float>
             </group>
@@ -95,22 +131,17 @@ function Scene() {
           <Suspense fallback={<Loading />}>
             <div>
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
-              <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
-                {/* <EffectComposer>
-              <Autofocus ref={autofocusRef} smoothTime={0.2} />
-                </EffectComposer> */}
+              <Canvas shadows camera={{ near: 0.2, position: [-15, 6, -55] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
                 <ambientLight intensity={2} />
+                <Entrance />
+                {/* <Text>Vous êtes ici</Text> */}
                 <Suspense fallback={<Loading />}>
                   <Tombs
                     setTombClones={setTombClones}
                     onTombClick={handleTombClick}
                   />
                 </Suspense>
-
                 <SceneCamera />
-
-
-                {/* <color attach="background" args={["black"]} /> */}
 
                 <ambientLight intensity={Math.PI / 2} />
                 <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='purple' />
@@ -124,12 +155,13 @@ function Scene() {
                 />
                 <MainOrbitControl orbitControlRef={orbitControlRef} />
 
-                {/* <Environment preset="city" /> */}
-                {/* Ajout du Composer avec Depth of Field et autres effets */}
               </Canvas>
               <TombModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                  setIsModalOpen(false);
+                  resetCameraPosition();
+                }}
                 tombName={selectedTomb}
               />
             </div>

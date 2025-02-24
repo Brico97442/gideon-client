@@ -3,12 +3,14 @@ import { useGLTF } from "@react-three/drei";
 
 
 const Entrance = () => {
-    const entranceGLTF = useGLTF("/3d-models/gltf/entrance/entrance.gltf");
+    const entranceGLB = useGLTF("/3d-models/gltf/entrance/entrance.glb");
+    console.log(entranceGLB)
     return (
-        <mesh>
-            <primitive object={entranceGLTF.scene} position={[0, 0, 0]} />
+        <mesh position={[0,0,-33]} rotation={[0,3.1,0]}>
+            <primitive object={entranceGLB.scene}/>
         </mesh>
     );
 };
 
-export default Entrance
+export default Entrance    
+useGLTF.preload("/3d-models/gltf/entrance/entrance.glb");

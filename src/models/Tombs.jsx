@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useGLTF, useTexture } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { GET_TOMBS } from "../config/api";
 
