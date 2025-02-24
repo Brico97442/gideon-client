@@ -6,7 +6,7 @@ const Ground = () => {
     const groundGLB = useGLTF("/3d-models/gltf/ground/ground.glb");
     console.log(groundGLB)
     return (
-        <mesh position={[0,-0.2,0]} rotation={[0,0,0]}>
+        <mesh position={[0,0,0]} rotation={[0,0,0]}>
             <primitive object={groundGLB.scene}/>
         </mesh>
     );

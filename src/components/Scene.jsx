@@ -134,7 +134,7 @@ function Scene() {
             <div>
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
               <Canvas shadows camera={{ near: 0.2, position: [-15, 6, -55] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
-                <ambientLight intensity={2} />
+                {/* <ambientLight intensity={2} /> */}
                 <Entrance />
                 <Wall/>
                 <Ground/> 
@@ -148,8 +148,8 @@ function Scene() {
                 <SceneCamera />
 
                 <ambientLight intensity={Math.PI / 2} />
-                <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='purple' />
-                <directionalLight position={[5, 5, 5]} intensity={3} color="green" />
+                {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='purple' /> */}
+                <directionalLight position={[5, 5, 5]} intensity={2} color="white" />
 
                 <pointLight
                   position={[-10, -10, -10]}
