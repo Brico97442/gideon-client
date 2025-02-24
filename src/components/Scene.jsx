@@ -4,6 +4,8 @@ import { Environment, Float, OrbitControls, Text, useGLTF } from "@react-three/d
 
 import { useRef } from "react";
 import Entrance from "../models/Entrance";
+import Wall from "../models/Wall";
+import Ground from "../models/Ground";
 import UserInterface from "./UserInterface";
 import Tombs from "../models/Tombs";
 import TombModal from "./TombModal";
@@ -134,6 +136,8 @@ function Scene() {
               <Canvas shadows camera={{ near: 0.2, position: [-15, 6, -55] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
                 <ambientLight intensity={2} />
                 <Entrance />
+                <Wall/>
+                <Ground/> 
                 {/* <Text>Vous êtes ici</Text> */}
                 <Suspense fallback={<Loading />}>
                   <Tombs

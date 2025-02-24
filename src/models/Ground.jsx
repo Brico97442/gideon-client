@@ -1,13 +1,16 @@
 import React from "react";
 import { useGLTF } from "@react-three/drei";
 
+
 const Ground = () => {
-    const groundGLTF = useGLTF("/3d-models/gltf/ground/ground.gltf");
+    const groundGLB = useGLTF("/3d-models/gltf/ground/ground.glb");
+    console.log(groundGLB)
     return (
-        <mesh>
-            <primitive object={groundGLTF.scene} position={[0, 0, 0]} />
+        <mesh position={[0,-0.2,0]} rotation={[0,0,0]}>
+            <primitive object={groundGLB.scene}/>
         </mesh>
     );
 };
 
-export default Ground; // Maintenant l'export se fait après la déclaration
+export default Ground    
+useGLTF.preload("/3d-models/gltf/ground/ground.glb");
