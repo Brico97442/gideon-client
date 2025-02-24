@@ -64,10 +64,10 @@ function Scene() {
       <div className="main">
         <div className="fixed h-full w-full">
           <div className="absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50">
-            <div className={`${applicationStart ? 'lg:hidden':'lg:flex'}  flex-col items-center h-full justify-center relative`}>
-              <h1 className="text-white tracking-[0.5em] font-bold uppercase text-[72px]">Gideon </h1>
-              <div className="flex flex-col items-center absolute bottom-[161px]">
-                <h2 className="text-xl text-white">Lancer l'application</h2>
+            <div className={`${applicationStart ? 'lg:hidden':'hidden lg:flex'}  flex-col items-center h-full justify-center relative`}>
+              <h1 className="text-white tracking-[0.5em] font-bold uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
+              <div className="flex flex-col items-center absolute bottom-[20px] lg:bottom-[161px]">
+                <h2 className="text-xl text-white whitespace-nowrap">Lancer l'application</h2>
                 <button className=" z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px]" onClick={() => setApplicationStart(prev => !prev)}>
                   <img src={playIcon} />
                 </button>
