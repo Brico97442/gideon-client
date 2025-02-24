@@ -19,7 +19,7 @@ const ParticleSystem = ({ spacingBetweenClusters = 50, clusterSpread = 90 }) => 
     const radius = canvas.width / 3;
     const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
     gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
-    gradient.addColorStop(1, "rgba(255, 255, 255, 0.8)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 1)");
     context.beginPath();
     context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     context.fillStyle = gradient;
@@ -105,7 +105,7 @@ const ParticleSystem = ({ spacingBetweenClusters = 50, clusterSpread = 90 }) => 
   });
 
   return (
-        <points ref={pointsRef} userData={{ velocities }}>
+        <points ref={pointsRef} castShadow receiveShadow userData={{ velocities }}>
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"

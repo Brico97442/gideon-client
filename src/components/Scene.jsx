@@ -14,6 +14,9 @@ import { PI } from "three/tsl";
 import ParticleSystem from './ParticlesScene'
 import MainOrbitControl from '../utils/MainOrbitControl'
 import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing";
+import playIcon from '../assets/play_arrow.svg'
+
+import { Suspense } from "react";
 
 function Scene() {
   const [searchParams] = useSearchParams();
@@ -26,6 +29,7 @@ function Scene() {
   const orbitControlRef = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTomb, setSelectedTomb] = useState("");
+  const [applicationStart, setApplicationStart] = useState(false)
 
   const handleFocusOnObject = (name) => {
     focusOnObject(name, tombClones, camera, orbitControlRef);
@@ -50,57 +54,88 @@ function Scene() {
     }
   }, [tombNameFromURL, tombClones]);
 
+  const Loading = () => {
+    return (
+      <div className="bg-amber-600 z-50 h-full w-full">Chargement de la carte en cours</div>
+    )
+  }
   return (
     <>
       <div className="main">
-        <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
         <div className="fixed h-full w-full">
-        <div className="absolute top-0 backdrop-blur-[5px] w-full h-full z-50"></div>
-        <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
-          <group>
-            <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
-              <ParticleSystem />
-            </Float>
-          </group>
-        </Canvas>
+          <div className="absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50">
+            <div className={`${applicationStart ? 'hidden' : 'flex'} flex-col items-center h-full justify-center relative`}>
+              <h1 className="text-white tracking-[0.5em] font-bold uppercase text-[72px]">Gideon </h1>
+              <div className="flex flex-col items-center absolute bottom-[161px]">
+                <h2 className="text-xl text-white">Lancer l'application</h2>
+                <button className=" z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px]" onClick={() => setApplicationStart(prev => !prev)}>
+                  <img src={playIcon} />
+                </button>
+              </div>
+            </div>
           </div>
-        <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} className="canvas-view"  >
-          {/* <Ground />
-          <Entrance /> */}
-          {/* <EffectComposer>
+          <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
+            <group>
+              <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+                <ParticleSystem />
+                <pointLight
+                  position={[0, 0, 0]}
+                  decay={0}
+                  intensity={8}
+                  color='yellow'
+                />
+                <ambientLight intensity={1}/>
+
+              </Float>
+            </group>
+          </Canvas>
+        </div>
+
+        {applicationStart &&
+          <Suspense fallback={<Loading />}>
+            <div>
+              <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
+              <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
+                {/* <EffectComposer>
               <Autofocus ref={autofocusRef} smoothTime={0.2} />
-            </EffectComposer> */}
-          <ambientLight intensity={2} />
+                </EffectComposer> */}
+                <ambientLight intensity={2} />
+                <Suspense fallback={<Loading />}>
+                  <Tombs
+                    setTombClones={setTombClones}
+                    onTombClick={handleTombClick}
+                  />
+                </Suspense>
 
-          <Tombs
-            setTombClones={setTombClones}
-            onTombClick={handleTombClick}
-          />
-          <SceneCamera />
+                <SceneCamera />
 
-          
-          {/* <color attach="background" args={["black"]} /> */}
 
-          <ambientLight intensity={Math.PI / 2} />
-          <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={0} intensity={Math.PI} color='purple' />
+                {/* <color attach="background" args={["black"]} /> */}
 
-          <pointLight
-            position={[-10, -10, -10]}
-            decay={0}
-            intensity={Math.PI}
-            color='blue'
-          />
-          {/* <directionalLight position={[5, 5, 5]} intensity={3} /> */}
-          <MainOrbitControl orbitControlRef={orbitControlRef} />
+                <ambientLight intensity={Math.PI / 2} />
+                <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='purple' />
+                <directionalLight position={[5, 5, 5]} intensity={3} color="green" />
 
-          {/* <Environment preset="city" /> */}
-          {/* Ajout du Composer avec Depth of Field et autres effets */}
-        </Canvas>
-        <TombModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          tombName={selectedTomb}
-        />
+                <pointLight
+                  position={[-10, -10, -10]}
+                  decay={0}
+                  intensity={Math.PI}
+                  color='blue'
+                />
+                <MainOrbitControl orbitControlRef={orbitControlRef} />
+
+                {/* <Environment preset="city" /> */}
+                {/* Ajout du Composer avec Depth of Field et autres effets */}
+              </Canvas>
+              <TombModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                tombName={selectedTomb}
+              />
+            </div>
+          </Suspense>
+        }
+
       </div>
     </>
   )
