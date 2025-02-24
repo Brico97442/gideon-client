@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Environment, OrbitControls } from "@react-three/drei";
+import { Environment, Float, OrbitControls } from "@react-three/drei";
 
 import { useRef } from "react";
 import Ground from "../models/Ground";
@@ -12,10 +12,13 @@ import { focusOnObject } from "../utils/CameraUtils";
 import { useSearchParams } from "react-router-dom";
 import { PI } from "three/tsl";
 import ParticleSystem from './ParticlesScene'
+import MainOrbitControl from '../utils/MainOrbitControl'
+import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing";
 
 function Scene() {
   const [searchParams] = useSearchParams();
   const tombNameFromURL = searchParams.get("name");
+  const particleRenderTarget = useRef();
 
   const [tombClones, setTombClones] = useState([]);
   const [tombName, setTombName] = useState("");
@@ -51,17 +54,31 @@ function Scene() {
     <>
       <div className="main">
         <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
-        <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} className="canvas-view">
+        <div className="fixed h-full w-full">
+        <div className="absolute top-0 backdrop-blur-[5px] w-full h-full z-50"></div>
+        <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
+          <group>
+            <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+              <ParticleSystem />
+            </Float>
+          </group>
+        </Canvas>
+          </div>
+        <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} className="canvas-view"  >
           {/* <Ground />
           <Entrance /> */}
+          {/* <EffectComposer>
+              <Autofocus ref={autofocusRef} smoothTime={0.2} />
+            </EffectComposer> */}
+          <ambientLight intensity={2} />
+
           <Tombs
             setTombClones={setTombClones}
             onTombClick={handleTombClick}
           />
           <SceneCamera />
 
-          <ambientLight intensity={2} />
-          <ParticleSystem />
+          
           {/* <color attach="background" args={["black"]} /> */}
 
           <ambientLight intensity={Math.PI / 2} />
@@ -74,13 +91,10 @@ function Scene() {
             color='blue'
           />
           {/* <directionalLight position={[5, 5, 5]} intensity={3} /> */}
+          <MainOrbitControl orbitControlRef={orbitControlRef} />
 
-
-          <OrbitControls ref={orbitControlRef} maxPolarAngle={Math.PI / 2} />
-          <color attach="background" args={['#030412']} />
-
-          {/* <PerspectiveCamera makeDefault position={[0, 1.6, 5]} fov={70} /> */}
           {/* <Environment preset="city" /> */}
+          {/* Ajout du Composer avec Depth of Field et autres effets */}
         </Canvas>
         <TombModal
           isOpen={isModalOpen}

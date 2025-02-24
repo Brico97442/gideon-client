@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import gsap from "gsap";
+// import { Autofocus } from "./Autofocus"; // Assure-toi d'importer le bon fichier
 
 // Fonction pour gérer la sélection et le focus sur une tombe
 export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {

@@ -1,27 +1,25 @@
-import { useFrame, useThree } from '@react-three/fiber';
-import { useMemo, useRef } from 'react';
-import * as THREE from 'three';
+import { Float } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
+import * as THREE from "three";
 
-const ParticleSystem = () => {
+const ParticleSystem = ({ spacingBetweenClusters = 50, clusterSpread = 90 }) => {
   const pointsRef = useRef();
-//   const { viewport } = useThree();
+  const particleCount = 1500; // Nombre total de particules
+  const maxSpeed = 0.002; // Vitesse max des particules
 
-  const particleCount = 1500;
-  const maxSpeed = 0.001;
-  const limit = 50;
-
-  // Création d'une texture de particules
+  // Création de la texture pour les particules
   const particleTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
+    const canvas = document.createElement("canvas");
     canvas.width = 64;
     canvas.height = 64;
-    const context = canvas.getContext('2d');
+    const context = canvas.getContext("2d");
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
     const radius = canvas.width / 3;
     const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
-    gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
-    gradient.addColorStop(1, 'rgba(255, 255, 255, 0.5)');
+    gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 0.8)");
     context.beginPath();
     context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
     context.fillStyle = gradient;
@@ -31,98 +29,102 @@ const ParticleSystem = () => {
   }, []);
 
   // Matériau des particules
-  const pointsMaterial = useMemo(() => {
-    return new THREE.PointsMaterial({
-      size: 2,
-      sizeAttenuation: true,
-      transparent: true,
-      opacity: 0.8,
-      map: particleTexture,
-      alphaTest: 0.1,
-      depthWrite: false,
-      vertexColors: true
-    });
-  }, [particleTexture]);
+  const pointsMaterial = useMemo(
+    () =>
+      new THREE.PointsMaterial({
+        size: 2,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity: 0.9,
+        map: particleTexture,
+        alphaTest: 0.1,
+        depthWrite: false,
+        vertexColors: true,
+      }),
+    [particleTexture]
+  );
 
-  // Création de la géométrie des particules
+  // Génération des positions et vitesses en 2 amas
   const [positions, velocities, colors] = useMemo(() => {
     const positions = new Float32Array(particleCount * 3);
     const velocities = new Float32Array(particleCount * 3);
     const colors = new Float32Array(particleCount * 3);
 
-    for (let i = 0; i < positions.length; i += 3) {
-      positions[i] = (Math.random() - 0.5) * 150;
-      positions[i + 1] = (Math.random() - 0.5) * 100;
-      positions[i + 2] = (Math.random() - 0.5) * 100;
+    for (let i = 0; i < particleCount; i++) {
+      const isLeftCluster = i < particleCount / 2; // Détermine si la particule est à gauche ou à droite
+      const xOffset = isLeftCluster ? -spacingBetweenClusters : spacingBetweenClusters; // Distance entre les amas
 
-      colors[i] = 0.0;
-      colors[i + 1] = Math.random() * 0.5;
-      colors[i + 2] = 0.5 + Math.random() * 0.5;
+      // Répartition aléatoire autour du centre du cluster
+      const x = xOffset + (Math.random() - 0.5) * clusterSpread;
+      const y = (Math.random() - 0.5) * clusterSpread;
+      const z = (Math.random() - 0.5) * clusterSpread;
 
-      velocities[i] = (Math.random() - 0.5) * 0.1;
-      velocities[i + 1] = (Math.random() - 0.5) * 0.1;
-      velocities[i + 2] = (Math.random() - 0.5) * 0.1;
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+
+      // Couleurs aléatoires
+      colors[i * 3] = 0.2 + Math.random() * 0.2;
+      colors[i * 3 + 1] = 0.3 + Math.random() * 0.2;
+      colors[i * 3 + 2] = 0.6 + Math.random() * 0.4;
+
+      // Vitesse initiale pour un mouvement fluide
+      velocities[i * 3] = (Math.random() - 0.5) * maxSpeed;
+      velocities[i * 3 + 1] = (Math.random() - 0.5) * maxSpeed;
+      velocities[i * 3 + 2] = (Math.random() - 0.5) * maxSpeed;
     }
 
     return [positions, velocities, colors];
-  }, [particleCount]);
+  }, [particleCount, clusterSpread, spacingBetweenClusters]);
 
-  // Mettre à jour les positions et vitesses des particules dans la scène
+  // Animation des particules
   useFrame((state, delta) => {
     if (pointsRef.current) {
-      pointsRef.current.rotation.y += delta * 0.03;
-
       const positions = pointsRef.current.geometry.attributes.position.array;
       const velocities = pointsRef.current.userData.velocities;
 
       for (let i = 0; i < positions.length; i += 3) {
-        positions[i] += velocities[i];
-        positions[i + 1] += velocities[i + 1];
-        positions[i + 2] += velocities[i + 2];
+        // Appliquer la vitesse
+        positions[i] += velocities[i] * delta * 60;
+        positions[i + 1] += velocities[i + 1] * delta * 60;
+        positions[i + 2] += velocities[i + 2] * delta * 60;
 
-        // Gestion des rebonds et des limites
-        for (let j = 0; j < 3; j++) {
-          if (Math.abs(positions[i + j]) > limit) {
-            positions[i + j] *= -0.9; // Rebond
-            velocities[i + j] *= -0.9; // Inverser la direction
-          }
-        }
+        // Légère oscillation pour rendre le mouvement plus naturel
+        velocities[i] += Math.sin(state.clock.elapsedTime * 0.2) * 0.0001;
+        velocities[i + 1] += Math.cos(state.clock.elapsedTime * 0.2) * 0.0001;
+        velocities[i + 2] += Math.sin(state.clock.elapsedTime * 0.15) * 0.0001;
 
-        velocities[i] += (Math.random() - 0.5) * 0.01;
-        velocities[i + 1] += (Math.random() - 0.5) * 0.01;
-        velocities[i + 2] += (Math.random() - 0.5) * 0.01;
-
-        // Limitation de la vitesse
-        for (let j = 0; j < 3; j++) {
-          velocities[i + j] = THREE.MathUtils.clamp(velocities[i + j], -maxSpeed, maxSpeed);
-        }
+        // Limitation des vitesses pour éviter la dispersion trop forte
+        velocities[i] = THREE.MathUtils.clamp(velocities[i], -maxSpeed, maxSpeed);
+        velocities[i + 1] = THREE.MathUtils.clamp(velocities[i + 1], -maxSpeed, maxSpeed);
+        velocities[i + 2] = THREE.MathUtils.clamp(velocities[i + 2], -maxSpeed, maxSpeed);
       }
 
-      // Marquer les positions comme mises à jour
       pointsRef.current.geometry.attributes.position.needsUpdate = true;
     }
   });
 
   return (
-    <points ref={pointsRef} userData={{ velocities }} position={[0,0,50]} scale={[3,3,3]}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={positions.length / 3}
-          array={positions}
-          itemSize={3}
-          usage={THREE.DynamicDrawUsage}
-        />
-        <bufferAttribute
-          attach="attributes-color"
-          count={colors.length / 3}
-          array={colors}
-          itemSize={3}
-          usage={THREE.StaticDrawUsage}
-        />
-      </bufferGeometry>
-      <primitive object={pointsMaterial} />
-    </points>
+        <points ref={pointsRef} userData={{ velocities }}>
+          <bufferGeometry>
+            <bufferAttribute
+              attach="attributes-position"
+              count={positions.length / 3}
+              array={positions}
+              itemSize={3}
+              usage={THREE.DynamicDrawUsage}
+            />
+            <bufferAttribute
+              attach="attributes-color"
+              count={colors.length / 3}
+              array={colors}
+              itemSize={3}
+              usage={THREE.StaticDrawUsage}
+            />
+          </bufferGeometry>
+          <primitive object={pointsMaterial} />
+        </points>
+
   );
 };
 
