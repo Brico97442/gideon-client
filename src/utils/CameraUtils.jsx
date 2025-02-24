@@ -1,6 +1,15 @@
+
 import * as THREE from "three";
 import gsap from "gsap";
-// import { Autofocus } from "./Autofocus"; // Assure-toi d'importer le bon fichier
+
+// Les couleurs associées à chaque section
+const sectionColors = {
+  9: '#FF5733',  // Section 1 (exemple : rouge)
+  10: '#33FF57',  // Section 1 (exemple : rouge)
+  11: '#3357FF',  // Section 1 (exemple : rouge)
+  12: '#FFFF33',  // Section 1 (exemple : rouge)
+  // Ajoute plus de sections et leurs couleurs ici si nécessaire
+};
 
 // Fonction pour gérer la sélection et le focus sur une tombe
 export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
@@ -30,16 +39,17 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
       clone.traverse((child) => {
         if (child.isMesh) {
           if (child.name === name) return; // Ne pas modifier la tombe sélectionnée
-  
+
           // Réinitialiser le matériau original
           if (child.userData.originalMaterial) {
             child.material = child.userData.originalMaterial;
           }
-  
-          // Appliquer une couleur aux tombes de la même section
+
+          // Appliquer la couleur spécifique à la section
           if (child.userData.sectionId === selectedSectionId) {
+            const sectionColor = sectionColors[selectedSectionId];
             child.material = child.material.clone();
-            child.material.color.set('#9900FF'); 
+            child.material.color.set(sectionColor);
           }
         }
       });
@@ -49,10 +59,8 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
 
 // Fonction pour mettre à jour la caméra et l'objet sélectionné
 const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
-  
-  // Changer la couleur de la tombe sélectionnée
   mesh.material = mesh.material.clone();
-  mesh.material.color.set(0xff8200);
+  mesh.material.color.set(0xff8200); // Applique une couleur orange à la tombe sélectionnée
 
   const targetPosition = {         // Placement de la caméra par rapport à la tombe 
     x: mesh.parent.position.x - 4,
@@ -66,7 +74,6 @@ const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
     z: mesh.parent.position.z,
   };
 
-  // Animation pour la caméra 
   gsap.to(camera.position, {
     x: targetPosition.x,
     y: targetPosition.y,
@@ -78,7 +85,6 @@ const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
     },
   });
 
-  // Animation du point de focus de OrbitControls
   if (orbitControlRef.current) {
     gsap.to(orbitControlRef.current.target, {
       x: lookAtTarget.x,
@@ -92,3 +98,34 @@ const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
     });
   }
 };
+
+// Exemple d'intégration avec ton JSON
+const processTombs = (jsonData) => {
+  jsonData.forEach((section) => {
+    const sectionId = section.id; // L'ID de la section
+    const tombs = section.tombs;
+
+    // Appliquer la couleur à chaque tombe de cette section
+    tombs.forEach((tomb) => {
+      // On applique l'ID de section à chaque tombe
+      tomb.userData = tomb.userData || {};
+      tomb.userData.sectionId = sectionId;
+
+      // Tu peux ajouter des transformations ici si tu en as besoin
+      tomb.position.set(
+        tomb.tombTransform.position[0],
+        tomb.tombTransform.position[1],
+        tomb.tombTransform.position[2]
+      );
+      tomb.rotation.set(
+        tomb.tombTransform.rotation[0],
+        tomb.tombTransform.rotation[1],
+        tomb.tombTransform.rotation[2]
+      );
+    });
+  });
+};
+
+// Exemple de récupération et traitement des données
+const jsonData = [ /* Ici tu insères le JSON complet de l'API que tu récupères */ ];
+processTombs(jsonData);
