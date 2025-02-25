@@ -1,32 +1,8 @@
 import React from 'react';
 import SearchIcon from '../assets/searchicon.svg'
+
 function UserInterface({ tombName, setTombName, focusOnObject }) {
 
-
-    const handleTopView = () => {
-        if (camera) {
-          gsap.to(camera.position, {
-            x: 0,
-            y: 0,  // Position au-dessus de la scène
-            z: 0, // Légèrement décalé pour éviter d'être pile sur l'origine
-            duration: 1,
-            ease: "power2.out",
-          });
-    
-          if (orbitControlRef.current) {
-            gsap.to(orbitControlRef.current.target, {
-              x: 0,
-              y: 0,
-              z: 0,
-              duration: 1,
-              ease: "power2.out",
-              // onUpdate: () => {
-              //   orbitControlRef.current.update();
-              // },
-            });
-          }
-        }
-      };
     return (
 
         <div id='ui' className="hidden lg:block absolute left-0 pl-5 py-6 h-full z-50">

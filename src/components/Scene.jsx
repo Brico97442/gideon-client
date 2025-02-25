@@ -3,6 +3,7 @@ import { Canvas, useThree } from "@react-three/fiber";
 import { Environment, Float, OrbitControls, Text, useGLTF } from "@react-three/drei";
 import { isMobile } from "react-device-detect"; // Détecte si l'appareil est mobile
 import * as THREE from "three";  // Assurez-vous d'importer THREE
+import axios from 'axios';
 
 import { useRef } from "react";
 import Entrance from "../models/Entrance";
@@ -21,6 +22,7 @@ import gsap from "gsap";
 import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
 import { highlightTombSection } from "../utils/ColorsUtils";
+import {GET_DECEASED } from "../config/api";
 
 // Définition des couleurs des sections
 const sectionColors = {
@@ -38,22 +40,44 @@ function Scene() {
   const [tombName, setTombName] = useState("");
   const [camera, setCamera] = useState();
   const orbitControlRef = useRef();
+  const tombId = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTomb, setSelectedTomb] = useState("");
   const [applicationStart, setApplicationStart] = useState(false)
-
-  const handleFocusOnObject = (name) => {
-    localStorage.setItem("selectedTomb", name); // Sauvegarde dans le stockage local
-    focusOnObject(name, tombClones, camera, orbitControlRef, sectionColors);
-    setSelectedTomb(name);
-    setIsModalOpen(true);
+  const [tombDetails, setTombDetails] = useState(null);
+  
+  
+  const fetchTombDetails = async (tombId) => {
+    try {
+      // Appel API en utilisant l'ID de la tombe
+      const response = await axios.get(GET_DECEASED(tombId));
+      // console.log("Données de la tombe :", response.data);  // Log des données reçues
+      setTombDetails(response.data);
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données de la tombe", error);
+    }
   };
   
-  const handleTombClick = (name) => {
-    setSelectedTomb(name);
-    setIsModalOpen(true);
-    focusOnObject(name, tombClones, camera, orbitControlRef, sectionColors);
+  
+  
+  
+  const handleFocusOnObject = (name) => {
+    // Trouver l'ID de la tombe sélectionnée en utilisant le nom ou directement depuis les clones
+      localStorage.setItem("selectedTomb", name); // Sauvegarde dans le stockage local
+      focusOnObject(name, tombClones, camera, orbitControlRef, sectionColors);
+      setSelectedTomb(name);
+      setIsModalOpen(true);
   };
+
+  const handleTombClick = (id) => {
+    // console.log("ID de la tombe sélectionnée:", id);  // Vérifie l'ID dans la console
+    setSelectedTomb(id); // Utilise l'ID pour identifier la tombe sélectionnée.
+    setIsModalOpen(true);
+    focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);  // Assure-toi que `focusOnObject` utilise bien l'ID
+    fetchTombDetails(id);  // Charger les détails de la tombe avec l'ID
+  };
+  
+
   
   const handleTopView = () => {
     if (!camera) return;
@@ -120,9 +144,7 @@ function Scene() {
   useEffect(() => {
     const savedTomb = searchParams.get("name") || localStorage.getItem("selectedTomb");
   
-    if (savedTomb && tombClones.length) {
-      console.log("Mise en surbrillance de la tombe sans déplacer la caméra:", savedTomb);
-      
+    if (savedTomb && tombClones.length) {      
       // Appliquer uniquement la surbrillance sans déplacer la caméra
       highlightTombSection(tombClones, savedTomb, sectionColors);
     }
@@ -186,7 +208,7 @@ function Scene() {
           <Suspense fallback={<Loading />}>
             <div>
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
-              <Canvas shadows   camera={{ near: 0.2, position: isMobile ? [0, 0, 0] : [35, 17, 100], rotation: [0,Math.PI, 0]}}  id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
+              <Canvas shadows   camera={{ near: 0.2, position: isMobile ? [0, 120, 0] : [35, 17, 100], rotation: [0,Math.PI, 0]}}  id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
                 {/* <ambientLight intensity={2} /> */}
                 <Entrance />
                 <Wall/>
@@ -220,6 +242,10 @@ function Scene() {
                   resetCameraPosition();
                 }}
                 tombName={selectedTomb}
+                tombDetails={tombDetails}  // Passe les détails de la tombe à la modal
+                tombId={tombId}
+                onTombClick={handleTombClick}  // Assure-toi que c'est bien la fonction `handleTombClick`
+
               />
             </div>
           </Suspense>

@@ -5,7 +5,7 @@ import { GET_TOMBS } from "../config/api";
 
 
 
-const Tombs = ({ setTombClones, onTombClick }) => {
+const Tombs = ({ setTombClones, onTombClick,tombId }) => {
 
   const [tombs, setTombs] = useState([]);
   const tombsGltf = {
@@ -50,7 +50,7 @@ const Tombs = ({ setTombClones, onTombClick }) => {
 
           tombClone.traverse((child) => {
             if (child.isMesh) {
-              child.name = `N°-${tomb.id}`;
+              child.name = `${tomb.id}`;
               // child.material = new THREE.MeshStandardMaterial({
               //   map:texture,
               // })

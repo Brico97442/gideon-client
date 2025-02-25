@@ -24,7 +24,7 @@ const MainOrbitControl = ({ orbitControlRef }) => {
     <OrbitControls
       ref={orbitControlRef}
       args={[camera, gl.domElement]}
-      maxDistance={90}
+      maxDistance={120}
       minDistance={8}
       enableDamping
       dampingFactor={0.1}

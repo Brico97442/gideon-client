@@ -27,8 +27,6 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
 export const focusOnObject = (name, tombClones, camera, orbitControlRef, sectionColors) => {
   if (!camera || !tombClones.length) return;
 
-  console.log("Cherchant tombe avec nom:", name);
-
   // Utiliser find pour récupérer directement le clone avec le mesh correspondant au nom
   const selectedTomb = tombClones.find(clone => 
     clone.children.some(child => child.isMesh && child.name === name)
@@ -39,12 +37,11 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef, section
     return;
   }
 
-  console.log("Tombe trouvée:", selectedTomb);
-
   // Changer la couleur de la section
   highlightTombSection(tombClones, name, sectionColors);
 
-  // Position de la caméra
+
+  // Position cible de la caméra
   const targetPosition = {
     x: selectedTomb.position.x + 4,
     y: selectedTomb.position.y + 2,
