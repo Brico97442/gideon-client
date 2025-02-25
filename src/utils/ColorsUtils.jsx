@@ -10,8 +10,9 @@ export const highlightTombSection = (tombClones, selectedTombName, sectionColors
   // Réinitialiser toutes les couleurs d'abord
   tombClones.forEach(clone => {
     clone.children.forEach(child => {
-      if (child.isMesh && child.name === name) {
-        child.material.color.set(sectionColors[name]); // Change la couleur de la tombe sélectionnée
+        if (child.isMesh && child.name === selectedTombName) {
+            child.material.color.set(sectionColors[selectedTombName]); 
+        
         child.material.emissive.set(0x00ff00);  // Exemple d'émissivité pour ajouter un effet de lumière
       } else {
         // Réinitialisez les autres tombes à leur état d'origine

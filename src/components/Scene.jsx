@@ -43,6 +43,7 @@ function Scene() {
   const [applicationStart, setApplicationStart] = useState(false)
 
   const handleFocusOnObject = (name) => {
+    localStorage.setItem("selectedTomb", name); // Sauvegarde dans le stockage local
     focusOnObject(name, tombClones, camera, orbitControlRef, sectionColors);
     setSelectedTomb(name);
     setIsModalOpen(true);
@@ -115,7 +116,14 @@ function Scene() {
       }
     }
   };
-
+  
+  useEffect(() => {
+    const savedTomb = searchParams.get("name") || localStorage.getItem("selectedTomb");
+    if (savedTomb && tombClones.length) {
+      console.log("Restauration de la tombe sélectionnée:", savedTomb);
+      focusOnObject(savedTomb, tombClones, camera, orbitControlRef, sectionColors);
+    }
+  }, [tombClones]); 
  
   useEffect(() => {
     const button = document.getElementById("top-view-btn");

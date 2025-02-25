@@ -1,11 +1,10 @@
 import gsap from "gsap";
-import * as THREE from "three";  // Assurez-vous d'importer THREE
+import * as THREE from "three"; 
 import { highlightTombSection } from "./ColorsUtils";
 
 export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, target) => {
   if (!camera || !orbitControlRef.current) return;
 
-  // Déplacement de la caméra vers la nouvelle position
   gsap.to(camera.position, {
     x: targetPosition.x,
     y: targetPosition.y,
@@ -14,7 +13,6 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
     ease: "power2.out",
   });
 
-  // Mise à jour de la cible de la caméra pour qu'elle suive la tombe
   gsap.to(orbitControlRef.current.target, {
     x: target.x,
     y: target.y,
@@ -30,7 +28,7 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef, section
 
   console.log("Cherchant tombe avec nom:", name);
 
-  // Utiliser find pour récupérer directement le clone avec le mesh correspondant au nom
+  // find pour récupérer directement le clone avec le mesh correspondant au nom
   const selectedTomb = tombClones.find(clone => 
     clone.children.some(child => child.isMesh && child.name === name)
   );
