@@ -95,7 +95,7 @@ function Scene() {
       gsap.to(camera.position, {
         x: 0,
         y: 100,  // Position en haut pour la vue de dessus
-        z: 0.1,  // Petit décalage pour éviter les problèmes de rendu
+        z: 0,  // Petit décalage pour éviter les problèmes de rendu
         duration: 1,
         ease: "power2.out",
       });

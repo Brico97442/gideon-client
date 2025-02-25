@@ -63,9 +63,9 @@ const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
 
   if (!isMobile) {
     const targetPosition = {
-      x: mesh.parent.position.x - 4,
-      y: mesh.parent.position.y + 3,
-      z: mesh.parent.position.z - 3,
+      x: mesh.parent.position.x+3,
+      y: mesh.parent.position.y+1,
+      z: mesh.parent.position.z+2.5,
     };
 
     const lookAtTarget = {     
