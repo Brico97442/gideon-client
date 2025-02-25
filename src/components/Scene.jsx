@@ -119,11 +119,15 @@ function Scene() {
   
   useEffect(() => {
     const savedTomb = searchParams.get("name") || localStorage.getItem("selectedTomb");
+  
     if (savedTomb && tombClones.length) {
-      console.log("Restauration de la tombe sélectionnée:", savedTomb);
-      focusOnObject(savedTomb, tombClones, camera, orbitControlRef, sectionColors);
+      console.log("Mise en surbrillance de la tombe sans déplacer la caméra:", savedTomb);
+      
+      // Appliquer uniquement la surbrillance sans déplacer la caméra
+      highlightTombSection(tombClones, savedTomb, sectionColors);
     }
-  }, [tombClones]); 
+  }, [tombClones]);
+  
  
   useEffect(() => {
     const button = document.getElementById("top-view-btn");
@@ -135,7 +139,7 @@ function Scene() {
 
   useEffect(() => {
     if (tombNameFromURL && tombClones.length > 0) {
-      focusOnObject(name, tombClones, camera, orbitControlRef);
+      focusOnObject(tombClones, camera, orbitControlRef);
     }
   }, [tombNameFromURL, tombClones]);
 

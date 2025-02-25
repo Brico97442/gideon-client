@@ -5,6 +5,7 @@ import { highlightTombSection } from "./ColorsUtils";
 export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, target) => {
   if (!camera || !orbitControlRef.current) return;
 
+  // Déplacement de la caméra vers la nouvelle position
   gsap.to(camera.position, {
     x: targetPosition.x,
     y: targetPosition.y,
@@ -28,7 +29,7 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef, section
 
   console.log("Cherchant tombe avec nom:", name);
 
-  // find pour récupérer directement le clone avec le mesh correspondant au nom
+  // Utiliser find pour récupérer directement le clone avec le mesh correspondant au nom
   const selectedTomb = tombClones.find(clone => 
     clone.children.some(child => child.isMesh && child.name === name)
   );
