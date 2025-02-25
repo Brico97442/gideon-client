@@ -22,11 +22,11 @@ import gsap from "gsap";
 import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
 import { highlightTombSection } from "../utils/ColorsUtils";
-import {GET_DECEASED } from "../config/api";
+import { GET_DECEASED } from "../config/api";
 
 // Définition des couleurs des sections
 const sectionColors = {
-  13: '#FF5733', 
+  13: '#FF5733',
   14: '#33FF57',
   15: '#3357FF',
   16: '#FFFF33',
@@ -35,7 +35,7 @@ const sectionColors = {
 function Scene() {
   const [searchParams] = useSearchParams();
   const tombNameFromURL = searchParams.get("name");
-  const [initialCameraPosition, setInitialCameraPosition] = useState(null); 
+  const [initialCameraPosition, setInitialCameraPosition] = useState(null);
   const [tombClones, setTombClones] = useState([]);
   const [tombName, setTombName] = useState("");
   const [camera, setCamera] = useState();
@@ -45,8 +45,8 @@ function Scene() {
   const [selectedTomb, setSelectedTomb] = useState("");
   const [applicationStart, setApplicationStart] = useState(false)
   const [tombDetails, setTombDetails] = useState(null);
-  
-  
+
+
   const fetchTombDetails = async (tombId) => {
     try {
       // Appel API en utilisant l'ID de la tombe
@@ -57,16 +57,16 @@ function Scene() {
       console.error("Erreur lors de la récupération des données de la tombe", error);
     }
   };
-  
-  
-  
-  
+
+
+
+
   const handleFocusOnObject = (name) => {
     // Trouver l'ID de la tombe sélectionnée en utilisant le nom ou directement depuis les clones
-      localStorage.setItem("selectedTomb", name); // Sauvegarde dans le stockage local
-      focusOnObject(name, tombClones, camera, orbitControlRef, sectionColors);
-      setSelectedTomb(name);
-      setIsModalOpen(true);
+    localStorage.setItem("selectedTomb", name); // Sauvegarde dans le stockage local
+    focusOnObject(name, tombClones, camera, orbitControlRef, sectionColors);
+    setSelectedTomb(name);
+    setIsModalOpen(true);
   };
 
   const handleTombClick = (id) => {
@@ -76,16 +76,16 @@ function Scene() {
     focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);  // Assure-toi que `focusOnObject` utilise bien l'ID
     fetchTombDetails(id);  // Charger les détails de la tombe avec l'ID
   };
-  
 
-  
+
+
   const handleTopView = () => {
     if (!camera) return;
-        const topViewPosition = { x: 0, y: 120, z: 0.001 };
-  
+    const topViewPosition = { x: 0, y: 120, z: 0.001 };
+
     // Déplacer la caméra vers cette position
     moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
-    
+
     if (orbitControlRef.current) {
       gsap.to(orbitControlRef.current.target, {
         x: 0,
@@ -140,17 +140,17 @@ function Scene() {
       }
     }
   };
-  
+
   useEffect(() => {
     const savedTomb = searchParams.get("name") || localStorage.getItem("selectedTomb");
-  
-    if (savedTomb && tombClones.length) {      
+
+    if (savedTomb && tombClones.length) {
       // Appliquer uniquement la surbrillance sans déplacer la caméra
       highlightTombSection(tombClones, savedTomb, sectionColors);
     }
   }, [tombClones]);
-  
- 
+
+
   useEffect(() => {
     const button = document.getElementById("top-view-btn");
     if (button) {
@@ -174,7 +174,7 @@ function Scene() {
   return (
     <>
       <div className="main">
-        <div className="fixed h-full w-full">
+        <div className=" fixed h-full w-full">
           <div className="absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50">
             <div className={`${applicationStart ? 'hidden' : 'flex'} flex-col items-center h-full justify-center relative`}>
               <h1 className="text-white tracking-[0.5em] font-bold uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
@@ -186,6 +186,8 @@ function Scene() {
               </div>
             </div>
           </div>
+
+
           <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
             <group>
               <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
@@ -207,12 +209,15 @@ function Scene() {
         {applicationStart &&
           <Suspense fallback={<Loading />}>
             <div>
+              <div className="flex justify-center bg-red-600 w-full h-full relative z-50">
+                <button id='top-view-btn' className="absolute cursor-pointer top-[50px]  h-30 w-30 rounded-full bg-orange-400/80">Vue du dessus</button>
+              </div>
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
-              <Canvas shadows   camera={{ near: 0.2, position: isMobile ? [0, 120, 0] : [35, 17, 100], rotation: [0,Math.PI, 0]}}  id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
+              <Canvas shadows camera={{ near: 0.2, position: isMobile ? [0, 120, 0] : [35, 17, 65], rotation: [0, Math.PI, 0] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
                 {/* <ambientLight intensity={2} /> */}
                 <Entrance />
-                <Wall/>
-                <Ground/> 
+                <Wall />
+                <Ground />
                 {/* <Text>Vous êtes ici</Text> */}
                 <Suspense fallback={<Loading />}>
                   <Tombs

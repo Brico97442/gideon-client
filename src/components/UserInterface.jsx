@@ -39,7 +39,6 @@ function UserInterface({ tombName, setTombName, focusOnObject }) {
                         className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none "
                     />
                 </form>
-                <button id='top-view-btn'className="absolute cursor-pointer top-[50px] -right-[180px] h-30 w-30 rounded-full bg-orange-400/80">Vue du dessus</button>
 
                 <button onClick={() => focusOnObject(tombName)} className="cursor-pointer rounded-lg relative flex items-center justify-center h-[76px] w-full bg-[#0E1C36] tracking-widest uppercase">
                     <img src={SearchIcon} className='font-orbitron absolute left-0 h-full p-4 ' />
