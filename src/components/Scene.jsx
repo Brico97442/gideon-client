@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Environment, Float, OrbitControls, Text, useGLTF } from "@react-three/drei";
 import { isMobile } from "react-device-detect"; // Détecte si l'appareil est mobile
+import * as THREE from "three";  // Assurez-vous d'importer THREE
 
 import { useRef } from "react";
 import Entrance from "../models/Entrance";
@@ -10,7 +11,6 @@ import Ground from "../models/Ground";
 import UserInterface from "./UserInterface";
 import Tombs from "../models/Tombs";
 import TombModal from "./TombModal";
-import { focusOnObject } from "../utils/CameraUtils";
 import { useSearchParams } from "react-router-dom";
 import { PI } from "three/tsl";
 import ParticleSystem from './ParticlesScene'
@@ -19,6 +19,16 @@ import MainOrbitControl from '../utils/MainOrbitControl'
 import playIcon from '../assets/play_arrow.svg'
 import gsap from "gsap";
 import { Suspense } from "react";
+import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
+import { highlightTombSection } from "../utils/ColorsUtils";
+
+// Définition des couleurs des sections
+const sectionColors = {
+  13: '#FF5733', 
+  14: '#33FF57',
+  15: '#3357FF',
+  16: '#FFFF33',
+};
 
 function Scene() {
   const [searchParams] = useSearchParams();
@@ -33,15 +43,46 @@ function Scene() {
   const [applicationStart, setApplicationStart] = useState(false)
 
   const handleFocusOnObject = (name) => {
-    focusOnObject(name, tombClones, camera, orbitControlRef);
+    focusOnObject(name, tombClones, camera, orbitControlRef, sectionColors);
     setSelectedTomb(name);
     setIsModalOpen(true);
   };
-
+  
   const handleTombClick = (name) => {
     setSelectedTomb(name);
     setIsModalOpen(true);
-    focusOnObject(name, tombClones, camera, orbitControlRef);
+    focusOnObject(name, tombClones, camera, orbitControlRef, sectionColors);
+  };
+  
+  const handleTopView = () => {
+    if (!camera) return;
+    
+    // Position de la caméra vue du dessus
+    const topViewPosition = { x: 0, y: 120, z: 0.001 }; // Position au-dessus de la scène
+  
+    // Déplacer la caméra vers cette position
+    moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
+    
+    // Réinitialiser la rotation de la caméra pour avoir une vue orthogonale (sans rotation)
+    gsap.to(camera.rotation, {
+      x: -Math.PI / 2,  // Vue du dessus
+      y: 0,
+      z: 0,
+      duration: 1.5,
+      ease: "power2.out"
+    });
+  
+    // Réinitialiser la cible de l'orbite à l'origine
+    if (orbitControlRef.current) {
+      gsap.to(orbitControlRef.current.target, {
+        x: 0,
+        y: 0,
+        z: 0,
+        duration: 1.5,
+        ease: "power2.out",
+        onUpdate: () => orbitControlRef.current.update(),
+      });
+    }
   };
 
   const SceneCamera = () => {
@@ -63,11 +104,11 @@ function Scene() {
         x: initialCameraPosition.x,
         y: initialCameraPosition.y,
         z: initialCameraPosition.z,
-        duration: 1,
+        duration: 1.5,
         ease: "power2.out",
-        // onUpdate: () => {
-        //   camera.lookAt(0, 0, 0);
-        // },
+        onUpdate: () => {
+          camera.lookAt(0, 0, 0);
+        },
       });
 
 
@@ -76,7 +117,7 @@ function Scene() {
           x: 0,
           y: 0,
           z: 0,
-          duration: 1,
+          duration: 1.5,
           ease: "power2.out",
           onUpdate: () => {
             orbitControlRef.current.update();
@@ -86,54 +127,14 @@ function Scene() {
     }
   };
 
-  const handleTopView = () => {
-    if (camera) {
-      // Stopper toutes les animations en cours sur la caméra
-      gsap.killTweensOf(camera.position);
-      gsap.killTweensOf(camera.rotation);
-  
-      gsap.to(camera.position, {
-        x: 0,
-        y: 100,  // Position en haut pour la vue de dessus
-        z: 0,  // Petit décalage pour éviter les problèmes de rendu
-        duration: 1,
-        ease: "power2.out",
-      });
-  
-      // Rotation de la caméra pour aligner correctement l'entrée
-      gsap.to(camera.rotation, {
-        y: -Math.PI,  // Change à Math.PI si la rotation est inversée
-        duration: 1,
-        ease: "power2.out",
-      });
-  
-      if (orbitControlRef.current) {
-        gsap.killTweensOf(orbitControlRef.current.target);
-        gsap.to(orbitControlRef.current.target, {
-          x: 0,
-          y: 0,
-          z: 0,
-          duration: 1,
-          ease: "power2.out",
-          onUpdate: () => {
-            orbitControlRef.current.update();
-          },
-        });
-      }
-    }
-  };
-
+ 
   useEffect(() => {
     const button = document.getElementById("top-view-btn");
     if (button) {
       button.addEventListener("click", handleTopView);
     }
-    // return () => {
-    //   if (button) {
-    //     button.removeEventListener("click", handleTopView);
-    //   }
-    // };
   }, [camera]);
+
 
   useEffect(() => {
     if (tombNameFromURL && tombClones.length > 0) {
@@ -184,7 +185,7 @@ function Scene() {
           <Suspense fallback={<Loading />}>
             <div>
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
-              <Canvas shadows   camera={{ near: 0.2, position: isMobile ? [0, 800, -200] : [-20, 100, -55], rotation: [0,Math.PI, 0]}}  id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
+              <Canvas shadows   camera={{ near: 0.2, position: isMobile ? [0, 0, 0] : [35, 17, 100], rotation: [0,Math.PI, 0]}}  id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
                 {/* <ambientLight intensity={2} /> */}
                 <Entrance />
                 <Wall/>
