@@ -30,28 +30,17 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef, section
 
   console.log("Cherchant tombe avec nom:", name);
 
-  let selectedTomb = null;
-  let selectedMesh = null;
-
-  // Parcourir les tombes pour trouver la bonne
-  for (const clone of tombClones) {
-    let found = false;
-    clone.traverse((child) => {
-      if (child.isMesh && child.name === name) {
-        selectedTomb = clone;
-        selectedMesh = child;
-        found = true;
-      }
-    });
-    if (found) break;
-  }
+  // Utiliser find pour récupérer directement le clone avec le mesh correspondant au nom
+  const selectedTomb = tombClones.find(clone => 
+    clone.children.some(child => child.isMesh && child.name === name)
+  );
 
   if (!selectedTomb) {
     console.warn("Aucune tombe trouvée avec le nom:", name);
     return;
   }
 
-  console.log("Tombe trouvée:", selectedTomb, "Mesh:", selectedMesh);
+  console.log("Tombe trouvée:", selectedTomb);
 
   // Changer la couleur de la section
   highlightTombSection(tombClones, name, sectionColors);
@@ -69,3 +58,4 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef, section
   // Déplacer la caméra et ajuster la cible d'orbite
   moveCameraToPosition(camera, targetPosition, orbitControlRef, target);
 };
+

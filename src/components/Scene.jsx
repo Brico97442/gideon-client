@@ -56,23 +56,11 @@ function Scene() {
   
   const handleTopView = () => {
     if (!camera) return;
-    
-    // Position de la caméra vue du dessus
-    const topViewPosition = { x: 0, y: 120, z: 0.001 }; // Position au-dessus de la scène
+        const topViewPosition = { x: 0, y: 120, z: 0.001 };
   
     // Déplacer la caméra vers cette position
     moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
     
-    // Réinitialiser la rotation de la caméra pour avoir une vue orthogonale (sans rotation)
-    gsap.to(camera.rotation, {
-      x: -Math.PI / 2,  // Vue du dessus
-      y: 0,
-      z: 0,
-      duration: 1.5,
-      ease: "power2.out"
-    });
-  
-    // Réinitialiser la cible de l'orbite à l'origine
     if (orbitControlRef.current) {
       gsap.to(orbitControlRef.current.target, {
         x: 0,
@@ -93,6 +81,7 @@ function Scene() {
       if (!initialCameraPosition) {
         setInitialCameraPosition(camera.position.clone());
       }
+
     }, [camera]);
 
     return null;
@@ -138,7 +127,7 @@ function Scene() {
 
   useEffect(() => {
     if (tombNameFromURL && tombClones.length > 0) {
-      focusOnObject(tombNameFromURL, tombClones, camera, orbitControlRef);
+      focusOnObject(name, tombClones, camera, orbitControlRef);
     }
   }, [tombNameFromURL, tombClones]);
 
