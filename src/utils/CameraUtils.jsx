@@ -1,15 +1,12 @@
-import { isMobile } from "react-device-detect"; // Détecte si l'appareil est mobile
-
+import { isMobile } from "react-device-detect"; 
 import * as THREE from "three";
 import gsap from "gsap";
 
-// Les couleurs associées à chaque section
 const sectionColors = {
   9: '#FF5733',  // Section 1 (exemple : rouge)
   10: '#33FF57',  // Section 1 (exemple : rouge)
   11: '#3357FF',  // Section 1 (exemple : rouge)
   12: '#FFFF33',  // Section 1 (exemple : rouge)
-  // Ajoute plus de sections et leurs couleurs ici si nécessaire
 };
 
 // Fonction pour gérer la sélection et le focus sur une tombe
@@ -19,6 +16,7 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef) => {
   tombClones.forEach((clone) => {
     clone.traverse((child) => {
       if (child.isMesh) {
+
         // Sauvegarde du matériau d'origine si ce n'est pas déjà fait
         if (!child.userData.originalMaterial) {
           child.userData.originalMaterial = child.material;
@@ -63,7 +61,7 @@ const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
   mesh.material = mesh.material.clone();
   mesh.material.color.set(0xff8200); // Couleur orange pour la sélection
 
-  if (!isMobile) { // Sur PC, animation de la caméra
+  if (!isMobile) {
     const targetPosition = {
       x: mesh.parent.position.x - 4,
       y: mesh.parent.position.y + 3,
@@ -80,11 +78,11 @@ const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
       x: targetPosition.x,
       y: targetPosition.y,
       z: targetPosition.z,
-      duration: 1.5,
+      duration: 1,
       ease: "power2.out",
-      onUpdate: () => {
-        camera.lookAt(lookAtTarget.x, lookAtTarget.y, lookAtTarget.z);
-      },
+      // onUpdate: () => {
+      //   camera.lookAt(lookAtTarget.x, lookAtTarget.y, lookAtTarget.z);
+      // },
     });
 
     if (orbitControlRef.current) {
@@ -105,7 +103,6 @@ const updateSelectedMesh = (mesh, orbitControlRef, camera) => {
 
 
 
-// Exemple d'intégration avec ton JSON
 const processTombs = (jsonData) => {
   jsonData.forEach((section) => {
     const sectionId = section.id; // L'ID de la section

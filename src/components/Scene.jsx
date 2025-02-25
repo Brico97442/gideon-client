@@ -63,19 +63,20 @@ function Scene() {
         x: initialCameraPosition.x,
         y: initialCameraPosition.y,
         z: initialCameraPosition.z,
-        duration: 1.5,
+        duration: 1,
         ease: "power2.out",
-        onUpdate: () => {
-          camera.lookAt(0, 0, 0);
-        },
+        // onUpdate: () => {
+        //   camera.lookAt(0, 0, 0);
+        // },
       });
+
 
       if (orbitControlRef.current) {
         gsap.to(orbitControlRef.current.target, {
           x: 0,
           y: 0,
           z: 0,
-          duration: 1.5,
+          duration: 1,
           ease: "power2.out",
           onUpdate: () => {
             orbitControlRef.current.update();
@@ -84,6 +85,55 @@ function Scene() {
       }
     }
   };
+
+  const handleTopView = () => {
+    if (camera) {
+      // Stopper toutes les animations en cours sur la caméra
+      gsap.killTweensOf(camera.position);
+      gsap.killTweensOf(camera.rotation);
+  
+      gsap.to(camera.position, {
+        x: 0,
+        y: 100,  // Position en haut pour la vue de dessus
+        z: 0.1,  // Petit décalage pour éviter les problèmes de rendu
+        duration: 1,
+        ease: "power2.out",
+      });
+  
+      // Rotation de la caméra pour aligner correctement l'entrée
+      gsap.to(camera.rotation, {
+        y: -Math.PI,  // Change à Math.PI si la rotation est inversée
+        duration: 1,
+        ease: "power2.out",
+      });
+  
+      if (orbitControlRef.current) {
+        gsap.killTweensOf(orbitControlRef.current.target);
+        gsap.to(orbitControlRef.current.target, {
+          x: 0,
+          y: 0,
+          z: 0,
+          duration: 1,
+          ease: "power2.out",
+          onUpdate: () => {
+            orbitControlRef.current.update();
+          },
+        });
+      }
+    }
+  };
+
+  useEffect(() => {
+    const button = document.getElementById("top-view-btn");
+    if (button) {
+      button.addEventListener("click", handleTopView);
+    }
+    // return () => {
+    //   if (button) {
+    //     button.removeEventListener("click", handleTopView);
+    //   }
+    // };
+  }, [camera]);
 
   useEffect(() => {
     if (tombNameFromURL && tombClones.length > 0) {
@@ -112,7 +162,7 @@ function Scene() {
               </div>
             </div>
           </div>
-          <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -55] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
+          <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
             <group>
               <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
                 <ParticleSystem />

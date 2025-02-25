@@ -3,7 +3,7 @@ import { useGLTF } from "@react-three/drei";
 
 
 const Ground = () => {
-    const groundGLB = useGLTF("/3d-models/gltf/ground/ground.glb");
+    const groundGLB = useGLTF("/3d-models/gltf/cimetarylayout/ground.glb");
     console.log(groundGLB)
     return (
         <mesh position={[0,0,0]} rotation={[0,0,0]}>
@@ -13,4 +13,4 @@ const Ground = () => {
 };
 
 export default Ground    
-useGLTF.preload("/3d-models/gltf/ground/ground.glb");
+useGLTF.preload("/3d-models/gltf/cimetarylayout/ground.glb");

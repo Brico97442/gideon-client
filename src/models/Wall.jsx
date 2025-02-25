@@ -3,7 +3,7 @@ import { useGLTF } from "@react-three/drei";
 
 
 const Wall = () => {
-    const entranceGLB = useGLTF("/3d-models/gltf/entrance/wall.glb");
+    const entranceGLB = useGLTF("/3d-models/gltf/cimetarylayout/wall.glb");
     console.log(entranceGLB)
     return (
         <mesh position={[0,0,0]} rotation={[0,0,0]}>
@@ -13,4 +13,4 @@ const Wall = () => {
 };
 
 export default Wall    
-useGLTF.preload("/3d-models/gltf/entrance/wall.glb");
+useGLTF.preload("/3d-models/gltf/cimetarylayout/wall.glb");
