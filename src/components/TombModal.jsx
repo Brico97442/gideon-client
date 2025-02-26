@@ -7,8 +7,8 @@ const TombModal = ({ isOpen, onClose, tombName, tombDetails }) => {
   const qrValue = `https://gideon-lilac.vercel.app/?name=${encodeURIComponent(tombName)}`;
 
   return (
-    <div className="lg:block w-auto absolute right-0 p-6 h-full z-[40]">
-      <div className="bg-linear-to-b from-[#1E0E36]/80 to-[#27509C]/80 text-white h-full lg:w-[475px] flex flex-col justify-between z-40 p-7 rounded-3xl">
+    <div className="lg:block w-auto absolute right-0 p-6 h-full z-[40] ">
+      <div className="bg-linear-to-b from-[#1E0E36]/80 to-[#27509C]/80 backdrop-blur-[4px] text-white h-full lg:w-[475px] flex flex-col justify-between z-40 p-7 rounded-3xl">
         
         <div id="qr-code" className={`w-full ${isMobile? "hidden":"flex"} flex justify-center items-center h-1/3 p-6 border-b`}>
           <QRCodeCanvas value={qrValue} size={200} bgColor="#ffffff" fgColor="#000000" />

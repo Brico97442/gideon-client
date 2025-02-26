@@ -6,7 +6,7 @@ function UserInterface({ tombName, setTombName, focusOnObject }) {
     return (
 
         <div id='ui' className="hidden lg:block absolute left-0 pl-5 py-6 h-full z-50">
-            <div className="relative font-orbitron uppercase flex flex-col items-center justify-between bg-linear-to-b from-[#1E0E36]/80 to-[#27509C]/80 px-7 rounded-3xl h-full w-[475px] text-white py-6">
+            <div className="relative font-orbitron uppercase flex flex-col items-center justify-between bg-linear-to-b from-[#1E0E36]/80 to-[#27509C]/80 px-7 rounded-3xl h-full w-[475px] text-white py-6 backdrop-blur-[4px]">
                 <form className='w-full flex flex-col justify-between'>
                     <h1 className='font-bold text-[42px] w-full text-center tracking-[0.4em] h-[94px] border-b'>GIDEON</h1>
                     <h2 className='font-orbitron mt-6 mb-[67px] text-xl tracking-wide font-normal'>Rechercher un defunt</h2>
