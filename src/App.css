@@ -4,6 +4,17 @@
   --font-orbitron: 'Orbitron', sans-serif;
 }
 
+@layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE et Edge */
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -29,5 +40,4 @@ body {
 #tomb-canvas{
   position:absolute!important;
 }
-
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Environment, Float, OrbitControls, Text, useGLTF } from "@react-three/drei";
+import { AccumulativeShadows, BakeShadows, Environment, Float, Lightformer, OrbitControls, RandomizedLight, SoftShadows, Text, useGLTF } from "@react-three/drei";
 import { isMobile } from "react-device-detect"; // Détecte si l'appareil est mobile
 import * as THREE from "three";  // Assurez-vous d'importer THREE
 import axios from 'axios';
@@ -23,13 +23,16 @@ import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
 import { highlightTombSection } from "../utils/ColorsUtils";
 import { GET_DECEASED } from "../config/api";
+import Cross from "../models/Cross";
+import { Bloom, DepthOfField, EffectComposer } from '@react-three/postprocessing'
+import Pointer from "../models/Pointer";
 
 // Définition des couleurs des sections
 const sectionColors = {
-  13: '#FF5733',
-  14: '#33FF57',
-  15: '#3357FF',
-  16: '#FFFF33',
+  13: '#EF507E',
+  14: '#FFE771',
+  15: '#B89AD7',
+  16: '#E0C2B6',
 };
 
 function Scene() {
@@ -57,9 +60,6 @@ function Scene() {
       console.error("Erreur lors de la récupération des données de la tombe", error);
     }
   };
-
-
-
 
   const handleFocusOnObject = (name) => {
     // Trouver l'ID de la tombe sélectionnée en utilisant le nom ou directement depuis les clones
@@ -97,7 +97,6 @@ function Scene() {
       });
     }
   };
-
 
   const SceneCamera = () => {
     const { camera } = useThree();
@@ -210,33 +209,48 @@ function Scene() {
         {applicationStart &&
           <Suspense fallback={<Loading />}>
             <div>
-              <div className="flex justify-center bg-red-600 w-full h-full relative z-50">
-                <button id='top-view-btn' className="absolute cursor-pointer top-[50px]  h-30 w-30 rounded-full bg-orange-400/80">Vue du dessus</button>
+              <div className="flex justify-center w-full h-full relative z-50">
+                <button id='top-view-btn' className="absolute cursor-pointer text-white top-6 min-w-56 lg:top-6 h-10 lg:h-[76px] w-30 rounded-lg bg-[#0E1C36]/80 hover:bg-[#0E1C36]/70 hover:text-green-300 transition-all duration-150">Passer en vue aérienne</button>
               </div>
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
-              <Canvas shadows camera={{ near: 0.2, position: isMobile ? [0, 120, 0] : [35, 17, 100], rotation: [0, Math.PI, 0] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
-                {/* <ambientLight intensity={2} /> */}
-                <Entrance />
-                <Wall />
-                <Ground />
-                {/* <Text>Vous êtes ici</Text> */}
-                <Suspense fallback={<Loading />}>
-                  <Tombs
-                    setTombClones={setTombClones}
-                    onTombClick={handleTombClick}
-                  />
-                </Suspense>
+              <Canvas shadows camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
+                <group>
+                <Text rotation={[0,0,0]}>Vous êtes ici</Text>
+                  <Pointer/>
+                  <Entrance />
+                  <Wall />
+                  <Ground />
+                  <Cross />
+                  <ambientLight intensity={3} />
+                  <Suspense fallback={null}>
+                    <Tombs
+                      setTombClones={setTombClones}
+                      onTombClick={handleTombClick}
+                    />
+                    {/* <AccumulativeShadows temporal frames={40} color="black" colorBlend={2} toneMapped={true} alphaTest={0.75} opacity={2} scale={100}>
+                      <RandomizedLight intensity={Math.PI} amount={8} radius={4} ambient={0.5} position={[5, 5, -6]} bias={0.001} />
+                    </AccumulativeShadows> */}
+                    <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
+                    {/* <directionalLight position={[5, 5, 5]} intensity={2} color="white" /> */}
+                  </Suspense>
+                  {/* <Environment intensity={2}  preset="city"> */}
+
+                  <directionalLight position={[2, 3, -2]} intensity={0.5} />
+                  {/* </Environment> */}
+
+                  <EffectComposer>
+                    {/* <Lightformer form="ring" intensity={2} position={[40, 40, -35]} scale={8} color="white" /> */}
+                    <SoftShadows samples={32} radius={5} intensity={55} />
+                  </EffectComposer>
+                </group>
                 <SceneCamera />
 
-                <ambientLight intensity={Math.PI / 2} />
-                {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='purple' /> */}
-                <directionalLight position={[5, 5, 5]} intensity={2} color="white" />
 
                 <pointLight
                   position={[-10, -10, -10]}
                   decay={0}
                   intensity={Math.PI}
-                  color='blue'
+                  color='yellow'
                 />
                 <MainOrbitControl orbitControlRef={orbitControlRef} />
 
