@@ -91,7 +91,7 @@ const Tombs = ({ setTombClones, onTombClick, tombId }) => {
     generateTombs();
   }, []);
 
-  // console.log(tombs)
+  // console.log(tozzzzzzzmbs)
 
   const handleClick = (event) => {
     event.stopPropagation();
