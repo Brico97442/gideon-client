@@ -50,7 +50,7 @@ const Tombs = ({ setTombClones, onTombClick,tombId }) => {
 
           tombClone.traverse((child) => {
             if (child.isMesh) {
-              child.name = `${tomb.id}`;
+              child.name=`${tomb.id}`;
               // child.material = new THREE.MeshStandardMaterial({
               //   map:texture,
               // })
