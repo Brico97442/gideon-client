@@ -103,7 +103,7 @@ const Tombs = ({ setTombClones, onTombClick,tombId }) => {
     <mesh castShadow receiveShadow onClick={handleClick}>
       {tombs.map((clone, key) => (
         <group key={key}>
-          <primitive object={clone} />
+          <primitive object={clone} castShadow receiveShadow/>
         </group>
       ))}
     </mesh>

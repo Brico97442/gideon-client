@@ -40,7 +40,7 @@ function UserInterface({ tombName, setTombName, focusOnObject }) {
                     />
                 </form>
 
-                <button onClick={() => focusOnObject(tombName)} className="cursor-pointer rounded-lg relative flex items-center justify-center h-[76px] w-full bg-[#0E1C36] tracking-widest uppercase">
+                <button onClick={() => focusOnObject(tombName)} className="cursor-pointer rounded-lg relative flex items-center justify-center h-[76px] w-full hover:bg-[#0E1C36]/70 transition-all duration-150 bg-[#0E1C36]  hover:text-green-300 tracking-widest uppercase">
                     <img src={SearchIcon} className='font-orbitron absolute left-0 h-full p-4 ' />
                     Rechercher
                 </button>
