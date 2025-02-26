@@ -215,7 +215,7 @@ function Scene() {
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
               <Canvas shadows camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
                 <group>
-                <Text rotation={[0,0,0]}>Vous êtes ici</Text>
+                {/* <Text rotation={[0,0,0]}>Vous êtes ici</Text> */}
                   <Pointer/>
                   <Entrance />
                   <Wall />
