@@ -24,14 +24,15 @@ import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
 import { highlightTombSection } from "../utils/ColorsUtils";
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
-import { EffectComposer } from '@react-three/postprocessing'
+import { Bloom, DepthOfField, EffectComposer } from '@react-three/postprocessing'
+import Pointer from "../models/Pointer";
 
 // Définition des couleurs des sections
 const sectionColors = {
   13: '#EF507E',
   14: '#FFE771',
   15: '#B89AD7',
-  16: '#E0C2B6',  
+  16: '#E0C2B6',
 };
 
 function Scene() {
@@ -209,12 +210,13 @@ function Scene() {
           <Suspense fallback={<Loading />}>
             <div>
               <div className="flex justify-center w-full h-full relative z-50">
-                <button id='top-view-btn' className="absolute cursor-pointer text-white top-6 min-w-56 lg:top-6 h-10 lg:h-[76px] w-30 rounded-lg bg-[#0E1C36]/80 hover:bg-[#0E1C36]/70 hover:text-green-300 transition-all duration-150">Passer en vue de dessus</button>
+                <button id='top-view-btn' className="absolute cursor-pointer text-white top-6 min-w-56 lg:top-6 h-10 lg:h-[76px] w-30 rounded-lg bg-[#0E1C36]/80 hover:bg-[#0E1C36]/70 hover:text-green-300 transition-all duration-150">Passer en vue aérienne</button>
               </div>
               <UserInterface tombName={tombName} setTombName={setTombName} focusOnObject={handleFocusOnObject} />
-              <Canvas shadows colorManagement pixelRatio={1} camera={{ near: 0.2, position: isMobile ? [0, 70, 0] : [35, 17, 65], rotation: [0, Math.PI, 0] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
-                {/* <Text>Vous êtes ici</Text> */}
+              <Canvas shadows camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }} id="tomb-canvas" className="absolute w-full h-full top-0 left-0">
                 <group>
+                {/* <Text rotation={[0,0,0]}>Vous êtes ici</Text> */}
+                  <Pointer/>
                   <Entrance />
                   <Wall />
                   <Ground />
@@ -239,10 +241,10 @@ function Scene() {
                   <EffectComposer>
                     {/* <Lightformer form="ring" intensity={2} position={[40, 40, -35]} scale={8} color="white" /> */}
                     <SoftShadows samples={32} radius={5} intensity={55} />
-                    <BakeShadows scale={8} />
                   </EffectComposer>
                 </group>
                 <SceneCamera />
+
 
                 <pointLight
                   position={[-10, -10, -10]}
