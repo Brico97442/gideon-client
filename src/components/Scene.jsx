@@ -353,7 +353,11 @@ function Scene() {
                 className={`absolute h-full w-full lg:w-[80%] top-0 left-0 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
               >
               <group>
-             
+              <Billboard position={[0, 2, 50]} follow={true} lockX={false} lockY={false} lockZ={false}>
+                <Text fontSize={2} color="white">
+                  Vous êtes ici
+                </Text>
+              </Billboard>
                   <Pointer/>
                   <Entrance />
                   <Wall />
