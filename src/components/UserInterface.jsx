@@ -83,8 +83,8 @@ function UserInterface({ handleTombClick }) {
                 const response = await axios.get(SEARCH_DECEASED());
                 setCachedData(response.data);
             } catch (error) {
-                console.error("Erreur lors du chargement initial des données:", error);
-                setError("Une erreur est survenue lors du chargement des données.");
+                console.error(" initial loading data error:", error);
+                setError("Une erreur est survenue lors du chargement initial des données.");
             } finally {
                 setIsLoading(false);
             }
