@@ -6,7 +6,7 @@ import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing
 
 
 
-const Tombs = ({ setTombClones, onTombClick, tombId }) => {
+const Tombs = ({ setTombClones, onTombClick }) => {
 
   const [tombs, setTombs] = useState([]);
   const tombsGltf = {
@@ -52,14 +52,17 @@ const Tombs = ({ setTombClones, onTombClick, tombId }) => {
           tombClone.traverse((child) => {
             if (child.isMesh) {
               child.name = `${tomb.id}`;
-              // child.material = new THREE.MeshStandardMaterial({
-              //   map:texture,
-              // })
               child.userData = {
                 clickable: true,
                 id: tomb.id,
-                sectionId: section.id
+                sectionId: section.id,
+                type: tomb.type
               };
+              console.log("Configuration de la tombe:", {
+                id: tomb.id,
+                sectionId: section.id,
+                name: child.name
+              });
             }
           });
 
@@ -91,12 +94,11 @@ const Tombs = ({ setTombClones, onTombClick, tombId }) => {
     generateTombs();
   }, []);
 
-  // console.log(tozzzzzzzmbs)
 
   const handleClick = (event) => {
     event.stopPropagation();
     if (event.object.userData.clickable) {
-      onTombClick(event.object.name);
+      onTombClick(event.object.userData.id);
     }
   };
 

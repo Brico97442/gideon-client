@@ -25,21 +25,33 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
 };
 
 export const focusOnObject = (name, tombClones, camera, orbitControlRef, sectionColors) => {
-  if (!camera || !tombClones.length) return;
+  if (!camera || !tombClones.length) {
+    console.warn("Camera ou tombClones non disponibles");
+    return;
+  }
 
-  // Utiliser find pour récupérer directement le clone avec le mesh correspondant au nom
-  const selectedTomb = tombClones.find(clone => 
-    clone.children.some(child => child.isMesh && child.name === name)
-  );
+  console.log("Recherche de la tombe:", name);
+  console.log("Nombre de tombes disponibles:", tombClones.length);
+
+  // Recherche de la tombe dans tous les clones
+  let selectedTomb = null;
+  for (const clone of tombClones) {
+    clone.traverse((child) => {
+      if (child.isMesh && child.userData && child.userData.id === name) {
+        selectedTomb = clone;
+        console.log("Tombe trouvée:", child.userData);
+      }
+    });
+    if (selectedTomb) break;
+  }
 
   if (!selectedTomb) {
-    console.warn("Aucune tombe trouvée avec le nom:", name);
+    console.warn("Aucune tombe trouvée avec l'ID:", name);
     return;
   }
 
   // Changer la couleur de la section
   highlightTombSection(tombClones, name, sectionColors);
-
 
   // Position cible de la caméra
   const targetPosition = {
@@ -49,7 +61,11 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef, section
   };
 
   // Créer la cible de la caméra
-  const target = new THREE.Vector3(selectedTomb.position.x, selectedTomb.position.y, selectedTomb.position.z);
+  const target = new THREE.Vector3(
+    selectedTomb.position.x,
+    selectedTomb.position.y,
+    selectedTomb.position.z
+  );
 
   // Déplacer la caméra et ajuster la cible d'orbite
   moveCameraToPosition(camera, targetPosition, orbitControlRef, target);
