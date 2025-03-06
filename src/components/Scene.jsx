@@ -292,14 +292,16 @@ function Scene() {
   return (
     <>
       <div className="main">
-        <div className="fixed h-full w-full">
-          <div className="absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50"  onClick={handleStartApplication}>
-            <div className={`${applicationStart ? 'hidden' : 'flex'} flex-col items-center h-full justify-center relative`}>
-              <h1 className="text-white tracking-[0.5em] font-bold uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
+        <div className="fixed h-full w-full" onClick={handleStartApplication}>
+          <div
+            className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}
+          >
+            <div className={`${applicationStart ? 'fade-out' : 'fade-in'} flex flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
+              <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
               <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
-                <h2 className="text-xl text-white whitespace-nowrap">Toucher l'écran pour commencer</h2>
+                <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
                 <button 
-                  className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px]" 
+                  className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath" 
                 >
                   <img src={playIcon} alt="Play" />
                 </button>
@@ -353,7 +355,7 @@ function Scene() {
                 className={`absolute h-full w-full lg:w-[80%] top-0 left-0 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
               >
               <group>
-              <Billboard position={[0, 2, 50]} follow={true} lockX={false} lockY={false} lockZ={false}>
+              <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                 <Text fontSize={2} color="white">
                   Vous êtes ici
                 </Text>
