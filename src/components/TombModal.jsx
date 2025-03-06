@@ -37,6 +37,7 @@ const TombModal = ({ isOpen, onClose }) => {
               <div>
                 <h2 className="">Emplacement n°{selectedTomb}</h2>
               </div>
+              <h3>Ici repose</h3>
               {tombDetails && tombDetails.length > 0 && (
                 <div className="my-4 box-border max-h-[300px] overflow-hidden ">
                   <div className='h-full flex flex-col '>
