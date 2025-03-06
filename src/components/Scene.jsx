@@ -342,7 +342,7 @@ function Scene() {
                 </button>
               </div>
               
-              <div className={`transition-opacity duration-[1500] z-50  ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
+              <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
                 <UserInterface handleTombClick={handleTombClick} />
               </div>
             
