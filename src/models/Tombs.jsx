@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useGLTF } from "@react-three/drei";
+import { BakeShadows, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { GET_TOMBS } from "../config/api";
+import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing";
 
 
 
-const Tombs = ({ setTombClones, onTombClick,tombId }) => {
+const Tombs = ({ setTombClones, onTombClick }) => {
 
   const [tombs, setTombs] = useState([]);
   const tombsGltf = {
@@ -51,14 +52,17 @@ const Tombs = ({ setTombClones, onTombClick,tombId }) => {
           tombClone.traverse((child) => {
             if (child.isMesh) {
               child.name = `${tomb.id}`;
-              // child.material = new THREE.MeshStandardMaterial({
-              //   map:texture,
-              // })
               child.userData = {
                 clickable: true,
                 id: tomb.id,
-                sectionId : section.id
+                sectionId: section.id,
+                type: tomb.type
               };
+              console.log("Configuration de la tombe:", {
+                id: tomb.id,
+                sectionId: section.id,
+                name: child.name
+              });
             }
           });
 
@@ -90,20 +94,25 @@ const Tombs = ({ setTombClones, onTombClick,tombId }) => {
     generateTombs();
   }, []);
 
-  // console.log(tombs)
 
   const handleClick = (event) => {
     event.stopPropagation();
     if (event.object.userData.clickable) {
-      onTombClick(event.object.name);
+      onTombClick(event.object.userData.id);
     }
   };
 
   return (
-    <mesh castShadow receiveShadow onClick={handleClick}>
+    <mesh  receiveShadow castShadow onClick={handleClick}>
+      <EffectComposer>
+        {/* <Bloom intensity={1} width={300} height={300} /> */}
+        {/* <DepthOfField focusDistance={0.01} focalLength={0.5} bokehScale={1} height={300} /> */}
+      <BakeShadows scale={9} />
+      </EffectComposer>
+
       {tombs.map((clone, key) => (
         <group key={key}>
-          <primitive object={clone} />
+          <primitive object={clone} castShadow receiveShadow />
         </group>
       ))}
     </mesh>

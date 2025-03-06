@@ -4,12 +4,24 @@
   --font-orbitron: 'Orbitron', sans-serif;
 }
 
+@layer utilities {
+  .scrollbar-hidden {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE et Edge */
+  }
+
+  .scrollbar-hidden::-webkit-scrollbar {
+    display: none; /* Chrome, Safari */
+  }
+}
+
 * {
   box-sizing: border-box;
 }
 
 html,
 body,
+
 #root {
   width: 100%;
   height: 100%;
@@ -27,7 +39,65 @@ body {
 }
 
 #tomb-canvas{
-  position:absolute!important;
+  position:absolute!important; 
+  width: 50%;
 }
 
+.shape-container-background {
+  background-color: #29285BE5;
+  opacity: 0.9;
+  clip-path: polygon(
+    5% 0,      /* coin supérieur gauche coupé */
+    95% 0,     /* coin supérieur droit coupé */
+    100% 3%,   /* début du côté droit */
+    100% 97%,  /* fin du côté droit */
+    95% 100%,  /* coin inférieur droit coupé */
+    5% 100%,   /* coin inférieur gauche coupé */
+    0 97%,     /* début du côté gauche */
+    0 3%       /* fin du côté gauche */
+  );
+}
 
+.shape-border {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #29ABE2E5; /* Couleur de la bordure */
+  opacity: 0.9;
+  clip-path: polygon(
+    5% 0,      /* coin supérieur gauche coupé */
+    95% 0,     /* coin supérieur droit coupé */
+    100% 3%,   /* début du côté droit */
+    100% 30%,  /* avant la fente */
+    98% 31%,   /* début de la fente (chanfreiné) */
+    98% 60%,   /* fin de la fente (chanfreiné) */
+    100% 61%,  /* après la fente */
+    100% 97%,  /* fin du côté droit */
+    95% 100%,  /* coin inférieur droit coupé */
+    5% 100%,   /* coin inférieur gauche coupé */
+    0 97%,     /* début du côté gauche */
+    0 3%       /* fin du côté gauche */
+  );
+}
+
+.shape-inner {
+  position: absolute;
+  top: 2px; /* Épaisseur de la bordure */
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  clip-path: polygon(
+    5% 0,      /* coin supérieur gauche coupé */
+    95% 0,     /* coin supérieur droit coupé */
+    100% 3%,   /* début du côté droit */
+    100% 30%,  /* avant la fente */
+    98% 31%,   /* début de la fente (chanfreiné) */
+    98% 60%,   /* fin de la fente (chanfreiné) */
+    100% 61%,  /* après la fente */
+    100% 97%,  /* fin du côté droit */
+    95% 100%,  /* coin inférieur droit coupé */
+    5% 100%,   /* coin inférieur gauche coupé */
+    0 97%,     /* début du côté gauche */
+    0 3%       /* fin du côté gauche */
+  );
+}
