@@ -101,3 +101,83 @@ body {
     0 3%       /* fin du côté gauche */
   );
 }
+
+.modal-shape-container-background {
+  background-color: #29285BE5;
+  opacity: 0.9;
+  clip-path: polygon(
+    5% 0,      /* coin supérieur gauche coupé */
+    95% 0,     /* coin supérieur droit coupé */
+    100% 3%,   /* début du côté droit */
+    100% 97%,  /* fin du côté droit */
+    95% 100%,  /* coin inférieur droit coupé */
+    5% 100%,   /* coin inférieur gauche coupé */
+    0 97%,     /* début du côté gauche */
+    0 3%       /* fin du côté gauche */
+  );
+}
+
+.modal-shape-border {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: #29ABE2E5; /* Couleur de la bordure */
+  opacity: 0.9;
+  clip-path: polygon(
+    5% 0,      /* coin supérieur gauche coupé */
+    95% 0,     /* coin supérieur droit coupé */
+    100% 3%,   /* début du côté droit */
+    100% 97%,  /* fin du côté droit */
+    95% 100%,  /* coin inférieur droit coupé */
+    5% 100%,   /* coin inférieur gauche coupé */
+    0 97%,     /* fin du côté gauche */
+    0 61%,     /* après la fente */
+    2% 60%,    /* fin de la fente (chanfreiné) */
+    2% 31%,    /* début de la fente (chanfreiné) */
+    0 30%,     /* avant la fente */
+    0 3%         /* fin du côté gauche */
+  );
+}
+
+.modal-shape-inner {
+  position: absolute;
+  top: 2px; /* Épaisseur de la bordure */
+  left: 2px;
+  right: 2px;
+  bottom: 2px;
+  clip-path: polygon(
+    5% 0,      /* coin supérieur gauche coupé */
+    95% 0,     /* coin supérieur droit coupé */
+    100% 3%,   /* début du côté droit */
+    100% 97%,  /* fin du côté droit */
+    95% 100%,  /* coin inférieur droit coupé */
+    5% 100%,   /* coin inférieur gauche coupé */
+    0 97%,     /* fin du côté gauche */
+    0 61%,     /* après la fente */
+    2% 60%,    /* fin de la fente (chanfreiné) */
+    2% 31%,    /* début de la fente (chanfreiné) */
+    0 30%,     /* avant la fente */
+    0 3%       /* début du côté gauche */
+  );
+}
+
+ul {
+  overflow-y: scroll;
+}
+
+ul::-webkit-scrollbar {
+  width: 2px; /* Largeur de la barre de défilement */
+}
+
+ul::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Couleur de l'arrière-plan de la piste */
+}
+
+ul::-webkit-scrollbar-thumb {
+  background: #888;
+  height: 4px; /* Couleur de la barre de défilement */
+}
+
+ul::-webkit-scrollbar-thumb:hover {
+  background: #29285BE5; /* Couleur de la barre de défilement au survol */
+}
