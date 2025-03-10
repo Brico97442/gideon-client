@@ -17,7 +17,7 @@ const defaultBladeOptions = {
 
 export default function Grass({
   bladeOptions = defaultBladeOptions,
-  instances = 250000,
+  instances = 100000,
   groundModelPath = "/3d-models/gltf/cimetarylayout/ground.glb",
   position = [0, 0, 0],
   windStrength = 3.0,
@@ -154,7 +154,22 @@ export default function Grass({
       const x = a.clone().multiplyScalar(1 - sqrtR1).add(b.clone().multiplyScalar(sqrtR1 * (1 - r2))).add(c.clone().multiplyScalar(sqrtR1 * r2));
 
       offsets.set([x.x, x.y, x.z], i * 3);
-      orientations.set([0, 0, 0, 1], i * 4); // Orientation par défaut
+
+      // Ajouter une rotation aléatoire autour de l'axe Y pour chaque brin d'herbe
+      const randomYAngle = Math.random() * Math.PI * 2;
+      const yRotation = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), randomYAngle);
+
+      // Combiner la rotation aléatoire avec l'orientation existante
+      const finalRotation = new THREE.Quaternion().multiplyQuaternions(yRotation, new THREE.Quaternion(0, 0, 0, 1));
+
+      // Stocker le quaternion
+      orientations.set([
+        finalRotation.x,
+        finalRotation.y,
+        finalRotation.z,
+        finalRotation.w
+      ], i * 4);
+
       stretches[i] = Math.random() * 0.5 + 0.5; // Étirement aléatoire entre 0.5 et 1.0
 
       // Ajouter des angles de racine aléatoires
