@@ -23,11 +23,12 @@ const TombModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;
 
   const qrValue = `https://gideon-lilac.vercel.app/?name=${encodeURIComponent(selectedTomb)}`;
-  console.log(qrValue)
+  // console.log(qrValue)
+  
   return (
     <div id="ui" className=" lg:block w-full lg:w-auto  absolute right-0 px-2 lg:px-5 py-6 h-full z-50">
       <div className="modal-shape-container-background w-full h-full p-4">
-        <div className="modal-shape-container relative font-orbitron uppercase flex flex-col items-center justify-between h-full lg:w-[460px] text-white">
+        <div className="modal-shape-container relative font-orbitron flex flex-col items-center justify-between h-full lg:w-[460px] text-white">
           <div className="modal-shape-border"></div>
           <div className="modal-shape-inner bg-gradient-to-b from-[#3D52CA]/80  via-[#001278]/80 to-[#3D52CA]/80 flex flex-col items-center ">
             <div id="qr-code" className={`w-full ${isMobile ? "hidden" : "flex"} flex justify-center items-center h-1/3 p-6 border-b`}>
@@ -37,9 +38,9 @@ const TombModal = ({ isOpen, onClose }) => {
               <div>
                 <h2 className="">Emplacement n°{selectedTomb}</h2>
               </div>
-              <h3>Ici repose</h3>
-              {tombDetails && tombDetails.length > 0 && (
+              {tombDetails && (
                 <div className="my-4 box-border max-h-[300px] overflow-hidden ">
+                  <h3 className='mb-3'>Ici repose</h3>
                   <div className='h-full flex flex-col '>
 
                     <ul className="block overflow-y-scroll space-y-2 flex-col h-full">

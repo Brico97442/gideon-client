@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Float, SoftShadows, Text, Billboard } from "@react-three/drei";
+import { Float, SoftShadows, Text, Billboard, StatsGl, Stats } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import axios from 'axios';
@@ -25,6 +25,8 @@ import { useTomb } from '../context/TombContext';
 import gsap from "gsap";
 import playIcon from '../assets/play_arrow.svg';
 import { TransitionEffect } from './TransitionEffect';
+import Grass from "./Grass";
+import Grass2 from "./Grass2";
 
 // Définition des couleurs des sections
 const sectionColors = {
@@ -51,6 +53,7 @@ function Scene() {
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
   const [isDepthOfFieldEnabled, setIsDepthOfFieldEnabled] = useState(false);
   const [focusedTombDistance, setFocusedTombDistance] = useState(null);
+  const [isShowUi, setIsShowUi] = useState(true)
 
   const fetchTombDetails = async (tombId) => {
     try {
@@ -169,7 +172,7 @@ function Scene() {
   };
 
   const handleTombClick = (id) => {
-    console.log("Click sur la tombe:", id);
+    // console.log("Click sur la tombe:", id);
     setIsModalOpen(true);
     setSelectedTomb(id);
 
@@ -177,7 +180,7 @@ function Scene() {
       console.log("Focus sur la tombe:", id);
       focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);
       fetchTombDetails(id);
-
+      setIsShowUi(false)
       // Activer le Depth of Field après un délai
       setTimeout(() => {
         setIsDepthOfFieldEnabled(true);
@@ -196,6 +199,7 @@ function Scene() {
     if (!camera) return;
     setIsDepthOfFieldEnabled(false);
     setFocusedTombDistance(null);
+    setIsShowUi(true)
     const topViewPosition = { x: 0, y: 120, z: 0.001 };
 
     moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
@@ -216,7 +220,7 @@ function Scene() {
     setIsDepthOfFieldEnabled(false);
     setFocusedTombDistance(null);
     if (initialCameraPosition) {
-      gsap.to(camera.position,{
+      gsap.to(camera.position, {
         x: initialCameraPosition.x,
         y: initialCameraPosition.y,
         z: initialCameraPosition.z,
@@ -284,10 +288,22 @@ function Scene() {
     setApplicationStart(true);
   };
 
+  useEffect(() => {
+
+    if (isMobile && !isSceneLoaded) {
+      setApplicationStart(true);
+      setIsSceneLoaded(true)
+    }
+  }, [])
+
   const handleTransitionComplete = () => {
     setIsTransitioning(false);
     setIsSceneLoaded(true);
   };
+
+  useEffect(() => {
+    console.log("Tombes reçues :", tombClones);
+  }, [tombClones]);
 
   return (
     <>
@@ -296,7 +312,7 @@ function Scene() {
           <div
             className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}
           >
-            <div className={`${applicationStart ? 'fade-out' : 'fade-in'} flex flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
+            <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
               <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
               <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
                 <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
@@ -342,6 +358,7 @@ function Scene() {
                 >
                   Passer en vue aérienne
                 </button>
+                <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
               </div>
 
               <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
@@ -355,28 +372,28 @@ function Scene() {
                 className={`absolute h-full w-full lg:w-[80%] top-0 left-0 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
               >
                 <group>
+                  <ambientLight intensity={3} />
                   <Suspense fallback={null}>
-                  <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
-                <Text fontSize={2} color="white">
-                  Vous êtes ici
-                </Text>
-              </Billboard>
                     <Pointer />
                     <Entrance />
                     <Wall />
                     <Ground />
                     <Cross />
-                    <ambientLight intensity={3} />
+                    <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
+                      <Text fontSize={2} color="white">
+                        Vous êtes ici
+                      </Text>
+                    </Billboard>
+                    <Grass position={[-2, -0.5, 15]} />
+                    {/* <Grass2 windStrength={0.01} windFrequency={0.1} position={[-2, -0.5, 15]} tombs={tombClones} /> */}
                     <Tombs
                       setTombClones={setTombClones}
                       onTombClick={handleTombClick}
                     />
-                    <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
-                    <directionalLight position={[2, 3, -2]} intensity={0.5} />
-                    <pointLight position={[0, 8, 0]} decay={1} intensity={Math.PI} color='yellow' />
+                    {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
                     <EffectComposer>
-                      <SoftShadows samples={32} radius={5} intensity={55} />
-                      {isDepthOfFieldEnabled && (
+                      {/* <SoftShadows samples={32} radius={5} intensity={55} /> */}
+                      {/* {isDepthOfFieldEnabled && (
                         <DepthOfField
                           focusDistance={0.001}
                           focalLength={0.02}
@@ -384,10 +401,10 @@ function Scene() {
                           height={500}
                           target={selectedTomb ? tombClones.find(tomb => tomb.name === selectedTomb) : null}
                         />
-                      )}
+                      )} */}
                     </EffectComposer>
                   </Suspense>
-
+                  {/* <directionalLight position={[2, 3, -2]} intensity={0.5} /> */}
                 </group>
 
                 <SceneCamera />
@@ -396,6 +413,12 @@ function Scene() {
                   onDistanceChange={handleDistanceChange}
                 />
 
+                <pointLight
+                  position={[-10, -10, -10]}
+                  decay={1}
+                  intensity={Math.PI}
+                  color='yellow'
+                />
               </Canvas>
               <TombModal
                 isOpen={isModalOpen}
@@ -403,6 +426,7 @@ function Scene() {
                   setIsModalOpen(false);
                   clearSelectedTomb();
                   resetCameraPosition();
+                  setIsShowUi(true)
                 }}
                 tombName={selectedTomb}
                 tombDetails={tombDetails}
@@ -410,6 +434,7 @@ function Scene() {
                 onTombClick={handleTombClick}
               />
             </div>
+            <Stats />
           </Suspense>
         )}
       </div>
