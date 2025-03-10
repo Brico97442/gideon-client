@@ -1,7 +1,10 @@
 @import "tailwindcss";
+@import "@fontsource/orbitron/400.css";
+@import "@fontsource/orbitron/500.css";
+@import "@fontsource/orbitron/700.css";
 
 @theme {
-  --font-orbitron: 'Orbitron', sans-serif;
+  --font-orbitron: 'Orbitron', 'Arial', sans-serif;
 }
 
 @layer utilities {
