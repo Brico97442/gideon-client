@@ -393,7 +393,7 @@ function Scene() {
                     {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
                     <EffectComposer>
                       {/* <SoftShadows samples={32} radius={5} intensity={55} /> */}
-                      {isDepthOfFieldEnabled && (
+                      {!isMobile && isDepthOfFieldEnabled && (
                         <DepthOfField
                           focusDistance={0.001}
                           focalLength={0.02}
