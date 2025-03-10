@@ -391,9 +391,9 @@ function Scene() {
                       onTombClick={handleTombClick}
                     />
                     {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
-                    {/* <EffectComposer> */}
+                    <EffectComposer>
                       {/* <SoftShadows samples={32} radius={5} intensity={55} /> */}
-                      {/* {isDepthOfFieldEnabled && (
+                      {isDepthOfFieldEnabled && (
                         <DepthOfField
                           focusDistance={0.001}
                           focalLength={0.02}
@@ -401,8 +401,8 @@ function Scene() {
                           height={500}
                           target={selectedTomb ? tombClones.find(tomb => tomb.name === selectedTomb) : null}
                         />
-                      )} */}
-                    {/* </EffectComposer> */}
+                      )}
+                    </EffectComposer>
                   </Suspense>
                   {/* <directionalLight position={[2, 3, -2]} intensity={0.5} /> */}
                 </group>
