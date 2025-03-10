@@ -328,7 +328,7 @@ function Scene() {
           <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
             <group>
               <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
-                <ParticleSystem />
+                {/* <ParticleSystem /> */}
                 <pointLight
                   position={[0, 0, 0]}
                   decay={0}
@@ -384,14 +384,14 @@ function Scene() {
                         Vous êtes ici
                       </Text>
                     </Billboard>
-                    <Grass position={[-2, -0.5, 15]} />
+                    <Grass position={[-2, -0.5, 14.5]} />
                     {/* <Grass2 windStrength={0.01} windFrequency={0.1} position={[-2, -0.5, 15]} tombs={tombClones} /> */}
                     <Tombs
                       setTombClones={setTombClones}
                       onTombClick={handleTombClick}
                     />
                     {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
-                    <EffectComposer>
+                    {/* <EffectComposer> */}
                       {/* <SoftShadows samples={32} radius={5} intensity={55} /> */}
                       {/* {isDepthOfFieldEnabled && (
                         <DepthOfField
@@ -402,7 +402,7 @@ function Scene() {
                           target={selectedTomb ? tombClones.find(tomb => tomb.name === selectedTomb) : null}
                         />
                       )} */}
-                    </EffectComposer>
+                    {/* </EffectComposer> */}
                   </Suspense>
                   {/* <directionalLight position={[2, 3, -2]} intensity={0.5} /> */}
                 </group>
@@ -434,7 +434,7 @@ function Scene() {
                 onTombClick={handleTombClick}
               />
             </div>
-            <Stats />
+            <Stats/>
           </Suspense>
         )}
       </div>

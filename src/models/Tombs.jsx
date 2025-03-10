@@ -104,11 +104,11 @@ const Tombs = ({ setTombClones, onTombClick }) => {
 
   return (
     <mesh onClick={handleClick}>
-      <EffectComposer>
+      {/* <EffectComposer> */}
         {/* <Bloom intensity={1} width={300} height={300} /> */}
-        <DepthOfField focusDistance={0.01} focalLength={0.5} bokehScale={1} height={300} />
-      <BakeShadows scale={9} />
-      </EffectComposer>
+        {/* <DepthOfField focusDistance={0.01} focalLength={0.5} bokehScale={1} height={300} /> */}
+      {/* <BakeShadows scale={9} /> */}
+      {/* </EffectComposer> */}
 
       {tombs.map((clone, key) => (
         <group key={key}>
