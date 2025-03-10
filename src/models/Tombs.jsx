@@ -58,11 +58,11 @@ const Tombs = ({ setTombClones, onTombClick }) => {
                 sectionId: section.id,
                 type: tomb.type
               };
-              console.log("Configuration de la tombe:", {
-                id: tomb.id,
-                sectionId: section.id,
-                name: child.name
-              });
+              // console.log("Configuration de la tombe:", {
+              //   id: tomb.id,
+              //   sectionId: section.id,
+              //   name: child.name
+              // });
             }
           });
 
@@ -103,16 +103,16 @@ const Tombs = ({ setTombClones, onTombClick }) => {
   };
 
   return (
-    <mesh  receiveShadow castShadow onClick={handleClick}>
+    <mesh onClick={handleClick}>
       <EffectComposer>
         {/* <Bloom intensity={1} width={300} height={300} /> */}
-        {/* <DepthOfField focusDistance={0.01} focalLength={0.5} bokehScale={1} height={300} /> */}
+        <DepthOfField focusDistance={0.01} focalLength={0.5} bokehScale={1} height={300} />
       <BakeShadows scale={9} />
       </EffectComposer>
 
       {tombs.map((clone, key) => (
         <group key={key}>
-          <primitive object={clone} castShadow receiveShadow />
+          <primitive object={clone} receiveShadow />
         </group>
       ))}
     </mesh>

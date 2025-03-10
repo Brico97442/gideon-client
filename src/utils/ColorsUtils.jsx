@@ -12,8 +12,8 @@ export const highlightTombSection = (tombClones, selectedTombId, sectionColors) 
 
   // Convertir l'ID en chaîne pour la comparaison
   const tombIdStr = String(selectedTombId);
-  console.log("Début de la surbrillance pour la tombe:", tombIdStr);
-  console.log("Nombre de tombes disponibles:", tombClones.length);
+  // console.log("Début de la surbrillance pour la tombe:", tombIdStr);
+  // console.log("Nombre de tombes disponibles:", tombClones.length);
 
   let selectedSectionId = null;
   let foundTomb = false;
@@ -40,11 +40,11 @@ export const highlightTombSection = (tombClones, selectedTombId, sectionColors) 
     clone.traverse((child) => {
       if (child.isMesh && child.userData) {
         const childId = String(child.userData.id);
-        console.log("Vérification de la tombe:", childId, "Section:", child.userData.sectionId);
+        // console.log("Vérification de la tombe:", childId, "Section:", child.userData.sectionId);
         if (childId === tombIdStr) {
           selectedSectionId = child.userData.sectionId;
           foundTomb = true;
-          console.log("Tombe trouvée! Section ID:", selectedSectionId);
+          // console.log("Tombe trouvée! Section ID:", selectedSectionId);
         }
       }
     });
@@ -67,7 +67,7 @@ export const highlightTombSection = (tombClones, selectedTombId, sectionColors) 
     return;
   }
 
-  console.log("Application de la couleur", sectionColor, "pour la section", selectedSectionId);
+  // console.log("Application de la couleur", sectionColor, "pour la section", selectedSectionId);
   
   // Colorer toutes les tombes de la même section
   tombClones.forEach((clone) => {
