@@ -39,7 +39,7 @@ export const focusOnObject = (name, tombClones, camera, orbitControlRef, section
     clone.traverse((child) => {
       if (child.isMesh && child.userData && child.userData.id === name) {
         selectedTomb = clone;
-        console.log("Tombe trouvée:", child.userData);
+        // console.log("Tombe trouvée:", child.userData);
       }
     });
     if (selectedTomb) break;

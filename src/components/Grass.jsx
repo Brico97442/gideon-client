@@ -195,7 +195,7 @@ export default function Grass({
   const material = useMemo(() => {
     if (!texture || !alphaMap) return null;
 
-    console.log("Création du matériau avec shader");
+    // console.log("Création du matériau avec shader");
 
     // Créer un matériau avec les shaders
     const mat = new THREE.RawShaderMaterial({
@@ -217,7 +217,7 @@ export default function Grass({
 
     return mat;
   }, [texture, alphaMap, bladeOptions.height, windStrength, windFrequency]);
-  console.log("Matériau appliqué :", material);
+  // console.log("Matériau appliqué :", material);
 
   // Animation loop - PARTIE CRUCIALE
   useFrame((state, delta) => {

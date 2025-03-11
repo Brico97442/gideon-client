@@ -14,6 +14,8 @@ export const TombProvider = ({ children }) => {
   const [previouslySelectedTomb, setPreviouslySelectedTomb] = useState(null);
 
   const selectTomb = (tombId, details = null) => {
+    // console.log('Sélection de la tombe:', tombId, 'avec les détails:', details);
+
     setPreviouslySelectedTomb(selectedTomb);
     setSelectedTomb(tombId);
     if (details) {
@@ -70,4 +72,19 @@ export const useTomb = () => {
     throw new Error('useTomb doit être utilisé à l\'intérieur d\'un TombProvider');
   }
   return context;
-}; 
+};
+
+export const findTombMeshById = (tombId, tombClones) => {
+  let foundMesh = null;
+  if (!tombClones || tombClones.length === 0 || !tombId) return null;
+  
+  tombClones.forEach(clone => {
+    clone.traverse(child => {
+      if (child.isMesh && child.userData && String(child.userData.id) === String(tombId)) {
+        foundMesh = child;
+      }
+    });
+  });
+  
+  return foundMesh;
+} 
