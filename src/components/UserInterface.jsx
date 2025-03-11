@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { useTomb } from '../context/TombContext';
 import { SEARCH_DECEASED } from '../config/api';
 
-function UserInterface({ handleTombClick }) {
+function UserInterface({ handleTombFocus }) {
     const [lastname, setLastname] = useState("");
     const [firstname, setFirstname] = useState("");
     const [birthdate, setBirthdate] = useState("");
@@ -150,7 +150,7 @@ function UserInterface({ handleTombClick }) {
             console.log('Données de la personne:', person);
             console.log('ID de la tombe:', person.tombId);
 
-            // Sélectionner la tombe dans le contexte
+            // Sélectionner la tombe dans le contexte avec uniquement la personne sélectionnée
             selectTomb(person.tombId, [person]);
 
             // Définir les couleurs de la section
@@ -164,10 +164,9 @@ function UserInterface({ handleTombClick }) {
             // Déclencher l'animation de focus
             focusOnTomb(person.tombId, sectionColors);
 
-            // Appeler la fonction handleTombClick du parent
-            if (handleTombClick && typeof handleTombClick === 'function') {
-                //console.log('Appel de handleTombClick avec ID:', person.tombId);
-                handleTombClick(person.tombId);
+            // Appeler la fonction handleTombFocus du parent
+            if (handleTombFocus && typeof handleTombFocus === 'function') {
+                handleTombFocus(person.tombId);
             }
         } else {
             console.error('Données de la personne invalides:', person);
@@ -253,7 +252,7 @@ function UserInterface({ handleTombClick }) {
 }
 
 UserInterface.propTypes = {
-    handleTombClick: PropTypes.func.isRequired
+    handleTombFocus: PropTypes.func.isRequired
 };
 
 export default UserInterface;

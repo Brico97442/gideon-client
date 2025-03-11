@@ -1,4 +1,3 @@
-
 export const highlightTombSection = (tombClones, selectedTombId, sectionColors) => {
   if (!tombClones || !tombClones.length) {
     console.warn("Pas de tombes disponibles pour la surbrillance");
@@ -29,7 +28,7 @@ export const highlightTombSection = (tombClones, selectedTombId, sectionColors) 
             child.material.userData.isCloned = true;
           }
           child.material.color.set('#FFFFFF');
-          child.material.emissive.set(0x000000);
+          // child.material.emissive.set(0x000000);
         }
       }
     });
@@ -68,7 +67,7 @@ export const highlightTombSection = (tombClones, selectedTombId, sectionColors) 
   }
 
   // console.log("Application de la couleur", sectionColor, "pour la section", selectedSectionId);
-  
+
   // Colorer toutes les tombes de la même section
   tombClones.forEach((clone) => {
     clone.traverse((child) => {
@@ -81,7 +80,7 @@ export const highlightTombSection = (tombClones, selectedTombId, sectionColors) 
       }
     });
   });
-  
+
   // Colorer spécialement la tombe sélectionnée
   tombClones.forEach((clone) => {
     clone.traverse((child) => {
@@ -91,9 +90,64 @@ export const highlightTombSection = (tombClones, selectedTombId, sectionColors) 
           child.material.userData.isCloned = true;
         }
         child.material.color.set('#FFA500'); // Orange vif pour la tombe sélectionnée
-        child.material.emissive.set('#FF4500'); // Ajouter un effet lumineux
-        child.material.emissiveIntensity = 0.3;
-        console.log("Surbrillance appliquée à la tombe:", tombIdStr);
+        // child.material.emissive.set('#FF4500'); // Ajouter un effet lumineux
+  
+      }
+    });
+  });
+};
+
+export const addOutlineToTomb = (tombClones, selectedTombId) => {
+  // D'abord nettoyer les clones d'outline précédents
+  tombClones.forEach((clone) => {
+    clone.traverse((child) => {
+      // Chercher et supprimer les clones d'outline existants
+      if (child.userData && child.userData.isOutlineClone) {
+        if (child.parent) {
+          child.parent.remove(child);
+        }
+      }
+    });
+  });
+
+  const tombIdStr = String(selectedTombId);
+  
+  // Maintenant créer un nouveau clone pour l'outline
+  tombClones.forEach((clone) => {
+    clone.traverse((child) => {
+      if (child.isMesh && child.userData && String(child.userData.id) === tombIdStr) {
+        // Créer un clone du mesh original
+        const outlineClone = child.clone();
+        
+        // Cloner le matériau
+        outlineClone.material = child.material.clone();
+        
+      
+        outlineClone.userData.isOutlineClone = true;
+        
+        // Appliquer l'effet d'outline
+        outlineClone.material.emissive.set('#FFA500'); 
+        outlineClone.material.color.set('#FFA500'); 
+        // outlineClone.material.transparent=true
+        outlineClone.material.emissiveIntensity = 2;
+        outlineClone.material.wireframe = false;
+
+        outlineClone.material.transparent = true;     
+        outlineClone.material.opacity = 0.5;   
+
+        outlineClone.scale.set(1.05, 1.05, 1.05);
+        
+        // Ajouter le clone au même parent que l'original
+        if (child.parent) {
+          child.parent.add(outlineClone);
+          
+          // Positionner exactement comme l'original
+          outlineClone.position.copy(child.position);
+          // outlineClone.position.x += -0.2;  // Vers le haut
+          outlineClone.position.y += -0.1;  // Vers le haut
+          // outlineClone.position.z += -0.1;  // Vers l'avant
+          outlineClone.rotation.copy(child.rotation);
+        }
       }
     });
   });

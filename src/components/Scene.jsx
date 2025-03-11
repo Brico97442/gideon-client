@@ -16,12 +16,12 @@ import ParticleSystem from './ParticlesScene';
 import MainOrbitControl from '../utils/MainOrbitControl';
 import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
-import { highlightTombSection } from "../utils/ColorsUtils";
+import { highlightTombSection, addOutlineToTomb } from "../utils/ColorsUtils";
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
-import { Bloom, EffectComposer, DepthOfField } from '@react-three/postprocessing';
+import { Bloom, EffectComposer, DepthOfField, Outline } from '@react-three/postprocessing';
 import Pointer from "../models/Pointer";
-import { useTomb } from '../context/TombContext';
+import { useTomb, findTombMeshById } from '../context/TombContext';
 import gsap from "gsap";
 import playIcon from '../assets/play_arrow.svg';
 import { TransitionEffect } from './TransitionEffect';
@@ -38,7 +38,6 @@ const sectionColors = {
 
 function Scene() {
   const [searchParams] = useSearchParams();
-  //const tombNameFromURL = searchParams.get("name");
   const [initialCameraPosition, setInitialCameraPosition] = useState(null);
   const [tombClones, setTombClones] = useState([]);
   const [camera, setCamera] = useState();
@@ -51,20 +50,40 @@ function Scene() {
   const [tombDetails, setTombDetails] = useState(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
-  const [isDepthOfFieldEnabled, setIsDepthOfFieldEnabled] = useState(false);
-  const [focusedTombDistance, setFocusedTombDistance] = useState(null);
   const [isShowUi, setIsShowUi] = useState(true)
+
+
+  // console.log('cet tombe est selectionné', selectTomb, 'et', selectedTomb)
 
   const fetchTombDetails = async (tombId) => {
     try {
       const response = await axios.get(GET_DECEASED(tombId));
       selectTomb(tombId, response.data);
       setTombDetails(response.data);
+
       return response.data;
     } catch (error) {
       console.error("Erreur lors de la récupération des données de la tombe", error);
     }
   };
+
+  const fetchTombDetail = async (tombId) => {
+    try {
+      const response = await axios.get(GET_DECEASED(tombId));
+      const person = response.data.find(p => p.id === tombId);
+      if (person) {
+        selectTomb(tombId, [person]);
+        setTombDetails([person]);
+      } else {
+        selectTomb(tombId, response.data);
+        setTombDetails(response.data);
+      }
+      return response.data;
+
+    } catch (error) {
+      console.error("Erreur lors de la récupération des données de la tombe", error);
+    }
+  }
 
   const SceneCamera = () => {
     const { camera } = useThree();
@@ -79,7 +98,7 @@ function Scene() {
 
       // Initialiser les éléments de scène dans le contexte
       if (tombClones.length > 0) {
-        console.log("Initialisation des éléments de scène avec", tombClones.length, "tombes");
+        // console.log("Initialisation des éléments de scène avec", tombClones.length, "tombes");
         setSceneElements(camera, orbitControlRef, tombClones);
       }
     }, [camera, tombClones]);
@@ -87,104 +106,21 @@ function Scene() {
     return null;
   };
 
-  // Ajouter un useEffect pour surveiller la position de la caméra
-  useEffect(() => {
-    let animationFrameId;
-
-    const checkCameraDistance = () => {
-      if (focusedTombDistance && selectedTomb && camera) {
-        const tomb = tombClones.find(t => t.name === selectedTomb);
-        if (tomb) {
-          const currentDistance = camera.position.distanceTo(tomb.position);
-          const distanceDiff = Math.abs(currentDistance - focusedTombDistance);
-          console.log("Distance actuelle:", currentDistance, "Distance initiale:", focusedTombDistance, "Différence:", distanceDiff);
-
-          if (distanceDiff > 10) {
-            setIsDepthOfFieldEnabled(false);
-          } else if (distanceDiff < 10) {
-            setIsDepthOfFieldEnabled(true);
-
-          }
-        }
-      }
-      animationFrameId = requestAnimationFrame(checkCameraDistance);
-    };
-
-    if (isDepthOfFieldEnabled) {
-      animationFrameId = requestAnimationFrame(checkCameraDistance);
-    }
-
-    return () => {
-      if (animationFrameId) {
-        cancelAnimationFrame(animationFrameId);
-      }
-    };
-  }, [focusedTombDistance, selectedTomb, camera, tombClones, isDepthOfFieldEnabled]);
-
-  // Ajouter un useEffect pour gérer le scroll
-  useEffect(() => {
-    let scrollTimeout;
-    let lastScrollTime = 0;
-    const SCROLL_DELAY = 1000; // Délai entre chaque vérification
-
-    const handleScroll = () => {
-      const currentTime = Date.now();
-      if (currentTime - lastScrollTime < SCROLL_DELAY) {
-        return; // Ignorer si le délai n'est pas écoulé
-      }
-      lastScrollTime = currentTime;
-
-      if (isDepthOfFieldEnabled && selectedTomb && camera) {
-        const tomb = tombClones.find(t => t.name === selectedTomb);
-        if (tomb) {
-          const currentDistance = camera.position.distanceTo(tomb.position);
-          const distanceDiff = Math.abs(currentDistance - focusedTombDistance);
-          console.log("Distance actuelle:", currentDistance, "Distance initiale:", focusedTombDistance, "Différence:", distanceDiff);
-
-          if (distanceDiff > 15) { // Augmenter le seuil à 15 unités
-            scrollTimeout = setTimeout(() => {
-              setIsDepthOfFieldEnabled(false);
-            }, 10000); // Délai avant la désactivation
-          }
-        }
-      }
-    };
-
-    const canvas = document.getElementById('tomb-canvas');
-    if (canvas) {
-      canvas.addEventListener('wheel', handleScroll);
-    }
-
-    return () => {
-      if (canvas) {
-        canvas.removeEventListener('wheel', handleScroll);
-      }
-      if (scrollTimeout) {
-        clearTimeout(scrollTimeout);
-      }
-    };
-  }, [isDepthOfFieldEnabled, selectedTomb, camera, tombClones, focusedTombDistance]);
-
-  const handleDistanceChange = () => {
-    if (isDepthOfFieldEnabled) {
-      setIsDepthOfFieldEnabled(false);
-    }
-  };
 
   const handleTombClick = (id) => {
-    // console.log("Click sur la tombe:", id);
     setIsModalOpen(true);
     setSelectedTomb(id);
 
     if (camera && tombClones.length > 0 && orbitControlRef.current) {
       console.log("Focus sur la tombe:", id);
       focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);
+      highlightTombSection(tombClones, id, sectionColors);
+      addOutlineToTomb(tombClones, id) 
       fetchTombDetails(id);
-      setIsShowUi(false)
-      // Activer le Depth of Field après un délai
-      setTimeout(() => {
-        setIsDepthOfFieldEnabled(true);
-      }, 1000);
+      setIsShowUi(false);
+      // setTimeout(() => {
+      //     setIsDepthOfFieldEnabled(true);
+      // }, 1000);
     } else {
       console.warn("État des dépendances:", {
         camera: !!camera,
@@ -195,10 +131,30 @@ function Scene() {
     }
   };
 
+  const handleTombFocus = (id) => {
+    setIsModalOpen(true);
+    setSelectedTomb(id);
+
+    if (camera && tombClones.length > 0 && orbitControlRef.current) {
+      console.log("Focus sur la tombe:", id);
+      focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);
+      highlightTombSection(tombClones, id, sectionColors);
+      addOutlineToTomb(tombClones, id)
+      fetchTombDetail(id);
+      setIsShowUi(false);
+      
+    } else {
+      console.warn("État des dépendances:", {
+        camera: !!camera,
+        tombClonesLength: tombClones.length,
+        orbitControlRef: !!orbitControlRef.current
+      });
+      fetchTombDetail(id);
+    }
+  };
+
   const handleTopView = () => {
     if (!camera) return;
-    setIsDepthOfFieldEnabled(false);
-    setFocusedTombDistance(null);
     setIsShowUi(true)
     const topViewPosition = { x: 0, y: 120, z: 0.001 };
 
@@ -217,8 +173,6 @@ function Scene() {
   };
 
   const resetCameraPosition = () => {
-    setIsDepthOfFieldEnabled(false);
-    setFocusedTombDistance(null);
     if (initialCameraPosition) {
       gsap.to(camera.position, {
         x: initialCameraPosition.x,
@@ -249,7 +203,6 @@ function Scene() {
   useEffect(() => {
     const savedTomb = searchParams.get("name");
     if (savedTomb && tombClones.length > 0 && camera && orbitControlRef.current) {
-      //console.log("Initialisation depuis l'URL - ID de la tombe:", savedTomb);
 
       // Mettre à jour le contexte avec la tombe sélectionnée
       selectTomb(savedTomb);
@@ -257,13 +210,15 @@ function Scene() {
       if (isMobile) {
         //console.log("Version mobile : uniquement surbrillance sans modal");
         highlightTombSection(tombClones, savedTomb, sectionColors);
+        addOutlineToTomb(tombClones, savedTomb) 
+
       } else {
         //console.log("Version desktop : surbrillance + modal + focus caméra");
         setIsModalOpen(true);
         focusOnObject(savedTomb, tombClones, camera, orbitControlRef, sectionColors);
       }
 
-      // Récupérer les détails de la tombe en arrière-plan
+      // Récupérer les détails de la tombe
       fetchTombDetails(savedTomb);
     }
   }, [tombClones, searchParams, camera, orbitControlRef]);
@@ -302,7 +257,7 @@ function Scene() {
   };
 
   useEffect(() => {
-    console.log("Tombes reçues :", tombClones);
+    // console.log("Tombes reçues :", tombClones);
   }, [tombClones]);
 
   return (
@@ -362,7 +317,7 @@ function Scene() {
               </div>
 
               <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
-                <UserInterface handleTombClick={handleTombClick} />
+                <UserInterface handleTombFocus={handleTombFocus} />
               </div>
 
               <Canvas
@@ -384,34 +339,19 @@ function Scene() {
                         Vous êtes ici
                       </Text>
                     </Billboard>
-                    <Grass position={[-2, -0.5, 14.5]} />
-                    {/* <Grass2 windStrength={0.01} windFrequency={0.1} position={[-2, -0.5, 15]} tombs={tombClones} /> */}
+                    {/* <Grass position={[-2, -0.5, 14.5]} /> */}
+                    <Grass2 windStrength={0.01} windFrequency={0.1} position={[-2, -0.5, 15]} tombs={tombClones} />
                     <Tombs
                       setTombClones={setTombClones}
-                      onTombClick={handleTombClick}
+                      onTombClick={isMobile ? handleTombFocus : handleTombClick}
+                      selectedTombId={selectedTomb}
                     />
-                    {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
-                    <EffectComposer>
-                      {/* <SoftShadows samples={32} radius={5} intensity={55} /> */}
-                      {!isMobile && isDepthOfFieldEnabled && (
-                        <DepthOfField
-                          focusDistance={0.001}
-                          focalLength={0.02}
-                          bokehScale={0.8}
-                          height={500}
-                          target={selectedTomb ? tombClones.find(tomb => tomb.name === selectedTomb) : null}
-                        />
-                      )}
-                    </EffectComposer>
+                    <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
                   </Suspense>
-                  {/* <directionalLight position={[2, 3, -2]} intensity={0.5} /> */}
                 </group>
 
                 <SceneCamera />
-                <MainOrbitControl
-                  orbitControlRef={orbitControlRef}
-                  onDistanceChange={handleDistanceChange}
-                />
+                <MainOrbitControl orbitControlRef={orbitControlRef} />
 
                 <pointLight
                   position={[-10, -10, -10]}
@@ -434,7 +374,7 @@ function Scene() {
                 onTombClick={handleTombClick}
               />
             </div>
-            <Stats/>
+            <Stats />
           </Suspense>
         )}
       </div>

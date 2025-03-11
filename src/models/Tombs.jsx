@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { BakeShadows, useGLTF } from "@react-three/drei";
+import React, { useState, useEffect, useRef } from "react";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { GET_TOMBS } from "../config/api";
-import { Bloom, DepthOfField, EffectComposer } from "@react-three/postprocessing";
+import { EffectComposer, Outline } from "@react-three/postprocessing";
 
-
-
-const Tombs = ({ setTombClones, onTombClick }) => {
-
+const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
   const [tombs, setTombs] = useState([]);
+  const [selectedTomb, setSelectedTomb] = useState(null);
+  const tombsRef = useRef({});
+  // console.log( selectedTomb)
+
   const tombsGltf = {
     1: useGLTF("/3d-models/gltf/tomb/01.glb"),
     2: useGLTF("/3d-models/gltf/tomb/02.glb"),
@@ -16,24 +17,9 @@ const Tombs = ({ setTombClones, onTombClick }) => {
     4: useGLTF("/3d-models/gltf/tomb/04.glb"),
     5: useGLTF("/3d-models/gltf/tomb/05.glb")
   }
-  // const tombTextures = {
-  //   1: useTexture("/3d-models/textures/Tomb01.png"),
-  //   2: useTexture("/3d-models/textures/Tomb02.png"),
-  //   3: useTexture("/3d-models/textures/Tomb03.png"),
-  //   4: useTexture("/3d-models/textures/Tomb04.png"),
-  //   5: useTexture("/3d-models/textures/Tomb05.png"),
-  // };
-
-  // const texture = useTexture('/3d-models/textures/Baked01.png')
-  // texture.flipY = false;
-  // texture.encoding=THREE.sRGBEncoding
-
-
 
   const generateTombs = async () => {
-
     try {
-      // console.log("Fetching tombs from:", GET_TOMBS); 
       const response = await fetch(GET_TOMBS);
 
       if (!response.ok) {
@@ -41,12 +27,10 @@ const Tombs = ({ setTombClones, onTombClick }) => {
       }
 
       const data = await response.json();
-      // console.log("Tombs data:", data); // Debugging API response
-
       const tombClonesArr = []
-      data.map((section) => {
-        section.tombs.map((tomb) => {
-
+      
+      data.forEach((section) => {
+        section.tombs.forEach((tomb) => {
           const tombClone = tombsGltf[tomb.type].scene.clone();
 
           tombClone.traverse((child) => {
@@ -58,30 +42,27 @@ const Tombs = ({ setTombClones, onTombClick }) => {
                 sectionId: section.id,
                 type: tomb.type
               };
-              // console.log("Configuration de la tombe:", {
-              //   id: tomb.id,
-              //   sectionId: section.id,
-              //   name: child.name
-              // });
+              
+              // Stocker la référence de chaque tombe par ID
+              tombsRef.current[tomb.id] = child;
             }
           });
 
           tombClone.position.set(
-            tomb.tombTransform.position[0],//x
-            tomb.tombTransform.position[2],//y
-            -tomb.tombTransform.position[1] //z
+            tomb.tombTransform.position[0],
+            tomb.tombTransform.position[2],
+            -tomb.tombTransform.position[1]
           );
 
           tombClone.rotation.set(
-            tomb.tombTransform.rotation[0],//x
-            tomb.tombTransform.rotation[2],//y
-            tomb.tombTransform.rotation[1],//z
+            tomb.tombTransform.rotation[0],
+            tomb.tombTransform.rotation[2],
+            tomb.tombTransform.rotation[1],
           );
-          tombClonesArr.push(tombClone)
-          return tombClone;
+          
+          tombClonesArr.push(tombClone);
         });
-
-      })
+      });
 
       setTombs(tombClonesArr);
       setTombClones(tombClonesArr);
@@ -94,6 +75,14 @@ const Tombs = ({ setTombClones, onTombClick }) => {
     generateTombs();
   }, []);
 
+  // Mettre à jour la tombe sélectionnée quand selectedTombId change
+  useEffect(() => {
+    if (selectedTombId && tombsRef.current[selectedTombId]) {
+      setSelectedTomb(tombsRef.current[selectedTombId]);
+    } else {
+      setSelectedTomb(null);
+    }
+  }, [selectedTombId]);
 
   const handleClick = (event) => {
     event.stopPropagation();
@@ -103,27 +92,22 @@ const Tombs = ({ setTombClones, onTombClick }) => {
   };
 
   return (
-    <mesh onClick={handleClick}>
-      {/* <EffectComposer> */}
-        {/* <Bloom intensity={1} width={300} height={300} /> */}
-        {/* <DepthOfField focusDistance={0.01} focalLength={0.5} bokehScale={1} height={300} /> */}
-      {/* <BakeShadows scale={9} /> */}
-      {/* </EffectComposer> */}
-
-      {tombs.map((clone, key) => (
-        <group key={key}>
-          <primitive object={clone} receiveShadow />
-        </group>
-      ))}
-    </mesh>
+    <>
+      <mesh onClick={handleClick}>
+        {tombs.map((clone, key) => (
+          <group key={key}>
+            <primitive object={clone} receiveShadow castShadow />
+          </group>
+        ))}
+      </mesh>
+    </>
   );
 };
 
-useGLTF.preload("/3d-models/gltf/tomb/01.glb")
-useGLTF.preload("/3d-models/gltf/tomb/02.glb")
-useGLTF.preload("/3d-models/gltf/tomb/03.glb")
-useGLTF.preload("/3d-models/gltf/tomb/04.glb")
-useGLTF.preload("/3d-models/gltf/tomb/05.glb")
-
+useGLTF.preload("/3d-models/gltf/tomb/01.glb");
+useGLTF.preload("/3d-models/gltf/tomb/02.glb");
+useGLTF.preload("/3d-models/gltf/tomb/03.glb");
+useGLTF.preload("/3d-models/gltf/tomb/04.glb");
+useGLTF.preload("/3d-models/gltf/tomb/05.glb");
 
 export default Tombs;
