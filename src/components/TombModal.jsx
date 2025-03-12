@@ -4,9 +4,10 @@ import { isMobile } from 'react-device-detect';
 import { useTomb } from '../context/TombContext';
 import { highlightTombSection } from '../utils/ColorsUtils';
 import { formatDate } from '../utils/DateUtils';
-
+import modalRightBackground from '../assets/ui_element/right-modal.png';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import Button from './Button';
 
 const TombModal = ({ isOpen, onClose }) => {
   const { selectedTomb, tombDetails, tombClones } = useTomb();
@@ -16,19 +17,8 @@ const TombModal = ({ isOpen, onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [comment, setComment] = useState('');
   const [formStatus, setFormStatus] = useState(null);
-  
-  const formatDate = (dateString) => {
-    // Créer une date en spécifiant explicitement l'UTC
-    const parts = dateString.split('T')[0].split('-');
-    const year = parseInt(parts[0]);
-    const month = parseInt(parts[1]) - 1; // Les mois commencent à 0 en JavaScript
-    const day = parseInt(parts[2]);
-    
-    // Créer une nouvelle date sans heure (ce qui évite les problèmes de fuseau horaire)
-    const date = new Date(Date.UTC(year, month, day));
-    
-    return date.toLocaleDateString();
-};
+
+
   // Variables pour stocker les positions de départ et de fin du toucher
   let touchStartY = 0;
   let touchEndY = 0;
@@ -110,22 +100,21 @@ const TombModal = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div id="ui" className=" lg:block w-full lg:w-auto  absolute right-0 px-2 lg:px-5 py-6 h-full z-50">
-      <div className="modal-shape-container-background w-full h-full p-4">
-        <div className="modal-shape-container relative font-orbitron flex flex-col items-center justify-between h-full lg:w-[460px] text-white">
-          <div className=" bg-gradient-to-b from-[#3D52CA]/80  via-[#001278]/80 to-[#3D52CA]/80 flex flex-col items-center ">
-            <div id="qr-code" className={`w-full ${isMobile ? "hidden" : "flex"} flex justify-center items-center h-1/3 p-6 border-b`}>
-              <QRCodeCanvas value={qrValue} size={200} bgColor="#ffffff" fgColor="#000000" />
+    <div id="ui" className=" lg:block lg:w-auto absolute right-0 mx-2 py-2 lg:mr-3 lg:py-6 h-full z-50">
+      <div className="w-full lg:w-[501.5px] lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] pt-7 h-full relative">
+        <img src={modalRightBackground} alt="modal droite background" width={501.5} className="h-full w-[501.5px] object-fill absolute top-0 left-0" />
+        <div className="modal-shape-container relative font-orbitron flex flex-col items-center h-full text-white">
+          <div className="flex flex-col items-center h-full">
+            <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center items-center p-2 rounded-xl`}>
+              <QRCodeCanvas value={qrValue} size={200} bgColor="#C7D64F" fgColor="#174C53" />
             </div>
-            <div className="flex h-full w-auto lg:w-full pl-8 pt-6 pr-6 pb-6 justify-between flex-col">
-              <div>
-                <h2 className="">Emplacement n°{selectedTomb}</h2>
-              </div>
+            <div className="flex h-full w-auto lg:w-full flex-col px-[19px] bg-blue-600/55 mt-8">
+              <h2 className="text-[24px]">Emplacement n°{selectedTomb}</h2>
               {tombDetails && (
-                <div className="my-4 box-border max-h-[300px] overflow-hidden ">
+                <div className="my-[22px] box-border overflow-hidden bg-teal-600 ">
                   <h3 className='mb-3'>Ici repose</h3>
-                  <div className='h-full flex flex-col '>
-                    <ul className="block overflow-y-scroll space-y-2 flex-col h-full">
+                  <div className='h-full flex flex-col'>
+                    <ul className="space-y-2 flex-col max-h-[30vh] overflow-y-auto">
                       {tombDetails.map((person, index) => (
                         <li key={index} className="flex-col flex">
                           <span className='text-lg font-semibold capitalize underline'>{person.firstname} {person.lastname}</span>
@@ -136,34 +125,33 @@ const TombModal = ({ isOpen, onClose }) => {
                   </div>
                 </div>
               )}
-              <button onClick={() => setIsCommentOpen(!isCommentOpen)} className='h-10 w-10 rounded-full flex justify-center items-center bg-blue-600 cursor-pointer'>i</button>
-              {isCommentOpen && (
-                <div id='comments' className='absolute top-0 w-full h-full bg-yellow-500'>
-                  <form onSubmit={handleSubmit}>
+              {isMobile && <button onClick={() => setIsCommentOpen(!isCommentOpen)} className='h-10 w-10 z-50 rounded-full flex justify-center items-center bg-dark-green cursor-pointer'>i</button>}              {isCommentOpen && (
+                <div id='comments' className='absolute top-0 left-0 w-full h-full bg-yellow-500'>
+                  <form onSubmit={handleSubmit} className='h-full w-full'>
                     <input
                       type="text"
                       value={lastname}
                       onChange={(e) => setLastname(e.target.value)}
                       placeholder="Nom"
-                      className=" placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
+                      className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
                     />
                     <input
                       type="text"
                       value={firstname}
                       onChange={(e) => setFirstname(e.target.value)}
                       placeholder="Prénom"
-                      className=" placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
+                      className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
                     />
                     <input
                       type='text'
                       value={phoneNumber}
                       placeholder='Numéro de téléphone'
                       onChange={(e) => setPhoneNumber(e.target.value)}
-                      className=" placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
+                      className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
                     />
                     <textarea
                       value={comment}
-                      className=' placeholder:text-white placeholder:uppercase h-auto border-b mb-4 focus:outline-none bg-transparent text-white'
+                      className='w-full placeholder:text-white placeholder:uppercase h-auto border-b mb-4 focus:outline-none bg-transparent text-white'
                       placeholder='Laisser un message'
                       onChange={(e) => setComment(e.target.value)}
                     />
@@ -173,12 +161,9 @@ const TombModal = ({ isOpen, onClose }) => {
                   {formStatus === 'error' && <p className="text-red-500 mt-2">Erreur lors de l'envoi du commentaire.</p>}
                 </div>
               )}
-              <button
-                onClick={onClose}
-                className="h-10 lg:h-[76px] w-full rounded-lg bg-[#0E1C36] hover:bg-[#0E1C36]/70 text-white hover:text-green-300 transition-all duration-150"
-              >
-                Retourner à l'Accueil
-              </button>
+            </div>
+            <div className='w-full' onClick={onClose}>
+              <Button btnValue="Retourner à l'Accueil"/>
             </div>
           </div>
         </div>

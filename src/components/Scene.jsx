@@ -29,6 +29,8 @@ import Grass from "./Grass";
 import Grass2 from "./Grass2";
 import Grass3 from "./Grass3";
 import Road from "../models/Road";
+import Button from "./Button";
+import Test from "./Test";
 
 // Définition des couleurs des sections
 const sectionColors = {
@@ -117,12 +119,10 @@ function Scene() {
       console.log("Focus sur la tombe:", id);
       focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);
       highlightTombSection(tombClones, id, sectionColors);
-      addOutlineToTomb(tombClones, id) 
+      addOutlineToTomb(tombClones, id)
       fetchTombDetails(id);
       setIsShowUi(false);
-      // setTimeout(() => {
-      //     setIsDepthOfFieldEnabled(true);
-      // }, 1000);
+
     } else {
       console.warn("État des dépendances:", {
         camera: !!camera,
@@ -138,13 +138,12 @@ function Scene() {
     setSelectedTomb(id);
 
     if (camera && tombClones.length > 0 && orbitControlRef.current) {
-      console.log("Focus sur la tombe:", id);
+      // console.log("Focus sur la tombe:", id);
       focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);
       highlightTombSection(tombClones, id, sectionColors);
       addOutlineToTomb(tombClones, id)
       fetchTombDetail(id);
       setIsShowUi(false);
-      
     } else {
       console.warn("État des dépendances:", {
         camera: !!camera,
@@ -212,7 +211,7 @@ function Scene() {
       if (isMobile) {
         //console.log("Version mobile : uniquement surbrillance sans modal");
         highlightTombSection(tombClones, savedTomb, sectionColors);
-        addOutlineToTomb(tombClones, savedTomb) 
+        addOutlineToTomb(tombClones, savedTomb)
 
       } else {
         //console.log("Version desktop : surbrillance + modal + focus caméra");
@@ -273,9 +272,7 @@ function Scene() {
               <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
               <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
                 <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
-                <button
-                  className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath"
-                >
+                <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
                   <img src={playIcon} alt="Play" />
                 </button>
               </div>
@@ -307,16 +304,15 @@ function Scene() {
 
         {applicationStart && (
           <Suspense fallback={<Loading />}>
-            <div>
-              <div className={`flex justify-center w-full h-full relative z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`}>
-                <button
-                  id='top-view-btn'
-                  className="absolute cursor-pointer text-white top-6 min-w-56 lg:top-6 h-10 lg:h-[76px] w-30 rounded-lg bg-[#0E1C36]/80 hover:bg-[#0E1C36]/70 hover:text-green-300 transition-all duration-150"
-                >
-                  Passer en vue aérienne
-                </button>
-                <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
-              </div>
+            {/* <div className="w-full h-full relative">
+             {!isModalOpen && isMobile && 
+             <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
+                <div className={`w-[416px] h-[76px] ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`} >
+                  <Button btnValue="Passer en vue aérienne"/>
+                </div>
+              </div>}
+
+              <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
 
               <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
                 <UserInterface handleTombFocus={handleTombFocus} />
@@ -341,8 +337,8 @@ function Scene() {
                         Vous êtes ici
                       </Text>
                     </Billboard>
-                    <Road/>
-                   { isMobile? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />}
+                    <Road />
+                    {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />}
 
                     <Tombs
                       setTombClones={setTombClones}
@@ -377,7 +373,13 @@ function Scene() {
                 onTombClick={handleTombClick}
               />
             </div>
-            <Stats />
+            <Stats /> */}
+            <Canvas>
+
+            <Test count={1200}/>
+            <ambientLight intensity={3}/>
+            <Stats/>
+            </Canvas>
           </Suspense>
         )}
       </div>
