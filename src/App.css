@@ -7,6 +7,12 @@
   --font-orbitron: 'Orbitron', 'Arial', sans-serif;
 }
 
+@theme {
+  --color-dark-green:oklch(38.53% 0.0556 207.51);
+  --color-lite-blue : oklch(72.05% 0.1173 210.79);
+  --color-apple-green:oklch(83.94% 0.1577 115.26);
+}
+
 @layer utilities {
   .scrollbar-hidden {
     scrollbar-width: none; /* Firefox */

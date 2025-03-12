@@ -6,6 +6,7 @@ import { SEARCH_DECEASED } from '../config/api';
 import modalBackground from '../assets/ui_element/left_modal.png';
 import logo from '../assets/ui_element/logo_st_paul.svg';
 import { formatDate } from '../utils/DateUtils';
+import Button from "./Button";
 
 function UserInterface({ handleTombFocus }) {
     const [lastname, setLastname] = useState("");
@@ -212,10 +213,10 @@ function UserInterface({ handleTombFocus }) {
         <div id="ui" className="hidden lg:block absolute left-0 pl-3 py-6 h-full z-50">
             <div className="w-[501.5px] pl-[38.5px] pr-[48.5px] h-full relative">
                 <img src={modalBackground} alt="modal gauche background" width={501.5} className="h-full w-[501.5px] object-fill absolute top-0 left-0" />
-                
+
                 <h1 className="absolute -left-[60px] top-[11vh] font-bold text-[38px] -rotate-90 leading-none">GIDEON</h1>
-                
-                <div className="h-full w-full relative font-orbitron flex flex-col text-white">
+
+                <div className="h-full w-full relative font-orbitron flex flex-col text-dark-green">
 
                     <div id="logo_container" className="w-full flex justify-end">
                         <img src={logo} alt="Saint paul logo" width={224} height={122} />
@@ -230,14 +231,14 @@ function UserInterface({ handleTombFocus }) {
                                 value={lastname}
                                 onChange={(e) => setLastname(e.target.value)}
                                 placeholder="Nom"
-                                className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
+                                className="w-full placeholder:text-dark-green placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-dark-green"
                             />
                             <input
                                 type="text"
                                 value={firstname}
                                 onChange={(e) => setFirstname(e.target.value)}
                                 placeholder="Prénom"
-                                className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
+                                className="w-full placeholder:text-dark-green placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-dark-green"
                             />
                             <div className=" mb-4">
                                 <label className="block text-sm mb-1">Date de naissance</label>
@@ -245,7 +246,7 @@ function UserInterface({ handleTombFocus }) {
                                     type="date"
                                     value={birthdate}
                                     onChange={(e) => setBirthdate(e.target.value)}
-                                    className="w-full border-b h-10 placeholder:uppercase focus:outline-none bg-transparent text-white"
+                                    className="w-full border-b h-10 placeholder:uppercase focus:outline-none bg-transparent text-dark-green"
                                 />
                             </div>
                             <div className=" mb-4">
@@ -254,7 +255,7 @@ function UserInterface({ handleTombFocus }) {
                                     type="date"
                                     value={deathdate}
                                     onChange={(e) => setDeathdate(e.target.value)}
-                                    className="w-full border-b h-10 placeholder:uppercase focus:outline-none bg-transparent text-white"
+                                    className="w-full border-b h-10 placeholder:uppercase focus:outline-none bg-transparent text-dark-green"
                                 />
                             </div>
 
@@ -262,7 +263,7 @@ function UserInterface({ handleTombFocus }) {
                             {isLoading && <p className="text-center mt-2">Chargement...</p>}
 
                             {results.length > 0 && (
-                                <div className="w-full mt-2 overflow-hidden z-20">
+                                <div className="w-full mt-2 overflow-hidden z-20 text-dark-green">
                                     <h3 className="text-center mb-2">
                                         {results.length} résultat{results.length > 1 ? 's' : ''} trouvé{results.length > 1 ? 's' : ''}
                                     </h3>
@@ -289,12 +290,10 @@ function UserInterface({ handleTombFocus }) {
                             )}
                         </div>
                     </div>
-                    <button
-                        onClick={handleSearch}
-                        className="w-full bg-[#0E1C36] h-[76px] hover:bg-[#0E1C36]/70 absolute bottom-[18px] text-white rounded-lg transition-all duration-150 mb-4"
-                    >
-                        Rechercher
-                    </button>
+
+                    <div className='w-full mb-12' onClick={handleSearch}>
+                        <Button btnValue="Rechercher" />
+                    </div>
                 </div>
             </div>
         </div>
