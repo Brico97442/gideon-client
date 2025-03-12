@@ -282,7 +282,7 @@ function Scene() {
           <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
             <group>
               <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
-                {/* <ParticleSystem /> */}
+                <ParticleSystem />
                 {/* <pointLight
                   position={[0, 0, 0]}
                   decay={0}
@@ -304,7 +304,7 @@ function Scene() {
 
         {applicationStart && (
           <Suspense fallback={<Loading />}>
-            {/* <div className="w-full h-full relative">
+            <div className="w-full h-full relative">
              {!isModalOpen && isMobile && 
              <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
                 <div className={`w-[416px] h-[76px] ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`} >
@@ -373,13 +373,12 @@ function Scene() {
                 onTombClick={handleTombClick}
               />
             </div>
-            <Stats /> */}
-            <Canvas>
-
+            <Stats />
+            {/* <Canvas>
             <Test count={1200}/>
             <ambientLight intensity={3}/>
             <Stats/>
-            </Canvas>
+            </Canvas> */}
           </Suspense>
         )}
       </div>
