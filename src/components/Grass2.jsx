@@ -19,8 +19,8 @@ const defaultBladeOptions = {
 export default function Grass2({
   bladeOptions = defaultBladeOptions,
   // width est utilisé par Grass mais n'est pas nécessaire pour Grass2
-  width = 100,
-  instances = 180000,
+  
+  instances = 140000,
   // Utiliser exactement le même chemin de modèle que Grass
   groundModelPath = "/3d-models/gltf/cimetarylayout/ground.glb",
   position = [0, 0, 0],
