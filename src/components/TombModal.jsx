@@ -3,6 +3,8 @@ import { QRCodeCanvas } from "qrcode.react";
 import { isMobile } from 'react-device-detect';
 import { useTomb } from '../context/TombContext';
 import { highlightTombSection } from '../utils/ColorsUtils';
+import { formatDate } from '../utils/DateUtils';
+
 import PropTypes from 'prop-types';
 import axios from 'axios';
 
@@ -14,7 +16,19 @@ const TombModal = ({ isOpen, onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [comment, setComment] = useState('');
   const [formStatus, setFormStatus] = useState(null);
-
+  
+  const formatDate = (dateString) => {
+    // Créer une date en spécifiant explicitement l'UTC
+    const parts = dateString.split('T')[0].split('-');
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]) - 1; // Les mois commencent à 0 en JavaScript
+    const day = parseInt(parts[2]);
+    
+    // Créer une nouvelle date sans heure (ce qui évite les problèmes de fuseau horaire)
+    const date = new Date(Date.UTC(year, month, day));
+    
+    return date.toLocaleDateString();
+};
   // Variables pour stocker les positions de départ et de fin du toucher
   let touchStartY = 0;
   let touchEndY = 0;
@@ -99,8 +113,7 @@ const TombModal = ({ isOpen, onClose }) => {
     <div id="ui" className=" lg:block w-full lg:w-auto  absolute right-0 px-2 lg:px-5 py-6 h-full z-50">
       <div className="modal-shape-container-background w-full h-full p-4">
         <div className="modal-shape-container relative font-orbitron flex flex-col items-center justify-between h-full lg:w-[460px] text-white">
-          <div className="modal-shape-border"></div>
-          <div className="modal-shape-inner bg-gradient-to-b from-[#3D52CA]/80  via-[#001278]/80 to-[#3D52CA]/80 flex flex-col items-center ">
+          <div className=" bg-gradient-to-b from-[#3D52CA]/80  via-[#001278]/80 to-[#3D52CA]/80 flex flex-col items-center ">
             <div id="qr-code" className={`w-full ${isMobile ? "hidden" : "flex"} flex justify-center items-center h-1/3 p-6 border-b`}>
               <QRCodeCanvas value={qrValue} size={200} bgColor="#ffffff" fgColor="#000000" />
             </div>
@@ -116,7 +129,7 @@ const TombModal = ({ isOpen, onClose }) => {
                       {tombDetails.map((person, index) => (
                         <li key={index} className="flex-col flex">
                           <span className='text-lg font-semibold capitalize underline'>{person.firstname} {person.lastname}</span>
-                          <span className='flex space-x-6 normal-case'><span>* Née le {new Date(person.birthdate).toLocaleDateString()}</span><span>* Mort le {new Date(person.deathDate).toLocaleDateString()}</span></span>
+                          <span className='flex space-x-6 normal-case'><span>* Née le {formatDate(person.birthdate)}</span> <span>* Mort le {formatDate(person.deathDate)}</span></span>
                         </li>
                       ))}
                     </ul>
