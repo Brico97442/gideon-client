@@ -3,6 +3,9 @@ import axios from "axios";
 import PropTypes from 'prop-types';
 import { useTomb } from '../context/TombContext';
 import { SEARCH_DECEASED } from '../config/api';
+import modalBackground from '../assets/ui_element/left_modal.png';
+import logo from '../assets/ui_element/logo_st_paul.svg';
+import { formatDate } from '../utils/DateUtils';
 
 function UserInterface({ handleTombFocus }) {
     const [lastname, setLastname] = useState("");
@@ -14,6 +17,7 @@ function UserInterface({ handleTombFocus }) {
     const [isLoading, setIsLoading] = useState(false);
     const [cachedData, setCachedData] = useState(null);
     const { selectTomb, focusOnTomb } = useTomb();
+
 
     // Index des données pour une recherche plus rapide
     const searchIndex = useMemo(() => {
@@ -83,7 +87,7 @@ function UserInterface({ handleTombFocus }) {
                 const response = await axios.get(SEARCH_DECEASED());
                 setCachedData(response.data);
             } catch (error) {
-                console.error(" initial loading data error:", error);
+                console.error("Erreur de chargement initial des données:", error);
                 setError("Une erreur est survenue lors du chargement initial des données.");
             } finally {
                 setIsLoading(false);
@@ -97,43 +101,74 @@ function UserInterface({ handleTombFocus }) {
         try {
             setIsLoading(true);
             setError("");
+            setResults([]);
 
-            // Si nous avons des données en cache, utiliser l'index local
-            if (searchIndex) {
+            // Si nous avons des critères de recherche
+            const hasSearchCriteria = lastname || firstname || birthdate || deathdate;
+
+            // Si nous avons des données en cache et l'index
+            if (searchIndex && hasSearchCriteria) {
+
+                let matches = new Set();
                 const searchTerms = [lastname, firstname].filter(term => term).map(term => term.toLowerCase());
-                const matches = new Set();
 
+                // Si on a des termes de recherche textuels
                 if (searchTerms.length > 0) {
-                    searchIndex.searchableText.forEach((person, text) => {
-                        if (searchTerms.every(term => text.includes(term))) {
+                    searchIndex.allDeceased.forEach(person => {
+                        const fullName = `${person.firstname || ''} ${person.lastname || ''}`.toLowerCase();
+                        if (searchTerms.every(term => fullName.includes(term))) {
                             matches.add(person);
                         }
                     });
+                } else {
+                    // Si aucun terme textuel, on part de toutes les données
+                    searchIndex.allDeceased.forEach(person => matches.add(person));
                 }
 
-                // Filtrer par dates si spécifiées
-                let filteredResults = Array.from(matches);
+                // Filtrer par date de naissance si spécifiée
                 if (birthdate) {
-                    filteredResults = filteredResults.filter(person => 
-                        person.birthdate && person.birthdate.startsWith(birthdate)
-                    );
-                }
-                if (deathdate) {
-                    filteredResults = filteredResults.filter(person => 
-                        person.deathDate && person.deathDate.startsWith(deathdate)
+                    const formattedBirthDate = new Date(birthdate).toISOString().split('T')[0];
+                    matches = new Set(
+                        Array.from(matches).filter(person => {
+                            if (!person.birthdate) return false;
+                            const personBirthDate = new Date(person.birthdate).toISOString().split('T')[0];
+                            return personBirthDate === formattedBirthDate;
+                        })
                     );
                 }
 
-                setResults(filteredResults);
+                // Filtrer par date de décès si spécifiée
+                if (deathdate) {
+                    const formattedDeathDate = new Date(deathdate).toISOString().split('T')[0];
+                    matches = new Set(
+                        Array.from(matches).filter(person => {
+                            if (!person.deathDate) return false;
+                            const personDeathDate = new Date(person.deathDate).toISOString().split('T')[0];
+                            return personDeathDate === formattedDeathDate;
+                        })
+                    );
+                }
+
+                console.log('Résultats filtrés:', Array.from(matches));
+                setResults(Array.from(matches));
             } else {
-                // Si pas de cache, utiliser l'API
+                // Si pas de cache ou d'index, ou pas de critères, utiliser l'API
                 const searchParams = new URLSearchParams();
                 if (lastname) searchParams.append('lastname', lastname);
                 if (firstname) searchParams.append('firstname', firstname);
-                if (birthdate) searchParams.append('birthdate', birthdate);
-                if (deathdate) searchParams.append('deathdate', deathdate);
+                if (birthdate) {
+                    const formattedBirthdate = new Date(birthdate).toISOString().split('T')[0];
+                    searchParams.append('birthdate', formattedBirthdate);
+                }
+                if (deathdate) {
+                    const formattedDeathdate = new Date(deathdate).toISOString().split('T')[0];
+                    searchParams.append('deathdate', formattedDeathdate);
+                }
 
-                const response = await axios.get(`${SEARCH_DECEASED()}?${searchParams.toString()}`);
+                const url = `${SEARCH_DECEASED()}?${searchParams.toString()}`;
+                console.log('URL de l\'API:', url);
+                const response = await axios.get(url);
+                console.log('Résultats de l\'API:', response.data);
                 setResults(response.data);
             }
         } catch (error) {
@@ -174,14 +209,21 @@ function UserInterface({ handleTombFocus }) {
     };
 
     return (
-        <div id="ui" className="hidden lg:block absolute left-0 pl-5 py-6 h-full z-50">
-            <div className="shape-container-background w-full h-full p-4">
-                <div className="shape-container relative font-orbitron uppercase flex flex-col items-center justify-between h-full w-[460px] text-white">
-                    <div className="shape-border"></div>
-                    <div className="shape-inner bg-gradient-to-b from-[#3D52CA]/80  via-[#001278]/80 to-[#3D52CA]/80">
-                        <div className="w-full flex flex-col p-7">
-                            <h1 className="font-bold text-[42px] w-full text-center tracking-[0.4em] h-[94px] border-b">GIDEON</h1>
-                            <h2 className="font-orbitron mt-6 mb-[67px] text-xl tracking-wide font-normal">Rechercher un défunt</h2>
+        <div id="ui" className="hidden lg:block absolute left-0 pl-3 py-6 h-full z-50">
+            <div className="w-[501.5px] pl-[38.5px] pr-[48.5px] h-full relative">
+                <img src={modalBackground} alt="modal gauche background" width={501.5} className="h-full w-[501.5px] object-fill absolute top-0 left-0" />
+                
+                <h1 className="absolute -left-[60px] top-[11vh] font-bold text-[38px] -rotate-90 leading-none">GIDEON</h1>
+                
+                <div className="h-full w-full relative font-orbitron flex flex-col text-white">
+
+                    <div id="logo_container" className="w-full flex justify-end">
+                        <img src={logo} alt="Saint paul logo" width={224} height={122} />
+                    </div>
+
+                    <div className=" h-full">
+                        <div className="flex flex-col pr-4">
+                            <h2 className="font-orbitron w-full text-xl text-center tracking-wide font-normal mt-[6vh] mb-14">Rechercher un défunt</h2>
 
                             <input
                                 type="text"
@@ -197,23 +239,31 @@ function UserInterface({ handleTombFocus }) {
                                 placeholder="Prénom"
                                 className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
                             />
-                            <input
-                                type="date"
-                                value={birthdate}
-                                onChange={(e) => setBirthdate(e.target.value)}
-                                className="w-full border-b mb-4 h-10 placeholder:uppercase focus:outline-none bg-transparent text-white"
-                            />
-                            <input
-                                type="date"
-                                value={deathdate}
-                                onChange={(e) => setDeathdate(e.target.value)}
-                                className="w-full border-b mb-4 h-10 placeholder:uppercase focus:outline-none bg-transparent text-white"
-                            />
+                            <div className=" mb-4">
+                                <label className="block text-sm mb-1">Date de naissance</label>
+                                <input
+                                    type="date"
+                                    value={birthdate}
+                                    onChange={(e) => setBirthdate(e.target.value)}
+                                    className="w-full border-b h-10 placeholder:uppercase focus:outline-none bg-transparent text-white"
+                                />
+                            </div>
+                            <div className=" mb-4">
+                                <label className="block text-sm mb-1">Date de décès</label>
+                                <input
+                                    type="date"
+                                    value={deathdate}
+                                    onChange={(e) => setDeathdate(e.target.value)}
+                                    className="w-full border-b h-10 placeholder:uppercase focus:outline-none bg-transparent text-white"
+                                />
+                            </div>
 
                             {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+                            {isLoading && <p className="text-center mt-2">Chargement...</p>}
+
                             {results.length > 0 && (
-                                <div className="w-full mt-4 overflow-hidden z-20">
-                                    <h3 className="text-center text-lg mb-2">
+                                <div className="w-full mt-2 overflow-hidden z-20">
+                                    <h3 className="text-center mb-2">
                                         {results.length} résultat{results.length > 1 ? 's' : ''} trouvé{results.length > 1 ? 's' : ''}
                                     </h3>
                                     <ul className="max-h-40 overflow-y-auto space-y-2">
@@ -227,8 +277,8 @@ function UserInterface({ handleTombFocus }) {
                                                     <span className="font-semibold">{person.firstname} {person.lastname}</span>
                                                     <div className="text-sm opacity-80">
                                                         <span>
-                                                            {person.birthdate && `Né(e) le ${new Date(person.birthdate).toLocaleDateString()}`}
-                                                            {person.deathDate && ` - Décédé(e) le ${new Date(person.deathDate).toLocaleDateString()}`}
+                                                            {person.birthdate && `Né(e) le ${formatDate(person.birthdate)}`}
+                                                            {person.deathDate && ` - Décédé(e) le ${formatDate(person.deathDate)}`}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -241,7 +291,7 @@ function UserInterface({ handleTombFocus }) {
                     </div>
                     <button
                         onClick={handleSearch}
-                        className="w-[400px] bg-[#0E1C36] h-[76px] hover:bg-[#0E1C36]/70 absolute bottom-[18px] text-white rounded-lg transition-all duration-150 mb-4"
+                        className="w-full bg-[#0E1C36] h-[76px] hover:bg-[#0E1C36]/70 absolute bottom-[18px] text-white rounded-lg transition-all duration-150 mb-4"
                     >
                         Rechercher
                     </button>

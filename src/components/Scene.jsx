@@ -27,6 +27,8 @@ import playIcon from '../assets/play_arrow.svg';
 import { TransitionEffect } from './TransitionEffect';
 import Grass from "./Grass";
 import Grass2 from "./Grass2";
+import Grass3 from "./Grass3";
+import Road from "../models/Road";
 
 // Définition des couleurs des sections
 const sectionColors = {
@@ -284,14 +286,14 @@ function Scene() {
             <group>
               <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
                 <ParticleSystem />
-                <pointLight
+                {/* <pointLight
                   position={[0, 0, 0]}
                   decay={0}
                   intensity={8}
                   color='yellow'
-                />
+                /> */}
                 <ambientLight intensity={1} />
-                <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" />
+                {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
               </Float>
             </group>
             {isTransitioning && (
@@ -339,8 +341,9 @@ function Scene() {
                         Vous êtes ici
                       </Text>
                     </Billboard>
-                    {/* <Grass position={[-2, -0.5, 14.5]} /> */}
-                    <Grass2 windStrength={0.01} windFrequency={0.1} position={[-2, -0.5, 15]} tombs={tombClones} />
+                    <Road/>
+                   { isMobile? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />}
+
                     <Tombs
                       setTombClones={setTombClones}
                       onTombClick={isMobile ? handleTombFocus : handleTombClick}
