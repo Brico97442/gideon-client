@@ -282,7 +282,7 @@ function Scene() {
           <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
             <group>
               <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
-                <ParticleSystem />
+                {/* <ParticleSystem /> */}
                 {/* <pointLight
                   position={[0, 0, 0]}
                   decay={0}
@@ -338,7 +338,7 @@ function Scene() {
                       </Text>
                     </Billboard>
                     <Road />
-                    {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />}
+                    {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
 
                     <Tombs
                       setTombClones={setTombClones}
