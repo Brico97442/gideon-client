@@ -1,36 +1,36 @@
 import { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Float, SoftShadows, Text, Billboard, StatsGl, Stats } from "@react-three/drei";
+import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import axios from 'axios';
 import { useRef } from "react";
-import Entrance from "../models/Entrance";
+// import Entrance from "../models/Entrance";
 import Wall from "../models/Wall";
-import Ground from "../models/Ground";
-import UserInterface from "./UserInterface";
-import Tombs from "../models/Tombs";
+// import Ground from "../models/Ground";
+// import UserInterface from "./UserInterface";
 import TombModal from "./TombModal";
+import Tombs from "../models/Tombs";
 import { useSearchParams } from "react-router-dom";
-import ParticleSystem from './ParticlesScene';
+// import ParticleSystem from './ParticlesScene';
 import MainOrbitControl from '../utils/MainOrbitControl';
 import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
 import { highlightTombSection, addOutlineToTomb } from "../utils/ColorsUtils";
 import { GET_DECEASED } from "../config/api";
-import Cross from "../models/Cross";
-import { Bloom, EffectComposer, DepthOfField, Outline } from '@react-three/postprocessing';
-import Pointer from "../models/Pointer";
+// import Cross from "../models/Cross";
+// import { Bloom, EffectComposer, DepthOfField, Outline } from '@react-three/postprocessing';
+// import Pointer from "../models/Pointer";
 import { useTomb, findTombMeshById } from '../context/TombContext';
 import gsap from "gsap";
-import playIcon from '../assets/play_arrow.svg';
-import { TransitionEffect } from './TransitionEffect';
-import Grass from "./Grass";
-import Grass2 from "./Grass2";
-import Grass3 from "./Grass3";
-import Road from "../models/Road";
-import Button from "./Button";
-import Test from "./Test";
+// import playIcon from '../assets/play_arrow.svg';
+// import { TransitionEffect } from './TransitionEffect';
+// import Grass from "./Grass";
+// import Grass2 from "./Grass2";
+// import Grass3 from "./Grass3";
+// import Road from "../models/Road";
+// import Button from "./Button";
+// import Test from "./Test";
 
 // Définition des couleurs des sections
 const sectionColors = {
@@ -49,13 +49,17 @@ function Scene() {
   const tombId = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTomb, setSelectedTomb] = useState("");
-  const [applicationStart, setApplicationStart] = useState(false)
+  // const [applicationStart, setApplicationStart] = useState(false)
   const { selectTomb, clearSelectedTomb, setSceneElements } = useTomb();
   const [tombDetails, setTombDetails] = useState(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [isSceneLoaded, setIsSceneLoaded] = useState(false);
+  // const [isTransitioning, setIsTransitioning] = useState(false);
+  // const [isSceneLoaded, setIsSceneLoaded] = useState(false);
   const [isShowUi, setIsShowUi] = useState(true)
 
+  function CameraControls() {
+    const { invalidate } = useThree();
+    return <OrbitControls onChange={() => invalidate()} />;
+  }
 
   // console.log('cet tombe est selectionné', selectTomb, 'et', selectedTomb)
 
@@ -154,24 +158,24 @@ function Scene() {
     }
   };
 
-  const handleTopView = () => {
-    if (!camera) return;
-    setIsShowUi(true)
-    const topViewPosition = { x: 0, y: 120, z: 0.001 };
+  // const handleTopView = () => {
+  //   if (!camera) return;
+  //   setIsShowUi(true)
+  //   const topViewPosition = { x: 0, y: 120, z: 0.001 };
 
-    moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
+  //   moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
 
-    if (orbitControlRef.current) {
-      gsap.to(orbitControlRef.current.target, {
-        x: 0,
-        y: 0,
-        z: 0,
-        duration: 1.5,
-        ease: "power2.out",
-        onUpdate: () => orbitControlRef.current.update(),
-      });
-    }
-  };
+  //   if (orbitControlRef.current) {
+  //     gsap.to(orbitControlRef.current.target, {
+  //       x: 0,
+  //       y: 0,
+  //       z: 0,
+  //       duration: 1.5,
+  //       ease: "power2.out",
+  //       onUpdate: () => orbitControlRef.current.update(),
+  //     });
+  //   }
+  // };
 
   const resetCameraPosition = () => {
     if (initialCameraPosition) {
@@ -235,36 +239,36 @@ function Scene() {
 
   const Loading = () => {
     return (
-      <div className="bg-amber-600 z-50 h-full w-full">Chargement de la carte en cours</div>
+      <div className="bg-amber-600 z-60 h-full w-full text-white flex justify-center items-center "><p>Chargement de la carte en cours</p></div>
     )
   }
 
-  const handleStartApplication = () => {
-    setIsTransitioning(true);
-    setApplicationStart(true);
-  };
+  // const handleStartApplication = () => {
+  //   setIsTransitioning(true);
+  //   setApplicationStart(true);
+  // };
 
-  useEffect(() => {
+  // useEffect(() => {
+  //   setIsSceneLoaded(true)
 
-    if (isMobile && !isSceneLoaded) {
-      setApplicationStart(true);
-      setIsSceneLoaded(true)
-    }
-  }, [])
+  //   // if (isMobile && !isSceneLoaded) {
+  //   //   setApplicationStart(true);
+  //   //   setIsSceneLoaded(true)
+  //   // }
+  // }, [])
 
-  const handleTransitionComplete = () => {
-    setIsTransitioning(false);
-    setIsSceneLoaded(true);
-  };
+  // const handleTransitionComplete = () => {
+  //   setIsTransitioning(false);
+  //   setIsSceneLoaded(true);
+  // };
 
-  useEffect(() => {
-    // console.log("Tombes reçues :", tombClones);
-  }, [tombClones]);
+  // useEffect(() => {
+  //   // console.log("Tombes reçues :", tombClones);
+  // }, [tombClones]);
 
   return (
-    <>
-      <div className="main">
-        <div className="fixed h-full w-full" onClick={handleStartApplication}>
+    <div className="main">
+      {/* <div className="fixed h-full w-full" onClick={handleStartApplication}>
           <div
             className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}
           >
@@ -279,110 +283,108 @@ function Scene() {
             </div>
           </div>
 
-          <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
+          <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }} frameloop="demand">
             <group>
               {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
-                {/* <ParticleSystem /> */}
-                {/* <pointLight
+      {/* <ParticleSystem /> */}
+      {/* <pointLight
                   position={[0, 0, 0]}
                   decay={0}
                   intensity={8}
                   color='yellow'
                 /> */}
-                {/* <ambientLight intensity={1} /> */}
-                {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-              {/* </Float> */}
-            </group>
-            {isTransitioning && (
+      {/* <ambientLight intensity={1} /> */}
+      {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
+      {/* </Float> */}
+      {/* </group> */}
+      {/* {isTransitioning && (
               <TransitionEffect
                 isTransitioning={isTransitioning}
                 onTransitionComplete={handleTransitionComplete}
               />
-            )}
-          </Canvas>
-        </div>
+            )} */}
+      {/* </Canvas>
+        </div> */}
 
-        {applicationStart && (
-          <Suspense fallback={<Loading />}>
-            <div className="w-full h-full relative">
-             {!isModalOpen && isMobile && 
-             <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
-                <div className={`w-[416px] h-[76px] ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`} >
-                  <Button btnValue="Passer en vue aérienne"/>
-                </div>
-              </div>}
+      {/* {applicationStart && ( */}
+      <div className="w-full h-full relative">
+        {
+          // !isModalOpen && isMobile &&
+          // <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
+          //   {/* <div className={`w-[416px] h-[76px] ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`} >
+          //         <Button btnValue="Passer en vue aérienne" />
+          //       </div> */}
+          // </div>
+        }
 
-              <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
+        {/* <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1> */}
 
-              <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
-                <UserInterface handleTombFocus={handleTombFocus} />
-              </div>
+        {/* <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
+            <UserInterface handleTombFocus={handleTombFocus} />
+          </div> */}
+        <Suspense fallback={<Loading />}>
+          <Canvas
+            frameloop="demand"
+            shadows
+            camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
+            id="tomb-canvas"
+            className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500 bg-red-500`}
+          >
 
-              <Canvas
-                shadows
-                camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
-                id="tomb-canvas"
-                className={`absolute h-full w-full lg:w-[80%] top-0 left-0 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`}
-              >
-                <group>
-                  <ambientLight intensity={3} />
-                  <Suspense fallback={null}>
-                    <Pointer />
-                    <Entrance />
-                    <Wall />
-                    <Ground />
-                    <Cross />
-                    <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
+            <group>
+              <ambientLight intensity={3} />
+              {/* <Pointer /> */}
+              {/* <Entrance /> */}
+              <Wall />
+              {/* <Ground /> */}
+              {/* <Cross /> */}
+              {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                       <Text fontSize={2} color="white">
                         Vous êtes ici
                       </Text>
-                    </Billboard>
-                    <Road />
-                    {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
-{/* 
-                    <Tombs
-                      setTombClones={setTombClones}
-                      onTombClick={isMobile ? handleTombFocus : handleTombClick}
-                      selectedTombId={selectedTomb}
-                    /> */}
-                    <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
-                  </Suspense>
-                </group>
+                    </Billboard> */}
+              {/* <Road /> */}
+              {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
 
-                <SceneCamera />
-                <MainOrbitControl orbitControlRef={orbitControlRef} />
+              <Tombs
+                setTombClones={setTombClones}
+                onTombClick={isMobile ? handleTombFocus : handleTombClick}
+                selectedTombId={selectedTomb}
+              />
+              {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
+            </group>
 
-                <pointLight
+            <SceneCamera />
+            <MainOrbitControl orbitControlRef={orbitControlRef} />
+            {/* <CameraControls /> */}
+            {/* <pointLight
                   position={[-10, -10, -10]}
                   decay={1}
                   intensity={Math.PI}
                   color='yellow'
-                />
-              </Canvas>
-              <TombModal
+                  /> */}
+
+          </Canvas>
+        </Suspense>
+        <TombModal
                 isOpen={isModalOpen}
                 onClose={() => {
                   setIsModalOpen(false);
                   clearSelectedTomb();
                   resetCameraPosition();
                   setIsShowUi(true)
-                }}
-                tombName={selectedTomb}
-                tombDetails={tombDetails}
-                tombId={tombId}
-                onTombClick={handleTombClick}
-              />
-            </div>
-            <Stats />
-            {/* <Canvas>
-            <Test count={1200}/>
-            <ambientLight intensity={3}/>
-            <Stats/>
-            </Canvas> */}
-          </Suspense>
-        )}
+                  }}
+                  tombName={selectedTomb}
+                  tombDetails={tombDetails}
+                  tombId={tombId}
+                  onTombClick={handleTombClick}
+                  />
+        <Stats />
       </div>
-    </>
+      {/* )} */}
+    </div>
+
+
   );
 }
 
