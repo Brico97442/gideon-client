@@ -21,6 +21,7 @@ import { OrbitControls, Stats, useGLTF } from "@react-three/drei";
 import { useEffect } from "react";
 import { useRef } from "react";
 import * as THREE from 'three';
+import Ground from "./models/Ground";
 
 function App() {
 
@@ -93,9 +94,10 @@ function App() {
     <>
       <div id="canvas" className="w-full h-full" >
         <Canvas frameloop="demand">
-          <ambientLight intensity={0.1} />
+          <ambientLight intensity={5} />
           <directionalLight color="red" position={[0, 0, 5]} />
-          <Instances />
+          <Ground />
+          {/* <Instances /> */}
           {/* {Array.from({ length: 1000 }).map((_, i) => (
             <mesh 
               key={i}
