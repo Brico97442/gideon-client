@@ -15,11 +15,18 @@
 //     </TombProvider>
 //   );
 // }
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import "./App.css";
 import { OrbitControls, Stats } from "@react-three/drei";
 
 function App() {
+
+  function CameraControls() {
+    const { invalidate } = useThree();
+    return <OrbitControls onChange={() => invalidate()} />;
+  }
+  
+
   return (
     <>
       <div id="canvas" className="w-full h-full" >
@@ -31,7 +38,7 @@ function App() {
             <meshStandardMaterial />
           </mesh>
           <Stats />
-          <OrbitControls />
+          <CameraControls />
         </Canvas>
       </div>
     </>
