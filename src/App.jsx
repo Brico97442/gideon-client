@@ -1,47 +1,34 @@
 import { Canvas, useThree } from "@react-three/fiber";
-import "./App.css";
-import { OrbitControls, Stats, useGLTF, Detailed } from "@react-three/drei";
-import { useEffect } from "react";
-import { useRef } from "react";
+import { OrbitControls, Stats, useGLTF } from "@react-three/drei";
+import { useEffect, useState, useRef, useCallback } from "react";
 import * as THREE from "three";
-import Ground from "./models/Ground";
-import { useState } from "react";
+import "./App.css"
 
-function CameraControls() {
-  const { invalidate } = useThree();
-  return <OrbitControls onChange={() => invalidate()} />;
+function CameraControls({ onCameraMove }) {
+  return <OrbitControls onChange={onCameraMove} />;
 }
 
 function Instances({ count = 1000 }) {
   const instancedMeshRef = useRef();
-  const { camera } = useThree();
+  const { camera } = useThree(); // Assure-toi que useThree() est bien dans Instances
   const temp = new THREE.Object3D();
 
-  // Chargement des différents niveaux de détail
   const low = useGLTF("/3d-models/gltf/tomb/01/01_LOD2.glb");
   const mid = useGLTF("/3d-models/gltf/tomb/01/01_LOD1.glb");
   const high = useGLTF("/3d-models/gltf/tomb/01/01_LOD0.glb");
 
-  // État pour suivre quel niveau de détail utiliser
   const [lodLevel, setLodLevel] = useState(high);
 
-  useEffect(() => {
-    if (!instancedMeshRef.current || !low || !mid || !high) return;
-
-    const updateLOD = () => {
-      const distance = camera.position.length();
-      if (distance < 15) {
-        setLodLevel(high);
-      } else if (distance < 30) {
-        setLodLevel(mid);
-      } else {
-        setLodLevel(low);
-      }
-    };
-
-    // Écoute les mouvements de la caméra
-    camera.addEventListener("change", updateLOD);
-    return () => camera.removeEventListener("change", updateLOD);
+  // Fonction de mise à jour du LOD
+  const updateLOD = useCallback(() => {
+    const distance = camera.position.length();
+    if (distance < 15) {
+      setLodLevel(high);
+    } else if (distance < 30) {
+      setLodLevel(mid);
+    } else {
+      setLodLevel(low);
+    }
   }, [camera, low, mid, high]);
 
   useEffect(() => {
@@ -79,24 +66,23 @@ function Instances({ count = 1000 }) {
   }, [lodLevel, count]);
 
   return (
-    <instancedMesh ref={instancedMeshRef} args={[null, null, count]} />
+    <>
+      <instancedMesh ref={instancedMeshRef} args={[null, null, count]} />
+      <CameraControls onCameraMove={updateLOD} />
+    </>
   );
 }
 
 function App() {
-
   return (
-    <>
-      <div id="canvas" className="w-full h-full">
+    <div id="canvas" className="w-screen h-screen">
       <Canvas frameloop="demand">
         <ambientLight intensity={5} />
         <directionalLight color="red" position={[0, 0, 5]} />
         <Instances />
         <Stats />
-        <CameraControls />
       </Canvas>
     </div>
-    </>
   );
 }
 
