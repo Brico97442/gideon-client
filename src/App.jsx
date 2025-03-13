@@ -29,7 +29,7 @@ function App() {
     return <OrbitControls onChange={() => invalidate()} />;
   }
 
-  function Instances({ count = 100000, temp = new THREE.Object3D() }) {
+  function Instances({ count = 1000, temp = new THREE.Object3D() }) {
     const instancedMeshRef = useRef();
     const lodRef = useRef();
     const { camera } = useThree();
