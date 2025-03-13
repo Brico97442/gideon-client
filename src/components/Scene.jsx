@@ -319,6 +319,7 @@ function Scene() {
               </div>
 
               <Canvas
+              frameloop="demand"
                 shadows
                 camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
                 id="tomb-canvas"
