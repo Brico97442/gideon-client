@@ -17,7 +17,7 @@
 // }
 import { Canvas, useThree } from "@react-three/fiber";
 import "./App.css";
-import { OrbitControls, Stats } from "@react-three/drei";
+import { OrbitControls, Stats, useGLTF } from "@react-three/drei";
 import { useEffect } from "react";
 import { useRef } from "react";
 import * as THREE from 'three';
@@ -31,48 +31,42 @@ function App() {
 
   function Instances({ count = 1000, temp = new THREE.Object3D() }) {
     const instancedMeshRef = useRef();
-    const lodRef = useRef();
     const { camera } = useThree();
+    const { scene: tombModel } = useGLTF('/3d-models/gltf/tomb/01.glb');
 
     useEffect(() => {
-      // Créer les géométries LOD
-      const lod = new THREE.LOD();
-      
-      // Niveau de détail élevé - cube normal
-      const highDetailGeometry = new THREE.BoxGeometry(1, 1, 1);
-      const highDetailMaterial = new THREE.MeshPhongMaterial();
-      const highDetailMesh = new THREE.Mesh(highDetailGeometry, highDetailMaterial);
-      
-      // Niveau de détail moyen - cube légèrement simplifié
-      const medDetailGeometry = new THREE.BoxGeometry(0.9, 0.9, 0.9);
-      const medDetailMaterial = new THREE.MeshPhongMaterial();
-      const medDetailMesh = new THREE.Mesh(medDetailGeometry, medDetailMaterial);
-      
-      // Niveau de détail faible - cube très simplifié
-      const lowDetailGeometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
-      const lowDetailMaterial = new THREE.MeshPhongMaterial();
-      const lowDetailMesh = new THREE.Mesh(lowDetailGeometry, lowDetailMaterial);
+      // Assurons-nous que le modèle est chargé
+      if (!tombModel) return;
 
-      // Ajouter les niveaux au LOD
-      lod.addLevel(highDetailMesh, 0);    // Visible de 0 à 50 unités
-      lod.addLevel(medDetailMesh, 50);    // Visible de 50 à 100 unités
-      lod.addLevel(lowDetailMesh, 100);   // Visible au-delà de 100 unités
+      // Créons une géométrie et un matériau à partir du premier mesh du modèle
+      const originalMesh = tombModel.children[0];
+      const geometry = originalMesh.geometry;
+      const material = originalMesh.material;
 
-      lodRef.current = lod;
+      // Configurons l'instancedMesh avec la géométrie et le matériau du modèle
+      instancedMeshRef.current.geometry = geometry;
+      instancedMeshRef.current.material = material;
 
-      // Set positions
+      // Positionnons les instances
       for (let i = 0; i < count; i++) {
         temp.position.set(
           Math.random() * 100 - 50,
-          Math.random() * 100 - 50,
+          Math.random() * 100 - 50, 
           Math.random() * 100 - 50
         );
+        temp.rotation.set(
+          Math.random() * Math.PI,
+          Math.random() * Math.PI,
+          Math.random() * Math.PI
+        );
+        temp.scale.setScalar(Math.random() * 0.5 + 0.5);
         temp.updateMatrix();
         instancedMeshRef.current.setMatrixAt(i, temp.matrix);
       }
-      // Update the instance
+
+      // Mettons à jour la matrice d'instances
       instancedMeshRef.current.instanceMatrix.needsUpdate = true;
-    }, []);
+    }, [tombModel, count]);
 
     useEffect(() => {
       // Mettre à jour les LODs en fonction de la position de la caméra
