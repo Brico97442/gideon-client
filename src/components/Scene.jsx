@@ -279,8 +279,8 @@ function Scene() {
             </div>
           </div>
 
-          {/* <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}> */}
-            {/* <group> */}
+          <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
+            <group>
               {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
                 {/* <ParticleSystem /> */}
                 {/* <pointLight
@@ -292,14 +292,14 @@ function Scene() {
                 {/* <ambientLight intensity={1} /> */}
                 {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
               {/* </Float> */}
-            {/* </group> */}
-            {/* {isTransitioning && (
+            </group>
+            {isTransitioning && (
               <TransitionEffect
                 isTransitioning={isTransitioning}
                 onTransitionComplete={handleTransitionComplete}
               />
-            )} */}
-          {/* </Canvas> */}
+            )}
+          </Canvas>
         </div>
 
         {applicationStart && (
@@ -339,12 +339,12 @@ function Scene() {
                     </Billboard>
                     <Road />
                     {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
-
+{/* 
                     <Tombs
                       setTombClones={setTombClones}
                       onTombClick={isMobile ? handleTombFocus : handleTombClick}
                       selectedTombId={selectedTomb}
-                    />
+                    /> */}
                     <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
                   </Suspense>
                 </group>
