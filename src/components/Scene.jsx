@@ -279,9 +279,9 @@ function Scene() {
             </div>
           </div>
 
-          <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
-            <group>
-              <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+          {/* <Canvas shadows camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}> */}
+            {/* <group> */}
+              {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
                 {/* <ParticleSystem /> */}
                 {/* <pointLight
                   position={[0, 0, 0]}
@@ -291,15 +291,15 @@ function Scene() {
                 /> */}
                 {/* <ambientLight intensity={1} /> */}
                 {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-              </Float>
-            </group>
-            {isTransitioning && (
+              {/* </Float> */}
+            {/* </group> */}
+            {/* {isTransitioning && (
               <TransitionEffect
                 isTransitioning={isTransitioning}
                 onTransitionComplete={handleTransitionComplete}
               />
-            )}
-          </Canvas>
+            )} */}
+          {/* </Canvas> */}
         </div>
 
         {applicationStart && (
@@ -319,7 +319,6 @@ function Scene() {
               </div>
 
               <Canvas
-              frameloop="demand"
                 shadows
                 camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
                 id="tomb-canvas"
