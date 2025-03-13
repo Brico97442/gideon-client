@@ -29,10 +29,10 @@ function App() {
   return (
     <>
       <div id="canvas" className="w-full h-full" >
-        <Canvas frameloop="always">
+        <Canvas frameloop="demand">
           <ambientLight intensity={0.1} />
           <directionalLight color="red" position={[0, 0, 5]} />
-          {Array.from({ length: 100 }).map((_, i) => (
+          {Array.from({ length: 1000 }).map((_, i) => (
             <mesh 
               key={i}
               position={[
@@ -52,7 +52,7 @@ function App() {
             </mesh>
           ))}
           <Stats />
-          <OrbitControls />
+          <CameraControls />
         </Canvas>
       </div>
     </>
