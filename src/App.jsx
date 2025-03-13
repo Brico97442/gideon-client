@@ -69,6 +69,7 @@ function App() {
             <boxGeometry />
             <meshStandardMaterial />
           </mesh>
+          
           <mesh>
             <boxGeometry />
             <meshStandardMaterial />
