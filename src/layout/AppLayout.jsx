@@ -1,13 +1,10 @@
-import Scene2 from "../components/Scene2";
-import { useState } from "react";
-
-// import { useContext } from "react";
+import { Suspense } from "react";
+import Scene from "../components/Scene";
 
 function AppLayout() {
     return (
-        <main className="fixed left-0 top-0 min-w-screen h-screen w-full ">
-            {/* <Scene /> */}
-
+        <main className="fixed left-0 top-0 min-w-screen h-screen w-full">
+            <Scene />
         </main>
     );
 }
