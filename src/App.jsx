@@ -39,6 +39,7 @@ function App() {
           </mesh>
           <Stats />
           <CameraControls />
+          
         </Canvas>
       </div>
     </>
