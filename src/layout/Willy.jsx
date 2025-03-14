@@ -9,7 +9,7 @@ function CameraControls({ onCameraMove }) {
 
 function Instances({ count = 1000 }) {
   const instancedMeshRef = useRef();
-  const { camera } = useThree(); // Assure-toi que useThree() est bien dans Instances
+  const { camera, scene  } = useThree(); // Assure-toi que useThree() est bien dans Instances
   const temp = new THREE.Object3D();
 
   const low = useGLTF("/3d-models/gltf/tomb/01/01low.glb");
@@ -20,14 +20,34 @@ function Instances({ count = 1000 }) {
 
   // Fonction de mise à jour du LOD
   const updateLOD = useCallback(() => {
-    const distance = camera.position.length();
-    if (distance < 15) {
+    // const distance = camera.position.length();
+    // if (distance < 15) {
+    //   setLodLevel(high);
+    // } else if (distance < 30) {
+    //   setLodLevel(mid);
+    // } else {
+    //   setLodLevel(low);
+    // }
+    let camDistance = camera.position.length();
+    let closestDistance = Infinity;
+
+    // 📌 Vérifie la proximité avec les autres objets
+    scene.traverse((object) => {
+      if (object.isMesh && object !== instancedMeshRef.current) {
+        const distance = camera.position.distanceTo(object.position);
+        if (distance < closestDistance) closestDistance = distance;
+      }
+    });
+
+    // 🔹 Applique le bon LOD
+    if (camDistance < 15 || closestDistance < 5) {
       setLodLevel(high);
-    } else if (distance < 30) {
+    } else if (camDistance < 30 || closestDistance < 15) {
       setLodLevel(mid);
     } else {
       setLodLevel(low);
     }
+
   }, [camera, low, mid, high]);
 
   useEffect(() => {
