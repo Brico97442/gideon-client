@@ -8,7 +8,7 @@ import { useRef } from "react";
 // import Entrance from "../models/Entrance";
 import Wall from "../models/Wall";
 // import Ground from "../models/Ground";
-// import UserInterface from "./UserInterface";
+import UserInterface from "./UserInterface";
 import TombModal from "./TombModal";
 import Tombs from "../models/Tombs";
 import { useSearchParams } from "react-router-dom";
@@ -319,9 +319,9 @@ function Scene() {
 
         {/* <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1> */}
 
-        {/* <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
+         <div className={`transition-opacity duration-[1500] z-50`} > 
             <UserInterface handleTombFocus={handleTombFocus} />
-          </div> */}
+          </div> 
         {/* <Suspense fallback={<Loading />}> */}
           <Canvas
             // frameloop="demand"
