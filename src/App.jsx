@@ -16,7 +16,6 @@ export default function App() {
   );
 }
 
-
 // import { Canvas, useThree } from "@react-three/fiber";
 // import { OrbitControls, Stats, useGLTF } from "@react-three/drei";
 // import { useEffect, useState, useRef, useCallback } from "react";
@@ -92,7 +91,7 @@ export default function App() {
 //   );
 // }
 
-// export default function App() {
+// function App() {
 //   return (
 //     <div id="canvas" className="w-screen h-screen">
 //       <Canvas frameloop="demand">
@@ -104,3 +103,5 @@ export default function App() {
 //     </div>
 //   );
 // }
+
+// export default App;
