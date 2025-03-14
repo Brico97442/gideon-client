@@ -1,6 +1,7 @@
 import gsap from "gsap";
 import * as THREE from "three"; 
 import { highlightTombSection, addOutlineToTomb } from '../utils/ColorsUtils';
+
 export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, target) => {
   if (!camera || !orbitControlRef.current) return;
 
