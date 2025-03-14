@@ -317,11 +317,11 @@ function Scene() {
           // </div>
         }
 
-        {/* <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1> */}
+        <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
 
-         <div className={`transition-opacity duration-[1500] z-50`} > 
-            <UserInterface handleTombFocus={handleTombFocus} />
-          </div> 
+        <div className={`transition-opacity duration-[1500] z-50`} >
+          <UserInterface handleTombFocus={handleTombFocus} />
+        </div>
         <Suspense fallback={<Loading />}>
           <Canvas
             frameloop="demand"
@@ -355,32 +355,32 @@ function Scene() {
               {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
             </group>
 
-            <SceneCamera frustumCulled={false}/>
-            <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false}/>
+            <SceneCamera frustumCulled={false} />
+            <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false} />
             {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
             <pointLight
-                  position={[-10, -10, -10]}
-                  decay={1}
-                  intensity={Math.PI}
-                  color='yellow'
-                  />
+              position={[-10, -10, -10]}
+              decay={1}
+              intensity={Math.PI}
+              color='yellow'
+            />
 
-        <Stats />
+            <Stats />
           </Canvas>
         </Suspense>
         <TombModal
-                isOpen={isModalOpen}
-                onClose={() => {
-                  setIsModalOpen(false);
-                  clearSelectedTomb();
-                  resetCameraPosition();
-                  setIsShowUi(true)
-                  }}
-                  tombName={selectedTomb}
-                  tombDetails={tombDetails}
-                  tombId={tombId}
-                  onTombClick={handleTombClick}
-                  />
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            clearSelectedTomb();
+            resetCameraPosition();
+            setIsShowUi(true)
+          }}
+          tombName={selectedTomb}
+          tombDetails={tombDetails}
+          tombId={tombId}
+          onTombClick={handleTombClick}
+        />
       </div>
       {/* )} */}
     </div>
