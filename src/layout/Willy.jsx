@@ -21,9 +21,9 @@ function Instances({ count = 1000 }) {
   // Fonction de mise à jour du LOD
   const updateLOD = useCallback(() => {
     const distance = camera.position.length();
-    if (distance < 2) {
+    if (distance < 15) {
       setLodLevel(high);
-    } else if (distance < 10) {
+    } else if (distance < 30) {
       setLodLevel(mid);
     } else {
       setLodLevel(low);
