@@ -355,7 +355,7 @@ function Scene() {
             </group>
 
             <SceneCamera />
-            <MainOrbitControl orbitControlRef={orbitControlRef} />
+            <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false}/>
             {/* <CameraControls /> */}
             {/* <pointLight
                   position={[-10, -10, -10]}

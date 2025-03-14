@@ -14,11 +14,11 @@ const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
 
   // Utilisation de useMemo pour charger les modèles une seule fois
   const tombModels = useMemo(() => ({
-    1: useGLTF("/3d-models/gltf/tomb/01lowtest.glb"),
-    2: useGLTF("/3d-models/gltf/tomb/02.glb"),
-    3: useGLTF("/3d-models/gltf/tomb/03.glb"),
-    4: useGLTF("/3d-models/gltf/tomb/04.glb"),
-    5: useGLTF("/3d-models/gltf/tomb/05.glb"),
+    1: useGLTF("/3d-models/gltf/tomb/01/01low.glb"),
+    2: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
+    3: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
+    4: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
+    5: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
   }), []);
 
   // Organiser les données de tombes par type pour l'instanciation
