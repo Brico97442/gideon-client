@@ -66,7 +66,7 @@ function Instances({ count = 1000 }) {
 
   return (
     <>
-      <instancedMesh ref={instancedMeshRef} args={[null, null, count]} />
+      <instancedMesh ref={instancedMeshRef} args={[null, null, count]} frustumCulled={false} />
       <CameraControls onCameraMove={updateLOD} />
     </>
   );
