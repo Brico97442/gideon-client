@@ -101,17 +101,17 @@ const TombModal = ({ isOpen, onClose }) => {
 
   return (
     <div id="ui" className=" lg:block lg:w-auto absolute right-0 mx-2 py-2 lg:mr-3 lg:py-6 h-full z-50">
-      <div className="w-full lg:w-[501.5px] lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] pt-7 h-full relative">
-        <img src={modalRightBackground} alt="modal droite background" width={501.5} className="h-full w-[501.5px] object-fill absolute top-0 left-0" />
+      <div className="w-full lg:w-[400px] lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] pt-7 h-full relative">
+        <img src={modalRightBackground} alt="modal droite background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" />
         <div className="modal-shape-container relative font-orbitron flex flex-col items-center h-full text-white">
           <div className="flex flex-col items-center h-full">
             <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center items-center p-2 rounded-xl`}>
-              <QRCodeCanvas value={qrValue} size={200} bgColor="#C7D64F" fgColor="#174C53" />
+              <QRCodeCanvas value={qrValue} size={150} bgColor="#C7D64F" fgColor="#174C53" />
             </div>
-            <div className="flex h-full w-auto lg:w-full flex-col px-[19px] bg-blue-600/55 mt-8">
-              <h2 className="text-[24px]">Emplacement n°{selectedTomb}</h2>
+            <div className="flex h-full w-auto lg:w-full flex-col px-[19px] mt-8">
+              <h2 className="text-[22px]">Emplacement n°{selectedTomb}</h2>
               {tombDetails && (
-                <div className="my-[22px] box-border overflow-hidden bg-teal-600 ">
+                <div className="my-[22px] box-border overflow-hidden">
                   <h3 className='mb-3'>Ici repose</h3>
                   <div className='h-full flex flex-col'>
                     <ul className="space-y-2 flex-col max-h-[30vh] overflow-y-auto">

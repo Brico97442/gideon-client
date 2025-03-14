@@ -211,8 +211,8 @@ function UserInterface({ handleTombFocus }) {
 
     return (
         <div id="ui" className="hidden lg:block absolute left-0 pl-3 py-6 h-full z-50">
-            <div className="w-[501.5px] pl-[38.5px] pr-[48.5px] h-full relative">
-                <img src={modalBackground} alt="modal gauche background" width={501.5} className="h-full w-[501.5px] object-fill absolute top-0 left-0" />
+            <div className="w-[400px] pl-[38.5px] pr-[48.5px] h-full relative">
+                <img src={modalBackground} alt="modal gauche background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" />
 
                 <h1 className="absolute -left-[60px] top-[11vh] font-bold text-[38px] -rotate-90 leading-none">GIDEON</h1>
 

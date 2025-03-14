@@ -322,9 +322,10 @@ function Scene() {
          <div className={`transition-opacity duration-[1500] z-50`} > 
             <UserInterface handleTombFocus={handleTombFocus} />
           </div> 
-        {/* <Suspense fallback={<Loading />}> */}
+        <Suspense fallback={<Loading />}>
           <Canvas
             // frameloop="demand"
+            style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
             shadows
             camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
             id="tomb-canvas"
@@ -356,17 +357,17 @@ function Scene() {
 
             {/* <SceneCamera /> */}
             {/* <MainOrbitControl orbitControlRef={orbitControlRef} /> */}
-            <CameraControls />
-            {/* <pointLight
+            <CameraControls orbitControlRef={orbitControlRef} />
+            <pointLight
                   position={[-10, -10, -10]}
                   decay={1}
                   intensity={Math.PI}
                   color='yellow'
-                  /> */}
+                  />
 
         <Stats />
           </Canvas>
-        {/* </Suspense> */}
+        </Suspense>
         <TombModal
                 isOpen={isModalOpen}
                 onClose={() => {
