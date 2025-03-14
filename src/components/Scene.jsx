@@ -324,7 +324,7 @@ function Scene() {
           </div> 
         <Suspense fallback={<Loading />}>
           <Canvas
-            // frameloop="demand"
+            frameloop="demand"
             style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
             shadows
             camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
@@ -355,9 +355,9 @@ function Scene() {
               {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
             </group>
 
-            {/* <SceneCamera /> */}
-            {/* <MainOrbitControl orbitControlRef={orbitControlRef} /> */}
-            <CameraControls orbitControlRef={orbitControlRef} />
+            <SceneCamera frustumCulled={false}/>
+            <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false}/>
+            {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
             <pointLight
                   position={[-10, -10, -10]}
                   decay={1}
