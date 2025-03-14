@@ -354,8 +354,10 @@ function Scene() {
               {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
             </group>
 
-            {/* <SceneCamera /> */}
-            {/* <MainOrbitControl orbitControlRef={orbitControlRef} /> */}
+           
+            <SceneCamera />
+            <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false}/>
+
             {/* <CameraControls /> */}
             {/* <pointLight
                   position={[-10, -10, -10]}

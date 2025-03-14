@@ -6,8 +6,33 @@ import { GET_TOMBS } from "../config/api";
 
 const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
   const [tombsData, setTombsData] = useState([]);
-  const { camera } = useThree();
-  const tombModels = useMemo(() => {
+  const [selectedTomb, setSelectedTomb] = useState(null);
+  const instancesRef = useRef({});
+  const tombRefs = useRef({});
+  const materialsRef = useRef({}); // Stockage des matériaux originaux par type de tombe
+  const coloredMaterialsRef = useRef({}); // Stockage des matériaux colorés
+
+  // Utilisation de useMemo pour charger les modèles une seule fois
+  const tombModels = useMemo(() => ({
+    1: useGLTF("/3d-models/gltf/tomb/01/01low.glb"),
+    2: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
+    3: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
+    4: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
+    5: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
+  }), []);
+
+  // Organiser les données de tombes par type pour l'instanciation
+  const instancedTombsData = useMemo(() => {
+    const grouped = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+    tombsData.forEach(tomb => {
+      grouped[tomb.type].push(tomb);
+    });
+    return grouped;
+  }, [tombsData]);
+
+  // Préparer les géométries et matériaux pour chaque type de tombe
+  const tombGeometriesAndMaterials = useMemo(() => {
+    const result = {};
     
     const models = {};
     
