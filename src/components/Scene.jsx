@@ -322,9 +322,9 @@ function Scene() {
         {/* <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
             <UserInterface handleTombFocus={handleTombFocus} />
           </div> */}
-        <Suspense fallback={<Loading />}>
+        {/* <Suspense fallback={<Loading />}> */}
           <Canvas
-            frameloop="demand"
+            // frameloop="demand"
             shadows
             camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
             id="tomb-canvas"
@@ -332,30 +332,30 @@ function Scene() {
           >
 
             <group>
-              <ambientLight intensity={3} />
               {/* <Pointer /> */}
               {/* <Entrance /> */}
-              <Wall />
+              {/* <Wall /> */}
               {/* <Ground /> */}
               {/* <Cross /> */}
               {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                       <Text fontSize={2} color="white">
-                        Vous êtes ici
+                      Vous êtes ici
                       </Text>
-                    </Billboard> */}
+                      </Billboard> */}
               {/* <Road /> */}
               {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
-
+              <ambientLight intensity={3} />
               <Tombs
                 setTombClones={setTombClones}
                 onTombClick={isMobile ? handleTombFocus : handleTombClick}
                 selectedTombId={selectedTomb}
+                camera={camera}
               />
               {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
             </group>
 
-            <SceneCamera />
-            <MainOrbitControl orbitControlRef={orbitControlRef} />
+            {/* <SceneCamera /> */}
+            {/* <MainOrbitControl orbitControlRef={orbitControlRef} /> */}
             {/* <CameraControls /> */}
             {/* <pointLight
                   position={[-10, -10, -10]}
@@ -364,8 +364,9 @@ function Scene() {
                   color='yellow'
                   /> */}
 
+        <Stats />
           </Canvas>
-        </Suspense>
+        {/* </Suspense> */}
         <TombModal
                 isOpen={isModalOpen}
                 onClose={() => {
@@ -379,7 +380,6 @@ function Scene() {
                   tombId={tombId}
                   onTombClick={handleTombClick}
                   />
-        <Stats />
       </div>
       {/* )} */}
     </div>
