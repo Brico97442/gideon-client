@@ -46,6 +46,7 @@ const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
       medium: useGLTF("/3d-models/gltf/tomb/02/02mid.glb"),
       high: useGLTF("/3d-models/gltf/tomb/02/02high.glb"),
     },
+
   }), []);
 
   // Vérification pour s'assurer que tous les modèles sont chargés
