@@ -356,7 +356,7 @@ function Scene() {
 
             {/* <SceneCamera /> */}
             {/* <MainOrbitControl orbitControlRef={orbitControlRef} /> */}
-            {/* <CameraControls /> */}
+            <CameraControls />
             {/* <pointLight
                   position={[-10, -10, -10]}
                   decay={1}
