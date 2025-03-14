@@ -91,7 +91,6 @@ export const highlightTombSection = (tombClones, selectedTombId, sectionColors) 
         }
         child.material.color.set('#FFA500'); // Orange vif pour la tombe sélectionnée
         // child.material.emissive.set('#FF4500'); // Ajouter un effet lumineux
-  
       }
     });
   });
@@ -122,7 +121,6 @@ export const addOutlineToTomb = (tombClones, selectedTombId) => {
         // Cloner le matériau
         outlineClone.material = child.material.clone();
         
-      
         outlineClone.userData.isOutlineClone = true;
         
         // Appliquer l'effet d'outline
@@ -152,3 +150,6 @@ export const addOutlineToTomb = (tombClones, selectedTombId) => {
     });
   });
 };
+
+// Exporter les deux fonctions
+export { highlightTombSection as default };
