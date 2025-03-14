@@ -8,7 +8,7 @@ import { useRef } from "react";
 // import Entrance from "../models/Entrance";
 import Wall from "../models/Wall";
 // import Ground from "../models/Ground";
-// import UserInterface from "./UserInterface";
+import UserInterface from "./UserInterface";
 import TombModal from "./TombModal";
 import Tombs from "../models/Tombs";
 import { useSearchParams } from "react-router-dom";
@@ -319,12 +319,12 @@ function Scene() {
 
         {/* <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1> */}
 
-        {/* <div className={`transition-opacity duration-[1500] z-50 ${isSceneLoaded ? 'opacity-100' : 'opacity-0'}`} >
+         <div className={`transition-opacity duration-[1500] z-50`} > 
             <UserInterface handleTombFocus={handleTombFocus} />
-          </div> */}
-        <Suspense fallback={<Loading />}>
+          </div> 
+        {/* <Suspense fallback={<Loading />}> */}
           <Canvas
-            frameloop="demand"
+            // frameloop="demand"
             shadows
             camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
             id="tomb-canvas"
@@ -332,30 +332,32 @@ function Scene() {
           >
 
             <group>
-              <ambientLight intensity={3} />
               {/* <Pointer /> */}
               {/* <Entrance /> */}
-              <Wall />
+              {/* <Wall /> */}
               {/* <Ground /> */}
               {/* <Cross /> */}
               {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                       <Text fontSize={2} color="white">
-                        Vous êtes ici
+                      Vous êtes ici
                       </Text>
-                    </Billboard> */}
+                      </Billboard> */}
               {/* <Road /> */}
               {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
-
+              <ambientLight intensity={3} />
               <Tombs
                 setTombClones={setTombClones}
                 onTombClick={isMobile ? handleTombFocus : handleTombClick}
                 selectedTombId={selectedTomb}
+                camera={camera}
               />
               {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
             </group>
 
+           
             <SceneCamera />
             <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false}/>
+
             {/* <CameraControls /> */}
             {/* <pointLight
                   position={[-10, -10, -10]}
@@ -364,8 +366,9 @@ function Scene() {
                   color='yellow'
                   /> */}
 
+        <Stats />
           </Canvas>
-        </Suspense>
+        {/* </Suspense> */}
         <TombModal
                 isOpen={isModalOpen}
                 onClose={() => {
@@ -379,7 +382,6 @@ function Scene() {
                   tombId={tombId}
                   onTombClick={handleTombClick}
                   />
-        <Stats />
       </div>
       {/* )} */}
     </div>
