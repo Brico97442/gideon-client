@@ -4,22 +4,29 @@ import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { GET_TOMBS } from "../config/api";
 import { highlightTombSection, addOutlineToTomb } from '../utils/ColorsUtils';
+import  MainOrbitControl  from '../utils/MainOrbitControl';
 
 const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
   const [tombsData, setTombsData] = useState([]);
   const [selectedTomb, setSelectedTomb] = useState(null);
   const instancesRef = useRef({});
   const tombRefs = useRef({});
-  const materialsRef = useRef({});
-  
-  // Utiliser un useRef pour stocker les niveaux LOD au lieu d'un useState
-  // Cela évite les re-rendus inutiles
+  const cameraPositionRef = useRef(new THREE.Vector3());
+  const needsLODUpdateRef = useRef(true);
+
+  // Niveau LOD pour chaque tombe
   const tombLODLevels = useRef({});
-  
-  // Utiliser le hook useThree pour accéder à la caméra
+
+  // Accès à la caméra
   const { camera } = useThree();
-  
-  // Mémoriser les modèles 3D pour éviter les rechargements
+
+  // Définition des seuils de distance pour les niveaux LOD
+  const LOD_THRESHOLDS = {
+    HIGH: 10,
+    MEDIUM: 30
+  };
+
+  // Modèles 3D mémorisés
   const tombModels = useMemo(() => ({
     1: {
       low: useGLTF("/3d-models/gltf/tomb/01/01low.glb"),
@@ -49,7 +56,7 @@ const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
 
   }), []);
 
-  // Vérification pour s'assurer que tous les modèles sont chargés
+  // Vérification des modèles
   const hasAllModels = useMemo(() => {
     for (const type in tombModels) {
       for (const level of ['low', 'medium', 'high']) {
@@ -59,13 +66,13 @@ const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
     return true;
   }, [tombModels]);
 
-  // Pré-traiter les géométries et matériaux
+  // Extraction des géométries et matériaux
   const tombGeometriesAndMaterials = useMemo(() => {
     const result = {};
-    
+
     for (const [type, models] of Object.entries(tombModels)) {
       result[type] = {};
-      
+
       for (const [lodLevel, model] of Object.entries(models)) {
         const meshes = [];
         model.scene.traverse((child) => {
@@ -80,11 +87,11 @@ const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
         result[type][lodLevel] = meshes;
       }
     }
-    
+
     return result;
   }, [tombModels]);
 
-  // Regrouper les tombes par type
+  // Regroupement des tombes par type
   const instancedTombsData = useMemo(() => {
     const grouped = { 1: [], 2: [], 3: [], 4: [], 5: [] };
     tombsData.forEach(tomb => {
@@ -93,260 +100,300 @@ const Tombs = ({ setTombClones, onTombClick, selectedTombId }) => {
     return grouped;
   }, [tombsData]);
 
-  // Fonction pour déterminer le niveau de LOD
+  // Fonction pour déterminer le niveau LOD
   const getLODLevel = (distance) => {
-    if (distance < 15) return 'high';
-    if (distance < 30) return 'medium';
+    if (distance < LOD_THRESHOLDS.HIGH) return 'high';
+    if (distance < LOD_THRESHOLDS.MEDIUM) return 'medium';
     return 'low';
   };
 
-  // Fonction pour une transition plus douce entre les niveaux LOD
-  const smoothLODTransition = (oldLevel, newLevel, distance) => {
-    // Ajouter un peu d'hystérésis pour éviter les oscillations
-    const transitionBuffer = 2;
-    
-    if (oldLevel === 'low' && newLevel === 'medium') {
-      return distance < 28 ? 'medium' : 'low';
-    }
-    
-    if (oldLevel === 'medium' && newLevel === 'low') {
-      return distance > 32 ? 'low' : 'medium';
-    }
-    
-    if (oldLevel === 'medium' && newLevel === 'high') {
-      return distance < 13 ? 'high' : 'medium';
-    }
-    
-    if (oldLevel === 'high' && newLevel === 'medium') {
-      return distance > 17 ? 'medium' : 'high';
-    }
-    
-    return newLevel;
-  };
-
-  // Utiliser useFrame au lieu de requestAnimationFrame
-  // Cela s'intègre mieux avec Three.js et React
-  useFrame(() => {
+  // Mise à jour des LOD lorsque la caméra bouge
+  const updateLODLevels = () => {
     if (tombsData.length === 0) return;
-    
-    // Mettre à jour les LOD moins fréquemment pour améliorer les performances
-    if (Math.random() > 0.05) return; // Exécuter environ 5% du temps
-    
+
     const cameraPosition = camera.position;
-    const updates = {};
-    let changed = false;
-    
-    // Mettre à jour par batch pour éviter trop de calculs
-    const batchSize = Math.min(50, tombsData.length);
-    const startIndex = Math.floor(Math.random() * Math.max(1, tombsData.length - batchSize));
-    const batch = tombsData.slice(startIndex, startIndex + batchSize);
-    
-    batch.forEach(tomb => {
+    let hasChanges = false;
+
+    // Optimisation: échantillonnage - traiter un sous-ensemble de tombes à chaque fois
+
+    const batchSize = 25; // Nombre de tombes à traiter par batch
+    const totalTombs = tombsData.length;
+
+    // Diviser les tombes en batches et traiter un batch différent à chaque appel
+    const batchIndex = Math.floor(Math.random() * Math.max(1, Math.ceil(totalTombs / batchSize)));
+    const startIndex = batchIndex * batchSize;
+    const endIndex = Math.min(startIndex + batchSize, totalTombs);
+
+    const tombBatch = tombsData.slice(startIndex, endIndex);
+
+    // Traiter la tombe sélectionnée en priorité si elle existe
+    if (selectedTombId) {
+      const selectedTombData = tombsData.find(tomb => tomb.id === selectedTombId);
+      if (selectedTombData && tombLODLevels.current[selectedTombId] !== 'high') {
+        tombLODLevels.current[selectedTombId] = 'high';
+        hasChanges = true;
+      }
+    }
+
+    // Traiter le batch courant
+    tombBatch.forEach(tomb => {
+      // Ignorer la tombe sélectionnée car déjà traitée
+      if (tomb.id === selectedTombId) return;
+
       const position = new THREE.Vector3(
         tomb.tombTransform.position[0],
         tomb.tombTransform.position[2],
         -tomb.tombTransform.position[1]
       );
-      
+
       const distance = position.distanceTo(cameraPosition);
-      const rawLODLevel = getLODLevel(distance);
-      const currentLODLevel = tombLODLevels.current[tomb.id] || 'low';
-      const newLODLevel = smoothLODTransition(currentLODLevel, rawLODLevel, distance);
-      
-      // Mettre à jour uniquement si le niveau LOD a changé
+      const newLODLevel = getLODLevel(distance);
+
       if (tombLODLevels.current[tomb.id] !== newLODLevel) {
-        updates[tomb.id] = newLODLevel;
-        changed = true;
+        tombLODLevels.current[tomb.id] = newLODLevel;
+        hasChanges = true;
       }
     });
-    
-    if (changed) {
-      // Mettre à jour les niveaux LOD
-      Object.entries(updates).forEach(([id, level]) => {
-        tombLODLevels.current[id] = level;
-      });
-      
-      // Forcer le re-rendu
+
+    // Déclencher un re-rendu uniquement si nécessaire
+    if (hasChanges) {
       setTombsData([...tombsData]);
     }
-  });
 
-  // Récupérer les données des tombes
-  const fetchTombs = async () => {
-    try {
-      const response = await fetch(GET_TOMBS);
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      
-      const flattenedTombs = [];
-      data.forEach((section) => {
-        section.tombs.forEach((tomb) => {
-          flattenedTombs.push({
-            ...tomb,
-            sectionId: section.id
-          });
-        });
-      });
-      
-      setTombsData(flattenedTombs);
-
-      const tombClonesArr = [];
-      if (!window.tombsSystem) window.tombsSystem = {};
-      window.tombsSystem.tombPositions = {};
-      
-      data.forEach((section) => {
-        section.tombs.forEach((tomb) => {
-          const tombDummy = new THREE.Object3D();
-          
-          const position = [
-            tomb.tombTransform.position[0],
-            tomb.tombTransform.position[2],
-            -tomb.tombTransform.position[1]
-          ];
-          
-          tombDummy.position.set(...position);
-          tombDummy.rotation.set(
-            tomb.tombTransform.rotation[0],
-            tomb.tombTransform.rotation[2],
-            tomb.tombTransform.rotation[1]
-          );
-          
-          tombDummy.userData = {
-            clickable: true,
-            id: tomb.id,
-            sectionId: section.id,
-            type: tomb.type,
-            isMesh: true
-          };
-          
-          window.tombsSystem.tombPositions[tomb.id] = {
-            x: position[0],
-            y: position[1],
-            z: position[2],
-            sectionId: section.id,
-            type: tomb.type
-          };
-          
-          tombClonesArr.push(tombDummy);
-        });
-      });
-
-      window.tombsSystem.tombClones = tombClonesArr;
-      setTombClones(tombClonesArr);
-      
-      // Initialiser les niveaux LOD
-      flattenedTombs.forEach(tomb => {
-        // Initialiser tous les LOD à 'low' pour une première performance optimale
-        tombLODLevels.current[tomb.id] = 'low';
-      });
-    } catch (error) {
-      console.error("Erreur lors de la récupération des tombes :", error);
+    // Réinitialiser les flags
+    needsLODUpdateRef.current = false;
+    if (window.tombsSystem) {
+      window.tombsSystem.needsLODUpdate = false;
     }
   };
 
-  useEffect(() => {
-    fetchTombs();
-  }, []);
+  // Vérifier si une mise à jour LOD est nécessaire
+  useFrame(() => {
+    // Vérifier d'abord si une mise à jour a été déclenchée par l'événement de caméra
+    if (window.tombsSystem && window.tombsSystem.needsLODUpdate) {
+      cameraPositionRef.current.copy(camera.position);
+      updateLODLevels();
+      return;
+    }
 
-  // Gérer la sélection de tombe
+    // Vérifier également si la caméra a bougé significativement
+    // (filet de sécurité pour les mouvements qui ne déclenchent pas l'événement)
+    if (camera.position.distanceToSquared(cameraPositionRef.current) > 0.5) {
+      cameraPositionRef.current.copy(camera.position);
+      needsLODUpdateRef.current = true;
+    }
+
+    // Mettre à jour les LOD si nécessaire
+    if (needsLODUpdateRef.current) {
+      updateLODLevels();
+    }
+  });
+
+  // Récupération des données des tombes
+  useEffect(() => {
+    const fetchTombs = async () => {
+      try {
+        const response = await fetch(GET_TOMBS);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+
+        // Transformation des données
+        const flattenedTombs = [];
+        data.forEach((section) => {
+          section.tombs.forEach((tomb) => {
+            flattenedTombs.push({
+              ...tomb,
+              sectionId: section.id
+            });
+          });
+        });
+
+        setTombsData(flattenedTombs);
+
+        // Préparation des clones pour le système de détection
+        const tombClonesArr = [];
+        if (!window.tombsSystem) window.tombsSystem = {};
+        window.tombsSystem.tombPositions = {};
+        window.tombsSystem.needsLODUpdate = false; // Initialiser le flag pour les mises à jour LOD
+
+        data.forEach((section) => {
+          section.tombs.forEach((tomb) => {
+            const tombDummy = new THREE.Object3D();
+
+            const position = [
+              tomb.tombTransform.position[0],
+              tomb.tombTransform.position[2],
+              -tomb.tombTransform.position[1]
+            ];
+
+            tombDummy.position.set(...position);
+            tombDummy.rotation.set(
+              tomb.tombTransform.rotation[0],
+              tomb.tombTransform.rotation[2],
+              tomb.tombTransform.rotation[1]
+            );
+
+            tombDummy.userData = {
+              clickable: true,
+              id: tomb.id,
+              sectionId: section.id,
+              type: tomb.type,
+              isMesh: true
+            };
+
+            window.tombsSystem.tombPositions[tomb.id] = {
+              x: position[0],
+              y: position[1],
+              z: position[2],
+              sectionId: section.id,
+              type: tomb.type
+            };
+
+            tombClonesArr.push(tombDummy);
+          });
+        });
+
+        window.tombsSystem.tombClones = tombClonesArr;
+        setTombClones(tombClonesArr);
+
+        // Initialisation des niveaux LOD
+        flattenedTombs.forEach(tomb => {
+          tombLODLevels.current[tomb.id] = 'low';
+        });
+
+        // Force une mise à jour initiale des LOD
+        cameraPositionRef.current.copy(camera.position);
+        needsLODUpdateRef.current = true;
+      } catch (error) {
+        console.error("Erreur lors de la récupération des tombes:", error);
+      }
+    };
+
+    fetchTombs();
+  }, [camera]);
+
+  // Gestion de la sélection de tombe
   useEffect(() => {
     if (selectedTombId && window.tombsSystem && tombsData.length > 0) {
       setSelectedTomb(selectedTombId);
       window.tombsSystem.selectedTombId = selectedTombId;
 
-      // Forcer le niveau LOD à 'high' pour la tombe sélectionnée
+      // Forcer le niveau LOD élevé pour la tombe sélectionnée
       tombLODLevels.current[selectedTombId] = 'high';
 
-      const sectionColors = {};
-      tombsData.forEach(tomb => {
-        if (!sectionColors[tomb.sectionId]) {
-          sectionColors[tomb.sectionId] = '#8888FF'; // Couleur bleue par défaut
-        }
-      });
+      // Forcer une mise à jour
+      needsLODUpdateRef.current = true;
 
+      // Application des effets visuels sur la tombe sélectionnée
       const tombClones = window.tombsSystem.tombClones || [];
-      highlightTombSection(tombClones, selectedTombId, sectionColors);
+      highlightTombSection(tombClones, selectedTombId);
       addOutlineToTomb(tombClones, selectedTombId);
+
+      // Déclencher un re-rendu
+      setTombsData([...tombsData]);
     } else {
       setSelectedTomb(null);
     }
   }, [selectedTombId, tombsData]);
 
-  const handleClick = (tomb) => {
-    onTombClick(tomb.id);
-    console.log("Clic sur la tombe:", tomb.id);
+  // Méthode publique pour forcer une mise à jour des LOD
+  // Peut être appelée depuis l'extérieur via une ref
+  const forceLODUpdate = () => {
+    needsLODUpdateRef.current = true;
   };
 
-  // Si les modèles ne sont pas tous chargés, retourner un groupe vide
+  // Exposer la méthode forceLODUpdate au système global
+  useEffect(() => {
+    if (window.tombsSystem) {
+      window.tombsSystem.forceLODUpdate = forceLODUpdate;
+    }
+
+    return () => {
+      if (window.tombsSystem) {
+        window.tombsSystem.forceLODUpdate = undefined;
+      }
+    };
+  }, []);
+
+  // Gestion des clics
+  const handleClick = (tomb) => {
+    onTombClick(tomb.id);
+  };
+
   if (!hasAllModels) {
     return <group />;
   }
 
-  // Mémoriser et rendre uniquement les tombes visibles
+  // Rendu des tombes par type et niveau LOD
   return (
     <>
+
       {Object.entries(instancedTombsData).map(([type, tombs]) => (
-        tombs.length > 0 && Object.entries(tombGeometriesAndMaterials[type]).map(([lodLevel, meshes]) => (
-          meshes.map((meshData, meshIndex) => (
-            <Instances
-              key={`type-${type}-lod-${lodLevel}-mesh-${meshIndex}`}
-              range={tombs.length}
-              geometry={meshData.geometry}
-              material={meshData.material}
-              ref={ref => {
-                if (ref) instancesRef.current[`${type}-${lodLevel}-${meshIndex}`] = ref;
-              }}
-            >
-              {tombs.map((tomb, idx) => {
-                // Rendre uniquement si le niveau LOD correspond
-                const currentLOD = tombLODLevels.current[tomb.id] || 'low';
-                if (currentLOD !== lodLevel) return null;
-                
-                return (
-                  <Instance
-                    key={`tomb-${tomb.id}-lod-${lodLevel}-mesh-${meshIndex}`}
-                    ref={ref => {
-                      if (ref && meshIndex === 0) {
-                        if (!tombRefs.current[tomb.id]) tombRefs.current[tomb.id] = {};
-                        tombRefs.current[tomb.id][lodLevel] = ref;
-                        
-                        ref.userData = {
-                          id: tomb.id,
-                          sectionId: tomb.sectionId,
-                          type: tomb.type,
-                          instanceId: idx,
-                          lodLevel
-                        };
-                      }
-                    }}
-                    position={[
-                      tomb.tombTransform.position[0],
-                      tomb.tombTransform.position[2],
-                      -tomb.tombTransform.position[1]
-                    ]}
-                    rotation={[
-                      tomb.tombTransform.rotation[0],
-                      tomb.tombTransform.rotation[2],
-                      tomb.tombTransform.rotation[1]
-                    ]}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleClick(tomb);
-                    }}
-                  />
-                );
-              })}
-            </Instances>
+        tombs.length > 0 && (
+          ['low', 'medium', 'high'].map(lodLevel => (
+            tombGeometriesAndMaterials[type][lodLevel].map((meshData, meshIndex) => (
+
+              <Instances
+                key={`type-${type}-lod-${lodLevel}-mesh-${meshIndex}`}
+                range={tombs.length}
+                geometry={meshData.geometry}
+                material={meshData.material}
+                ref={ref => {
+                  if (ref) instancesRef.current[`${type}-${lodLevel}-${meshIndex}`] = ref;
+                }}
+              >
+                {tombs.map((tomb, idx) => {
+                  // Rendre uniquement si le niveau LOD correspond
+                  const currentLOD = tombLODLevels.current[tomb.id];
+                  if (currentLOD !== lodLevel) return null;
+
+                  return (
+
+                    <Instance
+                      key={`tomb-${tomb.id}-lod-${lodLevel}-mesh-${meshIndex}`}
+                      ref={ref => {
+                        if (ref && meshIndex === 0) {
+                          if (!tombRefs.current[tomb.id]) tombRefs.current[tomb.id] = {};
+                          tombRefs.current[tomb.id][lodLevel] = ref;
+
+                          ref.userData = {
+                            id: tomb.id,
+                            sectionId: tomb.sectionId,
+                            type: tomb.type,
+                            instanceId: idx,
+                            lodLevel
+                          };
+                        }
+                      }}
+                      position={[
+                        tomb.tombTransform.position[0],
+                        tomb.tombTransform.position[2],
+                        -tomb.tombTransform.position[1]
+                      ]}
+                      rotation={[
+                        tomb.tombTransform.rotation[0],
+                        tomb.tombTransform.rotation[2],
+                        tomb.tombTransform.rotation[1]
+                      ]}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleClick(tomb);
+                      }}
+                    />
+                  );
+                })}
+              </Instances>
+            ))
           ))
-        ))
+        )
       ))}
     </>
   );
 };
 
-// Préchargement des modèles 3D avant le rendu
+// Préchargement des modèles
 useGLTF.preload("/3d-models/gltf/tomb/01/01low.glb");
 useGLTF.preload("/3d-models/gltf/tomb/01/01mid.glb");
 useGLTF.preload("/3d-models/gltf/tomb/01/01high.glb");

@@ -1,60 +1,47 @@
 import { OrbitControls } from "@react-three/drei";
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useThree } from "@react-three/fiber";
 import { isMobile } from "react-device-detect";
 import * as THREE from 'three'
-const MainOrbitControl = ({ orbitControlRef, onDistanceChange }) => {
+
+const MainOrbitControl = ({ orbitControlRef, onCameraMove }) => {
   const { camera, gl } = useThree();
-  const lastDistance = useRef(null);
 
   useEffect(() => {
     const controls = orbitControlRef.current;
     if (!controls) return;
 
     if (isMobile) {
-      // Activer le pan avec un seul doigt sur mobile
       controls.touches = {
-        ONE: THREE.TOUCH.PAN, // Utiliser un doigt pour le pan
-        TWO: THREE.TOUCH.DOLLY_ROTATE // Utiliser deux doigts pour le zoom et la rotation
+        ONE: THREE.TOUCH.PAN,
+        TWO: THREE.TOUCH.DOLLY_ROTATE
       };
     } else {
-      // Configuration pour les appareils non mobiles
       controls.touches = {
-        ONE: THREE.TOUCH.ROTATE, // Utiliser un doigt pour la rotation
-        TWO: THREE.TOUCH.DOLLY_PAN // Utiliser deux doigts pour le zoom et le pan
+        ONE: THREE.TOUCH.ROTATE,
+        TWO: THREE.TOUCH.DOLLY_PAN
       };
     }
 
-    // Limiter les mouvements de la caméra (pan) sur l'axe X (gauche/droite)
-    controls.screenSpacePanning = true; // permet de pan en espace écran
-    controls.enablePan = true; // s'assure que le pan est activé
+    controls.screenSpacePanning = true;
+    controls.enablePan = true;
+    controls.maxPolarAngle = Math.PI / 2;
 
-    // Limiter la translation sur l'axe X
+    // Ajouter un événement pour détecter les mouvements de caméra
+    const handleChange = () => {
+      if (onCameraMove) {
+        onCameraMove(camera.position.clone());
+      }
+    };
 
-    // Limiter la translation sur l'axe Y
-    controls.maxPolarAngle = Math.PI / 2;  // limite à la verticale pour ne pas aller sous le sol
+    controls.addEventListener('change', handleChange);
 
-    // Ajouter un listener pour le changement de distance
-    // const handleChange = () => {
-    //   if (onDistanceChange) {
-    //     const currentDistance = controls.getDistance();
-    //     if (lastDistance.current !== null) {
-    //       const distanceDiff = Math.abs(currentDistance - lastDistance.current);
-    //       if (distanceDiff > 0.5) { // Seuil de détection du scroll
-    //         onDistanceChange();
-    //       }
-    //     }
-    //     lastDistance.current = currentDistance;
-    //   }
-    // };
-
-    //   controls.addEventListener('change', handleChange);
-
-    //   return () => {
-    //     controls.removeEventListener('change', handleChange);
-    //   };
-    // }, [camera, onDistanceChange]);}
-  }, [orbitControlRef])
+    return () => {
+      if (controls) {
+        controls.removeEventListener('change', handleChange);
+      }
+    };
+  }, [orbitControlRef, camera, onCameraMove]);
 
   return (
     <OrbitControls
@@ -66,9 +53,6 @@ const MainOrbitControl = ({ orbitControlRef, onDistanceChange }) => {
       dampingFactor={0.1}
       rotateSpeed={0.5}
       panSpeed={0.6}
-      // enableRotate={false} // Désactiver la rotation
-      // enableZoom={true} // Activer le zoom
-      // enablePan={true} // Activer le pan
     />
   );
 };
