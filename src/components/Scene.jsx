@@ -23,6 +23,7 @@ import { GET_DECEASED } from "../config/api";
 // import Pointer from "../models/Pointer";
 import { useTomb, findTombMeshById } from '../context/TombContext';
 import gsap from "gsap";
+import Button from "./Button";
 // import playIcon from '../assets/play_arrow.svg';
 // import { TransitionEffect } from './TransitionEffect';
 // import Grass from "./Grass";
@@ -56,10 +57,10 @@ function Scene() {
   // const [isSceneLoaded, setIsSceneLoaded] = useState(false);
   const [isShowUi, setIsShowUi] = useState(true)
 
-  function CameraControls() {
-    const { invalidate } = useThree();
-    return <OrbitControls onChange={() => invalidate()} />;
-  }
+  // function CameraControls() {
+  //   const { invalidate } = useThree();
+  //   return <OrbitControls onChange={() => invalidate()} />;
+  // }
 
   // console.log('cet tombe est selectionné', selectTomb, 'et', selectedTomb)
 
@@ -236,6 +237,12 @@ function Scene() {
     }
   }, [camera]);
 
+  const handleCameraMove = (position) => {
+    // Déclencher une mise à jour des LOD sur le composant Tombs
+    if (window.tombsSystem) {
+      window.tombsSystem.needsLODUpdate = true;
+    }
+  };
 
   const Loading = () => {
     return (
@@ -309,12 +316,12 @@ function Scene() {
       {/* {applicationStart && ( */}
       <div className="w-full h-full relative">
         {
-          // !isModalOpen && isMobile &&
-          // <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
-          //   {/* <div className={`w-[416px] h-[76px] ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`} >
-          //         <Button btnValue="Passer en vue aérienne" />
-          //       </div> */}
-          // </div>
+          !isModalOpen && isMobile &&
+          <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
+            <div className={`w-[416px] h-[76px] ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`} >
+                  <Button btnValue="Passer en vue aérienne" />
+                </div>
+          </div>
         }
 
         <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
@@ -355,9 +362,13 @@ function Scene() {
               {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
             </group>
 
-            <SceneCamera frustumCulled={false} />
-            <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false} />
-            {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
+            {/* <SceneCamera frustumCulled={false} /> */}
+            <MainOrbitControl
+              orbitControlRef={orbitControlRef}
+              frustumCulled={false}
+              onCameraMove={handleCameraMove}
+            />           
+             {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
             <pointLight
               position={[-10, -10, -10]}
               decay={1}

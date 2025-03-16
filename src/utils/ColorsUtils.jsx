@@ -1,6 +1,7 @@
 export const highlightTombSection = (tombClones, selectedTombId, sectionColors) => {
   if (!tombClones || !tombClones.length) {
     console.warn("Pas de tombes disponibles pour la surbrillance");
+    console.log(tombClones)
     return;
   }
 
