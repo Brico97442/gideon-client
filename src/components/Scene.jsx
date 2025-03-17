@@ -17,11 +17,10 @@ import MainOrbitControl from '../utils/MainOrbitControl';
 import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
 import {
-  initColorSystem,
   highlightSelectedTomb,
-  updateInstanceColors,
   highlightTombSection,
-  createHighlightForTomb
+  createHighlightForTomb,
+  COLORS
 } from "../utils/ColorsUtils";
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
@@ -172,7 +171,7 @@ function Scene() {
       const tombData = window.tombsSystem.tombPositions[id];
       if (tombData) {
         // Puis créer la mise en évidence spécifique pour cette tombe
-        createHighlightForTomb(id, tombData, true);
+        createHighlightForTomb(id, tombData, COLORS.SELECTED_TOMB, true);
       }
 
       // Récupérer les détails de la tombe
@@ -230,6 +229,7 @@ const resetCameraPosition = () => {
     }
   }
 };
+
 useEffect(() => {
   const savedTomb = searchParams.get("name");
   if (savedTomb) {
@@ -388,7 +388,7 @@ return (
       <div className={`transition-opacity duration-[1500] z-50`} >
         <UserInterface handleTombFocus={handleTombFocus} />
       </div>
-      {/* <Suspense fallback={<Loading />}> */}
+      <Suspense fallback={<Loading />}>
       <Canvas
         // frameloop="demand"
         style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
@@ -439,7 +439,7 @@ return (
         <Stats />
       </Canvas>
 
-      {/* </Suspense> */}
+      </Suspense>
       <TombModal
         isOpen={isModalOpen}
         onClose={() => {

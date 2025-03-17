@@ -277,7 +277,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
     if (tombs[instanceId]) {
       const tomb = tombs[instanceId];
-      onTombClick(tomb.id); // Mettre à jour l'ID de la tombe sélectionnée
+      onTombClick(tomb.id);
       focusOnObject(tomb.id);
     }
   };
