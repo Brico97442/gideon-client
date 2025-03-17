@@ -1,156 +1,128 @@
-export const highlightTombSection = (tombClones, selectedTombId, sectionColors) => {
-  if (!tombClones || !tombClones.length) {
-    console.warn("Pas de tombes disponibles pour la surbrillance");
-    console.log(tombClones)
+import * as THREE from "three";
+
+export const highlightTombSection = (instancedMeshRefs, selectedTombId, sectionId, tombType, sectionColors) => {
+  if (!instancedMeshRefs || !instancedMeshRefs.current) {
+    console.warn("Références aux meshes instanciés non disponibles");
     return;
   }
-
+  
   if (!selectedTombId) {
     console.warn("Pas d'ID de tombe sélectionnée");
     return;
   }
-
-  // Convertir l'ID en chaîne pour la comparaison
-  const tombIdStr = String(selectedTombId);
-  // console.log("Début de la surbrillance pour la tombe:", tombIdStr);
-  // console.log("Nombre de tombes disponibles:", tombClones.length);
-
-  let selectedSectionId = null;
-  let foundTomb = false;
-
-  // Réinitialiser toutes les couleurs d'abord
-  tombClones.forEach(clone => {
-    clone.traverse(child => {
-      if (child.isMesh) {
-        if (child.material) {
-          // Cloner le matériau si ce n'est pas déjà fait
-          if (!child.material.userData.isCloned) {
-            child.material = child.material.clone();
-            child.material.userData.isCloned = true;
-          }
-          child.material.color.set('#FFFFFF');
-          // child.material.emissive.set(0x000000);
-        }
-      }
-    });
-  });
-
-  // Trouver la section ID de la tombe sélectionnée
-  for (const clone of tombClones) {
-    clone.traverse((child) => {
-      if (child.isMesh && child.userData) {
-        const childId = String(child.userData.id);
-        // console.log("Vérification de la tombe:", childId, "Section:", child.userData.sectionId);
-        if (childId === tombIdStr) {
-          selectedSectionId = child.userData.sectionId;
-          foundTomb = true;
-          // console.log("Tombe trouvée! Section ID:", selectedSectionId);
-        }
-      }
-    });
-    if (foundTomb) break;
-  }
-
-  if (!foundTomb) {
-    console.warn("Tombe non trouvée dans les clones:", tombIdStr);
-    return;
-  }
-
-  if (!selectedSectionId) {
-    console.warn("Section ID non trouvée pour la tombe:", tombIdStr);
-    return;
-  }
-
-  const sectionColor = sectionColors[selectedSectionId];
-  if (!sectionColor) {
-    console.warn('Pas de couleur définie pour l\'ID de section:', selectedSectionId);
-    return;
-  }
-
-  // console.log("Application de la couleur", sectionColor, "pour la section", selectedSectionId);
-
-  // Colorer toutes les tombes de la même section
-  tombClones.forEach((clone) => {
-    clone.traverse((child) => {
-      if (child.isMesh && child.userData && String(child.userData.sectionId) === String(selectedSectionId)) {
-        if (!child.material.userData.isCloned) {
-          child.material = child.material.clone();
-          child.material.userData.isCloned = true;
-        }
-        child.material.color.set(sectionColor);
-      }
-    });
-  });
-
-  // Colorer spécialement la tombe sélectionnée
-  tombClones.forEach((clone) => {
-    clone.traverse((child) => {
-      if (child.isMesh && child.userData && String(child.userData.id) === tombIdStr) {
-        if (!child.material.userData.isCloned) {
-          child.material = child.material.clone();
-          child.material.userData.isCloned = true;
-        }
-        child.material.color.set('#FFA500'); // Orange vif pour la tombe sélectionnée
-        // child.material.emissive.set('#FF4500'); // Ajouter un effet lumineux
-      }
-    });
-  });
-};
-
-export const addOutlineToTomb = (tombClones, selectedTombId) => {
-  // D'abord nettoyer les clones d'outline précédents
-  tombClones.forEach((clone) => {
-    clone.traverse((child) => {
-      // Chercher et supprimer les clones d'outline existants
-      if (child.userData && child.userData.isOutlineClone) {
-        if (child.parent) {
-          child.parent.remove(child);
-        }
-      }
-    });
-  });
-
-  const tombIdStr = String(selectedTombId);
   
-  // Maintenant créer un nouveau clone pour l'outline
-  tombClones.forEach((clone) => {
-    clone.traverse((child) => {
-      if (child.isMesh && child.userData && String(child.userData.id) === tombIdStr) {
-        // Créer un clone du mesh original
-        const outlineClone = child.clone();
-        
-        // Cloner le matériau
-        outlineClone.material = child.material.clone();
-        
-        outlineClone.userData.isOutlineClone = true;
-        
-        // Appliquer l'effet d'outline
-        outlineClone.material.emissive.set('#FFA500'); 
-        outlineClone.material.color.set('#FFA500'); 
-        // outlineClone.material.transparent=true
-        outlineClone.material.emissiveIntensity = 2;
-        outlineClone.material.wireframe = false;
-
-        outlineClone.material.transparent = true;     
-        outlineClone.material.opacity = 0.5;   
-
-        outlineClone.scale.set(1.05, 1.05, 1.05);
-        
-        // Ajouter le clone au même parent que l'original
-        if (child.parent) {
-          child.parent.add(outlineClone);
-          
-          // Positionner exactement comme l'original
-          outlineClone.position.copy(child.position);
-          // outlineClone.position.x += -0.2;  // Vers le haut
-          outlineClone.position.y += -0.1;  // Vers le haut
-          // outlineClone.position.z += -0.1;  // Vers l'avant
-          outlineClone.rotation.copy(child.rotation);
-        }
-      }
-    });
+  console.log("Début de la surbrillance pour la tombe:", selectedTombId, "Section:", sectionId);
+  
+  // Récupérer la couleur de la section
+  const sectionColor = sectionColors[sectionId];
+  if (!sectionColor) {
+    console.warn('Pas de couleur définie pour l\'ID de section:', sectionId);
+    return;
+  }
+  
+  // Supprimer tous les objets de surbrillance précédents
+  cleanupHighlights();
+  
+  // Créer un groupe pour contenir tous les objets de surbrillance
+  if (!window.tombsSystem.highlightGroup) {
+    window.tombsSystem.highlightGroup = new THREE.Group();
+    window.tombsSystem.highlightGroup.name = "highlightGroup";
+    
+    // Trouver la scène et ajouter le groupe
+    const scene = instancedMeshRefs.current[tombType]?.parent;
+    if (scene) {
+      scene.add(window.tombsSystem.highlightGroup);
+    }
+  }
+  
+  // Récupérer les données de toutes les tombes depuis le système global
+  const allTombPositions = window.tombsSystem.tombPositions;
+  
+  // Créer les objets de surbrillance pour la section
+  Object.entries(allTombPositions).forEach(([id, data]) => {
+    if (data.sectionId === sectionId) {
+      const isSelected = id === selectedTombId;
+      const color = isSelected ? '#FFA500' : sectionColor;
+      
+      createHighlightForTomb(id, data, color, isSelected);
+    }
   });
 };
 
-// Exporter les deux fonctions
-export { highlightTombSection as default };
+// Fonction pour nettoyer les objets de surbrillance précédents
+const cleanupHighlights = () => {
+  if (window.tombsSystem.highlightGroup) {
+    while (window.tombsSystem.highlightGroup.children.length > 0) {
+      const child = window.tombsSystem.highlightGroup.children[0];
+      window.tombsSystem.highlightGroup.remove(child);
+      
+      // Nettoyer la géométrie et le matériau
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) child.material.dispose();
+    }
+  }
+};
+
+// Créer un objet de surbrillance pour une tombe spécifique
+const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
+  if (!window.tombsSystem.highlightGroup) return;
+  
+  // Créer une boîte englobante pour la tombe
+  const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
+  
+  // Créer un matériau basique
+  const material = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(color),
+    transparent: true,
+    opacity: isSelected ? 0.5 : 0.3,
+    side: THREE.DoubleSide,
+    depthTest: false,
+    wireframe: false
+  });
+  
+  // Créer le mesh de surbrillance
+  const highlightMesh = new THREE.Mesh(boxGeometry, material);
+  highlightMesh.position.set(tombData.x, tombData.y, tombData.z);
+  highlightMesh.scale.set(1.2, 1.2, 1.2); // Légèrement plus grand que la tombe
+  highlightMesh.userData = { 
+    id: tombId,
+    isHighlight: true,
+    isSelected: isSelected
+  };
+  
+  // Ajouter au groupe de surbrillance
+  window.tombsSystem.highlightGroup.add(highlightMesh);
+  
+  // Si c'est la tombe sélectionnée, ajouter un effet supplémentaire
+  if (isSelected) {
+    // Créer un matériau lumineux pour la tombe sélectionnée
+    const glowMaterial = new THREE.MeshBasicMaterial({
+      color: new THREE.Color('#FFFF00'),
+      transparent: true,
+      opacity: 0.3,
+      side: THREE.FrontSide,
+      depthTest: false,
+      wireframe: false
+    });
+    
+    // Créer un mesh supplémentaire pour l'effet de lueur
+    const glowMesh = new THREE.Mesh(boxGeometry, glowMaterial);
+    glowMesh.position.set(tombData.x, tombData.y, tombData.z);
+    glowMesh.scale.set(1.3, 1.3, 1.3); // Encore plus grand pour l'effet de lueur
+    glowMesh.userData = { 
+      id: tombId,
+      isHighlight: true,
+      isGlow: true
+    };
+    
+    // Ajouter au groupe de surbrillance
+    window.tombsSystem.highlightGroup.add(glowMesh);
+  }
+};
+
+export const addOutlineToTomb = (instancedMeshRefs, selectedTombId, tombType) => {
+  // Cette fonction est maintenant intégrée dans createHighlightForTomb
+  // Elle est gardée pour la compatibilité
+};
+
+export default highlightTombSection;

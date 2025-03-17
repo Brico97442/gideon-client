@@ -1,6 +1,6 @@
 import gsap from "gsap";
-import * as THREE from "three"; 
-import { highlightTombSection, addOutlineToTomb } from '../utils/ColorsUtils';
+import * as THREE from "three";
+import { highlightTombSection } from '../utils/ColorsUtils';
 
 export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, target) => {
   if (!camera || !orbitControlRef.current) return;
@@ -24,69 +24,40 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
   });
 };
 
-export const focusOnObject = (name, tombClones, camera, orbitControlRef, sectionColors) => {
-  if (!camera || !tombClones || !tombClones.length) {
-    console.warn("Camera ou tombClones non disponibles");
+export const focusOnObject = (tombId, instancedMeshRefs, camera, orbitControlRef, sectionColors) => {
+  if (!camera || !window.tombsSystem || !window.tombsSystem.tombPositions) {
+    console.warn("Camera ou système de tombes non disponible");
     return;
   }
 
-  console.log("Recherche de la tombe:", name);
-  console.log("Nombre de tombes disponibles:", tombClones.length);
-
-  // Recherche de la tombe avec l'ID spécifié
-  let selectedTomb = null;
-  let tombPosition = null;
+  console.log("Recherche de la tombe:", tombId);
   
-  // D'abord, vérifier directement dans les clones
-  for (const clone of tombClones) {
-    if (clone.userData && String(clone.userData.id) === String(name)) {
-      selectedTomb = clone;
-      tombPosition = new THREE.Vector3(
-        clone.position.x,
-        clone.position.y,
-        clone.position.z
-      );
-      console.log("Tombe trouvée directement:", clone.userData);
-      break;
-    }
-  }
-  
-  // Si toujours pas trouvé, essayer de traverser les objets
-  if (!selectedTomb) {
-    for (const clone of tombClones) {
-      if (typeof clone.traverse === 'function') {
-        clone.traverse((child) => {
-          if (child.userData && String(child.userData.id) === String(name)) {
-            selectedTomb = child;
-            // Calculer la position mondiale si nécessaire
-            const worldPosition = new THREE.Vector3();
-            child.getWorldPosition(worldPosition);
-            tombPosition = worldPosition;
-            console.log("Tombe trouvée lors de la traversée:", child.userData);
-          }
-        });
-      }
-      if (selectedTomb) break;
-    }
-  }
-
-  // Si on n'a toujours pas trouvé, essayer les données globales
-  if (!selectedTomb && window.tombsSystem && window.tombsSystem.tombPositions) {
-    const posData = window.tombsSystem.tombPositions[name];
-    if (posData) {
-      tombPosition = new THREE.Vector3(posData.x, posData.y, posData.z);
-      console.log("Position trouvée dans les données globales");
-    }
-  }
-
-  if (!tombPosition) {
-    console.warn("Aucune tombe trouvée avec l'ID:", name);
+  // Récupérer les informations de la tombe depuis le système global
+  const tombData = window.tombsSystem.tombPositions[tombId];
+  if (!tombData) {
+    console.warn("Aucune tombe trouvée avec l'ID:", tombId);
     return;
   }
+  
+  // Créer un vecteur position à partir des données de la tombe
+  const tombPosition = new THREE.Vector3(
+    tombData.x,
+    tombData.y,
+    tombData.z
+  );
+  
+  console.log("Position de la tombe trouvée:", tombPosition);
 
-  // Changer la couleur de la section
+  // Appliquer la coloration
   try {
-    highlightTombSection(tombClones, name, sectionColors);
+    // Passer l'information de la section et du type à la fonction de coloration
+    highlightTombSection(
+      instancedMeshRefs, 
+      tombId, 
+      tombData.sectionId, 
+      tombData.type, 
+      sectionColors
+    );
   } catch (error) {
     console.error("Erreur lors de la surbrillance:", error);
   }

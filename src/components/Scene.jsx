@@ -5,9 +5,9 @@ import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import axios from 'axios';
 import { useRef } from "react";
-// import Entrance from "../models/Entrance";
+import Entrance from "../models/Entrance";
 import Wall from "../models/Wall";
-// import Ground from "../models/Ground";
+import Ground from "../models/Ground";
 import UserInterface from "./UserInterface";
 import TombModal from "./TombModal";
 import Tombs from "../models/Tombs";
@@ -18,9 +18,9 @@ import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
 import { highlightTombSection, addOutlineToTomb } from "../utils/ColorsUtils";
 import { GET_DECEASED } from "../config/api";
-// import Cross from "../models/Cross";
+import Cross from "../models/Cross";
 // import { Bloom, EffectComposer, DepthOfField, Outline } from '@react-three/postprocessing';
-// import Pointer from "../models/Pointer";
+import Pointer from "../models/Pointer";
 import { useTomb, findTombMeshById } from '../context/TombContext';
 import gsap from "gsap";
 import Button from "./Button";
@@ -29,7 +29,7 @@ import Button from "./Button";
 // import Grass from "./Grass";
 // import Grass2 from "./Grass2";
 // import Grass3 from "./Grass3";
-// import Road from "../models/Road";
+import Road from "../models/Road";
 // import Button from "./Button";
 // import Test from "./Test";
 
@@ -159,24 +159,24 @@ function Scene() {
     }
   };
 
-  // const handleTopView = () => {
-  //   if (!camera) return;
-  //   setIsShowUi(true)
-  //   const topViewPosition = { x: 0, y: 120, z: 0.001 };
+  const handleTopView = () => {
+    if (!camera) return;
+    setIsShowUi(true)
+    const topViewPosition = { x: 0, y: 120, z: 0.001 };
 
-  //   moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
+    moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
 
-  //   if (orbitControlRef.current) {
-  //     gsap.to(orbitControlRef.current.target, {
-  //       x: 0,
-  //       y: 0,
-  //       z: 0,
-  //       duration: 1.5,
-  //       ease: "power2.out",
-  //       onUpdate: () => orbitControlRef.current.update(),
-  //     });
-  //   }
-  // };
+    if (orbitControlRef.current) {
+      gsap.to(orbitControlRef.current.target, {
+        x: 0,
+        y: 0,
+        z: 0,
+        duration: 1.5,
+        ease: "power2.out",
+        onUpdate: () => orbitControlRef.current.update(),
+      });
+    }
+  };
 
   const resetCameraPosition = () => {
     if (initialCameraPosition) {
@@ -315,14 +315,14 @@ function Scene() {
 
       {/* {applicationStart && ( */}
       <div className="w-full h-full relative">
-        {
-          !isModalOpen && isMobile &&
+        
+           
           <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
-            <div className={`w-[416px] h-[76px] ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`} >
+            <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
               <Button btnValue="Passer en vue aérienne" />
             </div>
           </div>
-        }
+        
 
         <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
 
@@ -340,17 +340,17 @@ function Scene() {
         >
 
           <group>
-            {/* <Pointer /> */}
-            {/* <Entrance /> */}
-            {/* <Wall /> */}
-            {/* <Ground /> */}
-            {/* <Cross /> */}
+            <Pointer />
+            <Entrance />
+            <Wall />
+            <Ground />
+            <Cross />
             {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                       <Text fontSize={2} color="white">
                       Vous êtes ici
                       </Text>
                       </Billboard> */}
-            {/* <Road /> */}
+            <Road />
             {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
             <ambientLight intensity={3} />
      
