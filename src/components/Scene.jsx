@@ -342,7 +342,7 @@ function Scene() {
           <group>
             {/* <Pointer /> */}
             {/* <Entrance /> */}
-            {/* <Wall /> */}
+            <Wall />
             {/* <Ground /> */}
             {/* <Cross /> */}
             {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
@@ -361,7 +361,7 @@ function Scene() {
             {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
           </group>
 
-          {/* <SceneCamera frustumCulled={false} /> */}
+          <SceneCamera frustumCulled={false} />
           <MainOrbitControl
             orbitControlRef={orbitControlRef}
             frustumCulled={false}
