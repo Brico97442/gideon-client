@@ -63,8 +63,8 @@ export const highlightSelectedTomb = (selectedTombId) => {
   }
   
   // Réinitialiser toutes les couleurs (facultatif selon votre logique)
-  resetAllTombColors();
   
+  // resetAllTombColors();
   // Appliquer la couleur de sélection
   console.log("Setting color for tomb:", selectedTombId);
   setTombColor(selectedTombId, COLORS.SELECTED_TOMB);
@@ -135,33 +135,20 @@ export const highlightTombSection = (selectedTombId) => {
     return;
   }
   
-  // Supprimer tous les objets de surbrillance précédents
-  cleanupHighlights();
-  
-  // Créer un groupe pour contenir tous les objets de surbrillance
-  if (!window.tombsSystem.highlightGroup) {
-    window.tombsSystem.highlightGroup = new THREE.Group();
-    window.tombsSystem.highlightGroup.name = "highlightGroup";
-    
-    // Trouver la scène et ajouter le groupe
-    const scene = window.tombsSystem.camera.parent;
-    if (scene) {
-      scene.add(window.tombsSystem.highlightGroup);
-    }
-  }
+  // Réinitialiser d'abord toutes les couleurs
+  resetAllTombColors();
   
   // Récupérer les données de toutes les tombes depuis le système global
   const allTombPositions = window.tombsSystem.tombPositions;
   
-  // Créer les objets de surbrillance pour la section
+  // Mettre à jour les couleurs des tombes de la même section
   Object.entries(allTombPositions).forEach(([id, data]) => {
     if (data.sectionId === sectionId) {
-      const isSelected = id === selectedTombId;
-      const color = isSelected ? COLORS.SELECTED_TOMB : sectionColor;
+      // Si c'est la tombe sélectionnée, utiliser la couleur de sélection
+      // Sinon, utiliser la couleur de la section
+      const color = id === selectedTombId ? COLORS.SELECTED_TOMB : sectionColor;
       
-      createHighlightForTomb(id, data, color, isSelected);
-      
-      // Mettre également à jour les couleurs des instances
+      // Mettre à jour la couleur dans le système de couleurs
       if (window.tombsSystem.instanceColors) {
         window.tombsSystem.instanceColors[id] = new THREE.Color(color);
       }
@@ -170,24 +157,26 @@ export const highlightTombSection = (selectedTombId) => {
   
   // Mettre à jour les couleurs des instances
   updateInstanceColors();
+  
+  console.log("Surbrillance de section terminée pour ID de section:", sectionId);
 };
 
 // Fonction pour nettoyer les objets de surbrillance précédents
-const cleanupHighlights = () => {
-  if (window.tombsSystem.highlightGroup) {
-    while (window.tombsSystem.highlightGroup.children.length > 0) {
-      const child = window.tombsSystem.highlightGroup.children[0];
-      window.tombsSystem.highlightGroup.remove(child);
+// const cleanupHighlights = () => {
+//   if (window.tombsSystem.highlightGroup) {
+//     while (window.tombsSystem.highlightGroup.children.length > 0) {
+//       const child = window.tombsSystem.highlightGroup.children[0];
+//       window.tombsSystem.highlightGroup.remove(child);
       
-      // Nettoyer la géométrie et le matériau
-      if (child.geometry) child.geometry.dispose();
-      if (child.material) child.material.dispose();
-    }
-  }
-};
+//       // Nettoyer la géométrie et le matériau
+//       if (child.geometry) child.geometry.dispose();
+//       if (child.material) child.material.dispose();
+//     }
+//   }
+// };
 
 // Créer un objet de surbrillance pour une tombe spécifique
-const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
+export const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
   if (!window.tombsSystem.highlightGroup) return;
   
   // Créer une boîte englobante pour la tombe
@@ -222,7 +211,7 @@ const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
     const glowMaterial = new THREE.MeshBasicMaterial({
       color: new THREE.Color(COLORS.GLOW),
       transparent: true,
-      opacity: 0.3,
+      opacity: 0.9,
       side: THREE.FrontSide,
       depthTest: false,
       wireframe: false
@@ -231,7 +220,7 @@ const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
     // Créer un mesh supplémentaire pour l'effet de lueur
     const glowMesh = new THREE.Mesh(boxGeometry, glowMaterial);
     glowMesh.position.set(tombData.x, tombData.y, tombData.z);
-    glowMesh.scale.set(1.3, 1.3, 1.3); // Encore plus grand pour l'effet de lueur
+    glowMesh.scale.set(1.5, 1.5, 1.5); // Encore plus grand pour l'effet de lueur
     glowMesh.userData = { 
       id: tombId,
       isHighlight: true,
@@ -243,10 +232,9 @@ const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
   }
 };
 
-// Fonction pour initialiser le système de couleurs
 export const initColorSystem = (tombsData) => {
   // Initialiser le système de couleurs dans l'objet global
-  console.log(initColorSystem ,'crée')
+  console.log("Initialisation du système de couleurs...");
   if (!window.tombsSystem) window.tombsSystem = {};
   
   // Créer un objet pour stocker les couleurs des instances
@@ -265,20 +253,19 @@ export const initColorSystem = (tombsData) => {
     }
     window.tombsSystem.tombsByType[tomb.type].push(tomb);
   });
-};
-
-export const addOutlineToTomb = (instancedMeshRefs, selectedTombId) => {
-  // Cette fonction est maintenant intégrée dans highlightTombSection
-  // Elle est gardée pour la compatibilité
-  highlightSelectedTomb(selectedTombId);
-};
-
-export default {
-  highlightTombSection,
-  setTombColor,
-  resetAllTombColors,
-  highlightSelectedTomb,
-  updateInstanceColors,
-  initColorSystem,
-  COLORS
+  
+  // Grouper les tombes par section également pour un accès facile
+  window.tombsSystem.tombsBySection = {};
+  tombsData.forEach(tomb => {
+    const sectionId = tomb.sectionId;
+    if (!window.tombsSystem.tombsBySection[sectionId]) {
+      window.tombsSystem.tombsBySection[sectionId] = [];
+    }
+    window.tombsSystem.tombsBySection[sectionId].push(tomb);
+  });
+  
+  console.log("Système de couleurs initialisé");
+  
+  // Marquer le système comme initialisé
+  window.tombsSystem.colorsInitialized = true;
 };
