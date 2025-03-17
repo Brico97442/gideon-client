@@ -1,8 +1,8 @@
 import * as THREE from "three";
 
-export const highlightTombSection = (instancedMeshRefs, selectedTombId, sectionId, tombType, sectionColors) => {
-  if (!instancedMeshRefs || !instancedMeshRefs.current) {
-    console.warn("Références aux meshes instanciés non disponibles");
+export const highlightTombSection = (selectedTombId) => {
+  if (!window.tombsSystem || !window.tombsSystem.tombPositions) {
+    console.warn("Système de tombes non disponible");
     return;
   }
   
@@ -11,9 +11,26 @@ export const highlightTombSection = (instancedMeshRefs, selectedTombId, sectionI
     return;
   }
   
-  console.log("Début de la surbrillance pour la tombe:", selectedTombId, "Section:", sectionId);
+  console.log("Début de la surbrillance pour la tombe:", selectedTombId);
+  
+  // Récupérer les données de la tombe
+  const tombData = window.tombsSystem.tombPositions[selectedTombId];
+  if (!tombData) {
+    console.warn("Aucune tombe trouvée avec l'ID:", selectedTombId);
+    return;
+  }
+  
+  const sectionId = tombData.sectionId;
+  const tombType = tombData.type;
   
   // Récupérer la couleur de la section
+  const sectionColors = {
+    13: '#EF507E',
+    14: '#FFE771',
+    15: '#B89AD7',
+    16: '#E0C2B6',
+  };
+  
   const sectionColor = sectionColors[sectionId];
   if (!sectionColor) {
     console.warn('Pas de couleur définie pour l\'ID de section:', sectionId);
@@ -29,7 +46,7 @@ export const highlightTombSection = (instancedMeshRefs, selectedTombId, sectionI
     window.tombsSystem.highlightGroup.name = "highlightGroup";
     
     // Trouver la scène et ajouter le groupe
-    const scene = instancedMeshRefs.current[tombType]?.parent;
+    const scene = window.tombsSystem.camera.parent;
     if (scene) {
       scene.add(window.tombsSystem.highlightGroup);
     }
@@ -124,5 +141,7 @@ export const addOutlineToTomb = (instancedMeshRefs, selectedTombId, tombType) =>
   // Cette fonction est maintenant intégrée dans createHighlightForTomb
   // Elle est gardée pour la compatibilité
 };
+
+
 
 export default highlightTombSection;
