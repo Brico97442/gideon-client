@@ -329,7 +329,7 @@ function Scene() {
         <div className={`transition-opacity duration-[1500] z-50`} >
           <UserInterface handleTombFocus={handleTombFocus} />
         </div>
-        {/* <Suspense fallback={<Loading />}> */}
+        <Suspense fallback={<Loading />}>
         <Canvas
           frameloop="demand"
           style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
@@ -378,7 +378,7 @@ function Scene() {
           <Stats />
         </Canvas>
 
-        {/* </Suspense> */}
+        </Suspense>
         <TombModal
           isOpen={isModalOpen}
           onClose={() => {
