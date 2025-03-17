@@ -1,6 +1,7 @@
 import gsap from "gsap";
 import * as THREE from "three";
-import { highlightTombSection } from '../utils/ColorsUtils';
+// La référence à highlightTombSection peut être maintenue si vous l'utilisez ailleurs
+// import { highlightTombSection } from '../utils/ColorsUtils';
 
 export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, target) => {
   if (!camera || !orbitControlRef.current) return;
@@ -24,9 +25,21 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
   });
 };
 
-export const focusOnObject = (tombId, instancedMeshRefs, camera, orbitControlRef, sectionColors) => {
-  if (!camera || !window.tombsSystem || !window.tombsSystem.tombPositions) {
-    console.warn("Camera ou système de tombes non disponible");
+// Dans CameraUtils.jsx, modifiez la fonction focusOnObject comme suit :
+export const focusOnObject = (tombId) => {
+  console.log(`Focus sur la tombe ID: ${tombId}`);
+
+  if (!window.tombsSystem || !window.tombsSystem.tombPositions) {
+    console.warn("Système de tombes non disponible");
+    return;
+  }
+
+  // Récupérer la caméra et les contrôles depuis le système global
+  const camera = window.tombsSystem.camera;
+  const orbitControlRef = window.tombsSystem.orbitControlRef;
+
+  if (!camera || !orbitControlRef || !orbitControlRef.current) {
+    console.warn("Caméra ou contrôles d'orbite non disponibles");
     return;
   }
 
@@ -48,18 +61,14 @@ export const focusOnObject = (tombId, instancedMeshRefs, camera, orbitControlRef
   
   console.log("Position de la tombe trouvée:", tombPosition);
 
-  // Appliquer la coloration
-  try {
-    // Passer l'information de la section et du type à la fonction de coloration
-    highlightTombSection(
-      instancedMeshRefs, 
-      tombId, 
-      tombData.sectionId, 
-      tombData.type, 
-      sectionColors
-    );
-  } catch (error) {
-    console.error("Erreur lors de la surbrillance:", error);
+  // Forcer une mise à jour du LOD
+  if (window.tombsSystem.forceLODUpdate) {
+    window.tombsSystem.forceLODUpdate();
+  }
+  
+  // Marquer le système pour une mise à jour du LOD
+  if (window.tombsSystem.needsLODUpdate !== undefined) {
+    window.tombsSystem.needsLODUpdate = true;
   }
 
   // Position cible de la caméra
@@ -69,13 +78,33 @@ export const focusOnObject = (tombId, instancedMeshRefs, camera, orbitControlRef
     z: tombPosition.z + 1.1,
   };
 
-  // Créer la cible de la caméra
+  // Créer la cible de la caméra (le point vers lequel elle regarde)
   const target = new THREE.Vector3(
     tombPosition.x,
     tombPosition.y,
     tombPosition.z
   );
 
-  // Déplacer la caméra et ajuster la cible d'orbite
-  moveCameraToPosition(camera, targetPosition, orbitControlRef, target);
+  // Déplacer la caméra avec GSAP
+  gsap.to(camera.position, {
+    x: targetPosition.x,
+    y: targetPosition.y,
+    z: targetPosition.z,
+    duration: 1.5,
+    ease: "power2.out",
+    onUpdate: () => {
+      camera.lookAt(target);
+    }
+  });
+
+  // Animer également le point pivot d'OrbitControls
+  gsap.to(orbitControlRef.current.target, {
+    x: target.x,
+    y: target.y,
+    z: target.z,
+    duration: 1.5,
+    ease: "power2.out",
+    onUpdate: () => orbitControlRef.current.update(),
+  });
 };
+

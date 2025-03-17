@@ -3,13 +3,14 @@ import { useGLTF } from "@react-three/drei";
 import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { GET_TOMBS } from "../config/api";
-
-const Tombs = ({ onTombClick, selectedTombId }) => {
+import gsap from "gsap";
+import { focusOnObject } from "../utils/CameraUtils";
+const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   const { scene, camera } = useThree();
   const [tombsData, setTombsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0); // État pour forcer le rendu
-  
+
   // Référence aux maillages instanciés
   const instancedMeshesRef = useRef({});
 
@@ -25,8 +26,8 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
 
   // Seuils de distance pour les niveaux LOD
   const LOD_THRESHOLDS = {
-    HIGH: 20, // Utiliser le modèle haute résolution en dessous de 15 unités
-    MEDIUM: 40 // Utiliser le modèle moyenne résolution entre 15 et 30 unités
+    HIGH: 20,
+    MEDIUM: 40
   };
 
   // État du niveau de détail actuel
@@ -74,7 +75,7 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
           throw new Error(`Erreur HTTP: ${response.status}`);
         }
         const data = await response.json();
-
+  
         // Transformation des données pour un accès facile
         const flattenedTombs = [];
         data.forEach((section) => {
@@ -85,14 +86,14 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
             });
           });
         });
-
+  
         setTombsData(flattenedTombs);
-
+  
         // Initialiser le système global pour les tombes
         if (!window.tombsSystem) window.tombsSystem = {};
         window.tombsSystem.needsLODUpdate = true;
         window.tombsSystem.tombPositions = {};
-
+  
         // Enregistrer les positions de tombes
         flattenedTombs.forEach(tomb => {
           window.tombsSystem.tombPositions[tomb.id] = {
@@ -103,25 +104,24 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
             type: tomb.type
           };
         });
-
+  
         // Initialiser les couleurs pour chaque tombe
         const colorMap = {};
         flattenedTombs.forEach(tomb => {
           colorMap[tomb.id] = new THREE.Color(0xFFFFFF);
         });
         instanceColorsRef.current = colorMap;
-
+  
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des tombes:", error);
         setLoading(false);
       }
     };
-
+  
     fetchTombs();
   }, []);
 
-  // Fonction pour déterminer le niveau LOD
   const updateLOD = () => {
     // Calculer la distance moyenne entre la caméra et le centre de la scène
     const distance = camera.position.length();
@@ -209,7 +209,7 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
 
       // Créer un nouveau tableau de couleurs
       const colors = new Float32Array(tombs.length * 3);
-      
+
       // Remplir le tableau avec les couleurs actuelles
       tombs.forEach((tomb, index) => {
         const color = instanceColorsRef.current[tomb.id] || new THREE.Color(0xFFFFFF);
@@ -304,6 +304,8 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
   }, [tombsData, loading, currentLOD, refresh]);
 
   // Fonction pour gérer le clic sur une tombe
+  // 
+  // Dans Tombs.jsx, modifiez la fonction handleTombClick comme suit :
   const handleTombClick = (event) => {
     if (!onTombClick) return;
 
@@ -314,13 +316,14 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
     // Trouver la tombe correspondante par son type et instanceId
     const tombs = tombsData.filter(tomb => tomb.type === Number(tombType));
 
-    // Vérifier si l'instanceId est valide
     if (tombs[instanceId]) {
       const tomb = tombs[instanceId];
-      onTombClick(tomb.id); // Appeler le gestionnaire externe qui mettra à jour selectedTombId
+      onTombClick(tomb.id); // Mettre à jour l'ID de la tombe sélectionnée
+      // Utiliser la fonction externalisée pour focus sur la tombe
+      // Pas besoin de passer camera et orbitControlRef, car on utilise le window.tombsSystem
+      focusOnObject(tomb.id);
     }
   };
-
   // Exposer la méthode forceLODUpdate au système global
   useEffect(() => {
     if (window.tombsSystem) {
