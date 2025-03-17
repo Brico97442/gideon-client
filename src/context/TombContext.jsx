@@ -76,7 +76,7 @@ export const useTomb = () => {
 
 export const findTombMeshById = (tombId, tombClones) => {
   let foundMesh = null;
-  if (!tombClones || tombClones.length === 0 || !tombId) return null;
+  // if (!tombClones || tombClones.length === 0 || !tombId) return null;
   
   tombClones.forEach(clone => {
     clone.traverse(child => {

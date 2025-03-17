@@ -32,6 +32,7 @@ import Button from "./Button";
 import Road from "../models/Road";
 // import Button from "./Button";
 // import Test from "./Test";
+import { initColorSystem, highlightSelectedTomb, updateInstanceColors } from "../utils/ColorsUtils";
 
 // Définition des couleurs des sections
 const sectionColors = {
@@ -201,29 +202,70 @@ function Scene() {
       }
     }
   };
-
   useEffect(() => {
     const savedTomb = searchParams.get("name");
-    if (savedTomb && camera && orbitControlRef.current) {
-
-      // Mettre à jour le contexte avec la tombe sélectionnée
-      selectTomb(savedTomb);
-
-      if (isMobile) {
-        //console.log("Version mobile : uniquement surbrillance sans modal");
-        highlightTombSection( savedTomb, sectionColors);
-        addOutlineToTomb(savedTomb)
-
-      } else {
-        //console.log("Version desktop : surbrillance + modal + focus caméra");
-        setIsModalOpen(true);
-        focusOnObject(savedTomb,camera, orbitControlRef, sectionColors);
+    if (savedTomb) {
+      console.log("URL Parameter found:", savedTomb);
+      
+      // Fonction pour appliquer la surbrillance
+      const applyHighlight = () => {
+        if (window.tombsSystem && window.tombsSystem.tombPositions && window.tombsSystem.instanceColors) {
+          console.log("Applying highlight to tomb:", savedTomb);
+          
+          // Appliquer la surbrillance
+          highlightSelectedTomb(savedTomb);
+          
+          // Mettre à jour le state pour refléter la sélection
+          setSelectedTomb(savedTomb);
+          
+          // Récupérer les détails de la tombe
+          fetchTombDetails(savedTomb);
+          
+          // Si on veut aussi un focus caméra (optionnel)
+          // if (camera && orbitControlRef.current) {
+          //   focusOnObject(savedTomb, camera, orbitControlRef);
+          // }
+          
+          return true;
+        }
+        return false;
+      };
+      
+      // Créer un système de vérification périodique plus robuste
+      let attempts = 0;
+      const maxAttempts = 20; // Nombre maximal de tentatives
+      
+      const checkSystem = () => {
+        attempts++;
+        console.log(`Attempt ${attempts} to highlight tomb ${savedTomb}`);
+        
+        if (applyHighlight()) {
+          console.log("Successfully highlighted tomb");
+          return true;
+        } else if (attempts >= maxAttempts) {
+          console.warn("Failed to highlight tomb after maximum attempts");
+          return true;
+        }
+        return false;
+      };
+      
+      // Essayer immédiatement
+      if (!checkSystem()) {
+        // Mettre en place un intervalle pour vérifier périodiquement
+        const intervalId = setInterval(() => {
+          if (checkSystem()) {
+            clearInterval(intervalId);
+          }
+        }, 300); // Vérifier toutes les 300ms
+        
+        // Nettoyer l'intervalle après un certain temps (sécurité)
+        setTimeout(() => {
+          clearInterval(intervalId);
+          console.log("Highlight check timeout reached");
+        }, 6000); // Timeout après 6 secondes
       }
-
-      // Récupérer les détails de la tombe
-      fetchTombDetails(savedTomb);
     }
-  }, [tombClones, searchParams, camera, orbitControlRef]);
+  }, [searchParams]);
 
 
   useEffect(() => {
@@ -327,7 +369,7 @@ function Scene() {
         </div>
         {/* <Suspense fallback={<Loading />}> */}
         <Canvas
-          frameloop="demand"
+          // frameloop="demand"
           style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
           shadows
           camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
