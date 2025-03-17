@@ -3,19 +3,17 @@ import { useGLTF } from "@react-three/drei";
 import { useThree, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 import { GET_TOMBS } from "../config/api";
-import gsap from "gsap";
 import { focusOnObject } from "../utils/CameraUtils";
+import { initColorSystem, highlightSelectedTomb, updateInstanceColors } from "../utils/ColorsUtils";
+
 const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   const { scene, camera } = useThree();
   const [tombsData, setTombsData] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [refresh, setRefresh] = useState(0); // État pour forcer le rendu
+  const [refresh, setRefresh] = useState(0);
 
   // Référence aux maillages instanciés
   const instancedMeshesRef = useRef({});
-
-  // Stockage des couleurs des instances
-  const instanceColorsRef = useRef({});
 
   // Niveaux de détail
   const lodLevels = {
@@ -89,10 +87,13 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   
         setTombsData(flattenedTombs);
   
+
         // Initialiser le système global pour les tombes
         if (!window.tombsSystem) window.tombsSystem = {};
         window.tombsSystem.needsLODUpdate = true;
         window.tombsSystem.tombPositions = {};
+        window.tombsSystem.camera = camera;
+        window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
   
         // Enregistrer les positions de tombes
         flattenedTombs.forEach(tomb => {
@@ -105,13 +106,11 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
           };
         });
   
-        // Initialiser les couleurs pour chaque tombe
-        const colorMap = {};
-        flattenedTombs.forEach(tomb => {
-          colorMap[tomb.id] = new THREE.Color(0xFFFFFF);
-        });
-        instanceColorsRef.current = colorMap;
-  
+        // Initialiser le système de couleurs
+        initColorSystem(flattenedTombs);
+        if (window.tombsSystem) {
+          window.tombsSystem.initialized = true;
+        }
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des tombes:", error);
@@ -120,7 +119,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     };
   
     fetchTombs();
-  }, []);
+  }, [camera]);
 
   const updateLOD = () => {
     // Calculer la distance moyenne entre la caméra et le centre de la scène
@@ -172,59 +171,11 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   // Effet pour mettre à jour la couleur de la tombe sélectionnée
   useEffect(() => {
     if (!selectedTombId || !tombsData.length) return;
-
-    const selectedTomb = tombsData.find(tomb => tomb.id === selectedTombId);
-    if (!selectedTomb) return;
-
-    // Réinitialiser toutes les couleurs d'abord
-    Object.keys(instanceColorsRef.current).forEach(tombId => {
-      instanceColorsRef.current[tombId] = new THREE.Color(0xFFFFFF);
-    });
-
-    // Définir la couleur de la tombe sélectionnée
-    instanceColorsRef.current[selectedTombId] = new THREE.Color(0xFF0000);
-
-    // Mettre à jour les couleurs dans les meshes instanciés
-    updateInstanceColors();
-
+  
+    // Utiliser la fonction depuis ColorsUtils
+    highlightSelectedTomb(selectedTombId);
+    
   }, [selectedTombId, tombsData]);
-
-  // Fonction pour mettre à jour les couleurs des instances
-  const updateInstanceColors = () => {
-    if (!tombsData.length) return;
-
-    // Regrouper les tombes par type
-    const tombsByType = {};
-    tombsData.forEach(tomb => {
-      if (!tombsByType[tomb.type]) {
-        tombsByType[tomb.type] = [];
-      }
-      tombsByType[tomb.type].push(tomb);
-    });
-
-    // Mettre à jour les couleurs pour chaque type
-    Object.entries(tombsByType).forEach(([type, tombs]) => {
-      const mesh = instancedMeshesRef.current[type];
-      if (!mesh || !mesh.isInstancedMesh) return;
-
-      // Créer un nouveau tableau de couleurs
-      const colors = new Float32Array(tombs.length * 3);
-
-      // Remplir le tableau avec les couleurs actuelles
-      tombs.forEach((tomb, index) => {
-        const color = instanceColorsRef.current[tomb.id] || new THREE.Color(0xFFFFFF);
-        color.toArray(colors, index * 3);
-      });
-
-      // Mettre à jour le buffer de couleurs
-      if (!mesh.instanceColor) {
-        mesh.instanceColor = new THREE.InstancedBufferAttribute(colors, 3);
-      } else {
-        mesh.instanceColor.set(colors);
-      }
-      mesh.instanceColor.needsUpdate = true;
-    });
-  };
 
   // Mise à jour des InstancedMesh en fonction du LOD
   useEffect(() => {
@@ -244,6 +195,12 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
         tombsByType[tomb.type].push(tomb);
       }
     });
+    
+    // Mettre à jour la référence aux tombes groupées dans le système global
+    if (window.tombsSystem) {
+      window.tombsSystem.tombsByType = tombsByType;
+    }
+
 
     // Mise à jour des maillages instanciés pour chaque type
     Object.keys(tombsByType).forEach(type => {
@@ -299,13 +256,15 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     });
 
     // Mettre à jour les couleurs des instances après le changement de LOD
-    updateInstanceColors();
+    if (window.tombsSystem) {
+      window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
+      updateInstanceColors();
+     
+    }
 
-  }, [tombsData, loading, currentLOD, refresh]);
+  }, [tombsData, loading, currentLOD, refresh, tombModels]);
 
   // Fonction pour gérer le clic sur une tombe
-  // 
-  // Dans Tombs.jsx, modifiez la fonction handleTombClick comme suit :
   const handleTombClick = (event) => {
     if (!onTombClick) return;
 
@@ -319,11 +278,10 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     if (tombs[instanceId]) {
       const tomb = tombs[instanceId];
       onTombClick(tomb.id); // Mettre à jour l'ID de la tombe sélectionnée
-      // Utiliser la fonction externalisée pour focus sur la tombe
-      // Pas besoin de passer camera et orbitControlRef, car on utilise le window.tombsSystem
       focusOnObject(tomb.id);
     }
   };
+  
   // Exposer la méthode forceLODUpdate au système global
   useEffect(() => {
     if (window.tombsSystem) {
@@ -357,6 +315,10 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
             key={type}
             ref={(ref) => {
               instancedMeshesRef.current[type] = ref;
+              // Mettre à jour la référence dans le système global
+              if (window.tombsSystem) {
+                window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
+              }
             }}
             args={[null, null, count]}
             castShadow
