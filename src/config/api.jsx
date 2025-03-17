@@ -1,3 +1,4 @@
+
 const API_URL =!import.meta.env.PROD? import.meta.env.VITE_API_PUBLIC_URL : import.meta.env.VITE_API_LOCAL_URL ;
 
 const GET_TOMBS = `${API_URL}/tombs` 
