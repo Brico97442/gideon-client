@@ -16,7 +16,13 @@ import { useSearchParams } from "react-router-dom";
 import MainOrbitControl from '../utils/MainOrbitControl';
 import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
-import { highlightTombSection, addOutlineToTomb } from "../utils/ColorsUtils";
+import {
+  initColorSystem,
+  highlightSelectedTomb,
+  updateInstanceColors,
+  highlightTombSection,
+  createHighlightForTomb
+} from "../utils/ColorsUtils";
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
 // import { Bloom, EffectComposer, DepthOfField, Outline } from '@react-three/postprocessing';
@@ -32,7 +38,7 @@ import Button from "./Button";
 import Road from "../models/Road";
 // import Button from "./Button";
 // import Test from "./Test";
-import { initColorSystem, highlightSelectedTomb, updateInstanceColors } from "../utils/ColorsUtils";
+// import { initColorSystem, highlightSelectedTomb, updateInstanceColors } from "../utils/ColorsUtils";
 
 // Définition des couleurs des sections
 const sectionColors = {
@@ -97,7 +103,7 @@ function Scene() {
 
   const SceneCamera = () => {
     const { camera } = useThree();
-  
+
     useEffect(() => {
 
       if (!initialCameraPosition) {
@@ -113,13 +119,13 @@ function Scene() {
       // Ajouter la caméra et les contrôles d'orbite au système global
       window.tombsSystem.camera = camera;
       window.tombsSystem.orbitControlRef = orbitControlRef;
-  
+
       // Initialiser les éléments de scène dans le contexte
       if (tombClones.length > 0) {
         setSceneElements(camera, orbitControlRef, tombClones);
       }
     }, [camera, tombClones]);
-  
+
     return null;
   };
 
@@ -129,39 +135,86 @@ function Scene() {
 
     if (camera && orbitControlRef.current) {
       console.log("Focus sur la tombe:", id);
+
+      // Centrer la caméra sur la tombe
       focusOnObject(id, camera, orbitControlRef, sectionColors);
-      // highlightTombSection( id, sectionColors);
-      // addOutlineToTomb(id)
+
+      // Appliquer la surbrillance de section
+      highlightTombSection(id);
+
+      // Récupérer les données de la tombe sélectionnée
+      const tombData = window.tombsSystem.tombPositions[id];
+      if (tombData) {
+        // Puis créer la mise en évidence spécifique pour cette tombe
+        createHighlightForTomb(id, tombData, COLORS.SELECTED_TOMB, true);
+      }
+
+      // Récupérer les détails de la tombe
       fetchTombDetails(id);
       setIsShowUi(false);
-
     } else {
       fetchTombDetails(id);
     }
   };
+
+  // Et mettez également à jour la fonction handleTombFocus pour maintenir la cohérence
 
   const handleTombFocus = (id) => {
     setIsModalOpen(true);
     setSelectedTomb(id);
 
     if (camera && orbitControlRef.current) {
-      // console.log("Focus sur la tombe:", id);
-      focusOnObject(id,camera, orbitControlRef, sectionColors);
-      // highlightTombSection( id, sectionColors);
-      // addOutlineToTomb(id)
-      fetchTombDetail(id);
+      focusOnObject(id, camera, orbitControlRef, sectionColors);
+
+      // Appliquer la surbrillance de section ici aussi
+      highlightTombSection(id);
+      // Récupérer les données de la tombe sélectionnée
+      const tombData = window.tombsSystem.tombPositions[id];
+      if (tombData) {
+        // Puis créer la mise en évidence spécifique pour cette tombe
+        createHighlightForTomb(id, tombData, true);
+      }
+
+      // Récupérer les détails de la tombe
+      fetchTombDetails(id);
       setIsShowUi(false);
     } else {
-      fetchTombDetail(id);
+      fetchTombDetails(id);
     }
-  };
+  
+};;
 
-  const handleTopView = () => {
-    if (!camera) return;
-    setIsShowUi(true)
-    const topViewPosition = { x: 0, y: 120, z: 0.001 };
+const handleTopView = () => {
+  if (!camera) return;
+  setIsShowUi(true)
+  const topViewPosition = { x: 0, y: 120, z: 0.001 };
 
-    moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
+  moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
+
+  if (orbitControlRef.current) {
+    gsap.to(orbitControlRef.current.target, {
+      x: 0,
+      y: 0,
+      z: 0,
+      duration: 1.5,
+      ease: "power2.out",
+      onUpdate: () => orbitControlRef.current.update(),
+    });
+  }
+};
+
+const resetCameraPosition = () => {
+  if (initialCameraPosition) {
+    gsap.to(camera.position, {
+      x: initialCameraPosition.x,
+      y: initialCameraPosition.y,
+      z: initialCameraPosition.z,
+      duration: 1.5,
+      ease: "power2.out",
+      onUpdate: () => {
+        camera.lookAt(0, 0, 0);
+      },
+    });
 
     if (orbitControlRef.current) {
       gsap.to(orbitControlRef.current.target, {
@@ -170,150 +223,118 @@ function Scene() {
         z: 0,
         duration: 1.5,
         ease: "power2.out",
-        onUpdate: () => orbitControlRef.current.update(),
-      });
-    }
-  };
-
-  const resetCameraPosition = () => {
-    if (initialCameraPosition) {
-      gsap.to(camera.position, {
-        x: initialCameraPosition.x,
-        y: initialCameraPosition.y,
-        z: initialCameraPosition.z,
-        duration: 1.5,
-        ease: "power2.out",
         onUpdate: () => {
-          camera.lookAt(0, 0, 0);
+          orbitControlRef.current.update();
         },
       });
-
-      if (orbitControlRef.current) {
-        gsap.to(orbitControlRef.current.target, {
-          x: 0,
-          y: 0,
-          z: 0,
-          duration: 1.5,
-          ease: "power2.out",
-          onUpdate: () => {
-            orbitControlRef.current.update();
-          },
-        });
-      }
     }
-  };
-  useEffect(() => {
-    const savedTomb = searchParams.get("name");
-    if (savedTomb) {
-      console.log("URL Parameter found:", savedTomb);
-      
-      // Fonction pour appliquer la surbrillance
-      const applyHighlight = () => {
-        if (window.tombsSystem && window.tombsSystem.tombPositions && window.tombsSystem.instanceColors) {
-          console.log("Applying highlight to tomb:", savedTomb);
-          
-          // Appliquer la surbrillance
-          highlightSelectedTomb(savedTomb);
-          
-          // Mettre à jour le state pour refléter la sélection
-          setSelectedTomb(savedTomb);
-          
-          // Récupérer les détails de la tombe
-          fetchTombDetails(savedTomb);
-          
-          // Si on veut aussi un focus caméra (optionnel)
-          // if (camera && orbitControlRef.current) {
-          //   focusOnObject(savedTomb, camera, orbitControlRef);
-          // }
-          
-          return true;
-        }
-        return false;
-      };
-      
-      // Créer un système de vérification périodique plus robuste
-      let attempts = 0;
-      const maxAttempts = 20; // Nombre maximal de tentatives
-      
-      const checkSystem = () => {
-        attempts++;
-        console.log(`Attempt ${attempts} to highlight tomb ${savedTomb}`);
-        
-        if (applyHighlight()) {
-          console.log("Successfully highlighted tomb");
-          return true;
-        } else if (attempts >= maxAttempts) {
-          console.warn("Failed to highlight tomb after maximum attempts");
-          return true;
-        }
-        return false;
-      };
-      
-      // Essayer immédiatement
-      if (!checkSystem()) {
-        // Mettre en place un intervalle pour vérifier périodiquement
-        const intervalId = setInterval(() => {
-          if (checkSystem()) {
-            clearInterval(intervalId);
-          }
-        }, 300); // Vérifier toutes les 300ms
-        
-        // Nettoyer l'intervalle après un certain temps (sécurité)
-        setTimeout(() => {
-          clearInterval(intervalId);
-          console.log("Highlight check timeout reached");
-        }, 6000); // Timeout après 6 secondes
-      }
-    }
-  }, [searchParams]);
-
-
-  useEffect(() => {
-    const button = document.getElementById("top-view-btn");
-    if (button) {
-      button.addEventListener("click", handleTopView);
-    }
-  }, [camera]);
-
-  const handleCameraMove = (position) => {
-    // Déclencher une mise à jour des LOD sur le composant Tombs
-    if (window.tombsSystem) {
-      window.tombsSystem.needsLODUpdate = true;
-    }
-  };
-
-  const Loading = () => {
-    return (
-      <div className="bg-amber-600 z-60 h-full w-full text-white flex justify-center items-center "><p>Chargement de la carte en cours</p></div>
-    )
   }
+};
+useEffect(() => {
+  const savedTomb = searchParams.get("name");
+  if (savedTomb) {
+    console.log("URL Parameter found:", savedTomb);
 
-  // const handleStartApplication = () => {
-  //   setIsTransitioning(true);
-  //   setApplicationStart(true);
-  // };
+    // Fonction pour appliquer la surbrillance
+    const applyHighlight = () => {
+      if (window.tombsSystem && window.tombsSystem.tombPositions && window.tombsSystem.instanceColors) {
+        console.log("Applying highlight to tomb:", savedTomb);
 
-  // useEffect(() => {
-  //   setIsSceneLoaded(true)
+        // Appliquer la surbrillance
+        highlightSelectedTomb(savedTomb);
 
-  //   // if (isMobile && !isSceneLoaded) {
-  //   //   setApplicationStart(true);
-  //   //   setIsSceneLoaded(true)
-  //   // }
-  // }, [])
+        // Mettre à jour le state pour refléter la sélection
+        setSelectedTomb(savedTomb);
 
-  // const handleTransitionComplete = () => {
-  //   setIsTransitioning(false);
-  //   setIsSceneLoaded(true);
-  // };
+        // Récupérer les détails de la tombe
+        fetchTombDetails(savedTomb);
 
-  // useEffect(() => {
-  //   // console.log("Tombes reçues :", tombClones);
-  // }, [tombClones]);
+        return true;
+      }
+      return false;
+    };
 
+    // Créer un système de vérification périodique plus robuste
+    let attempts = 0;
+    const maxAttempts = 20; // Nombre maximal de tentatives
+
+    const checkSystem = () => {
+      attempts++;
+      console.log(`Attempt ${attempts} to highlight tomb ${savedTomb}`);
+
+      if (applyHighlight()) {
+        console.log("Successfully highlighted tomb");
+        return true;
+      } else if (attempts >= maxAttempts) {
+        console.warn("Failed to highlight tomb after maximum attempts");
+        return true;
+      }
+      return false;
+    };
+
+    // Essayer immédiatement
+    if (!checkSystem()) {
+      const intervalId = setInterval(() => {
+        if (checkSystem()) {
+          clearInterval(intervalId);
+        }
+      }, 300); // Vérifier toutes les 300ms
+
+      // Nettoyer l'intervalle après un certain temps(sécurité)
+      setTimeout(() => {
+        clearInterval(intervalId);
+      }, 6000);
+    }
+  }
+}, [searchParams]);
+
+
+useEffect(() => {
+  const button = document.getElementById("top-view-btn");
+  if (button) {
+    button.addEventListener("click", handleTopView);
+  }
+}, [camera]);
+
+const handleCameraMove = (position) => {
+  // Déclencher une mise à jour des LOD sur le composant Tombs
+  if (window.tombsSystem) {
+    window.tombsSystem.needsLODUpdate = true;
+  }
+};
+
+const Loading = () => {
   return (
-    <div className="main">
-      {/* <div className="fixed h-full w-full" onClick={handleStartApplication}>
+    <div className="bg-amber-600 z-60 h-full w-full text-white flex justify-center items-center "><p>Chargement de la carte en cours</p></div>
+  )
+}
+
+// const handleStartApplication = () => {
+//   setIsTransitioning(true);
+//   setApplicationStart(true);
+// };
+
+// useEffect(() => {
+//   setIsSceneLoaded(true)
+
+//   // if (isMobile && !isSceneLoaded) {
+//   //   setApplicationStart(true);
+//   //   setIsSceneLoaded(true)
+//   // }
+// }, [])
+
+// const handleTransitionComplete = () => {
+//   setIsTransitioning(false);
+//   setIsSceneLoaded(true);
+// };
+
+// useEffect(() => {
+//   // console.log("Tombes reçues :", tombClones);
+// }, [tombClones]);
+
+return (
+  <div className="main">
+    {/* <div className="fixed h-full w-full" onClick={handleStartApplication}>
           <div
             className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}
           >
@@ -331,113 +352,113 @@ function Scene() {
           <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }} frameloop="demand">
             <group>
               {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
-      {/* <ParticleSystem /> */}
-      {/* <pointLight
+    {/* <ParticleSystem /> */}
+    {/* <pointLight
                   position={[0, 0, 0]}
                   decay={0}
                   intensity={8}
                   color='yellow'
                 /> */}
-      {/* <ambientLight intensity={1} /> */}
-      {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-      {/* </Float> */}
-      {/* </group> */}
-      {/* {isTransitioning && (
+    {/* <ambientLight intensity={1} /> */}
+    {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
+    {/* </Float> */}
+    {/* </group> */}
+    {/* {isTransitioning && (
               <TransitionEffect
                 isTransitioning={isTransitioning}
                 onTransitionComplete={handleTransitionComplete}
               />
             )} */}
-      {/* </Canvas>
+    {/* </Canvas>
         </div> */}
 
-      {/* {applicationStart && ( */}
-      <div className="w-full h-full relative">
-        
-           
-          <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
-            <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
-              <Button btnValue="Passer en vue aérienne" />
-            </div>
-          </div>
-        
+    {/* {applicationStart && ( */}
+    <div className="w-full h-full relative">
 
-        <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
 
-        <div className={`transition-opacity duration-[1500] z-50`} >
-          <UserInterface handleTombFocus={handleTombFocus} />
+      <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
+        <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
+          <Button btnValue="Passer en vue aérienne" />
         </div>
-        {/* <Suspense fallback={<Loading />}> */}
-        <Canvas
-          // frameloop="demand"
-          style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
-          shadows
-          camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
-          id="tomb-canvas"
-          className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500 bg-red-500`}
-        >
+      </div>
 
-          <group>
-            <Pointer />
-            <Entrance />
-            <Wall />
-            <Ground />
-            <Cross />
-            {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
+
+      <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
+
+      <div className={`transition-opacity duration-[1500] z-50`} >
+        <UserInterface handleTombFocus={handleTombFocus} />
+      </div>
+      {/* <Suspense fallback={<Loading />}> */}
+      <Canvas
+        // frameloop="demand"
+        style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+        shadows
+        camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
+        id="tomb-canvas"
+        className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500 bg-red-500`}
+      >
+
+        <group>
+          <Pointer />
+          <Entrance />
+          <Wall />
+          <Ground />
+          <Cross />
+          {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                       <Text fontSize={2} color="white">
                       Vous êtes ici
                       </Text>
                       </Billboard> */}
-            <Road />
-            {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
-            <ambientLight intensity={3} />
-     
-            <Tombs
-              onTombClick={isMobile ? handleTombFocus : handleTombClick}
-              selectedTombId={selectedTomb}
-              orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
+          <Road />
+          {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
+          <ambientLight intensity={3} />
 
-            />              
-            {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
-          </group>
+          <Tombs
+            onTombClick={isMobile ? handleTombFocus : handleTombClick}
+            selectedTombId={selectedTomb}
+            orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
 
-          <SceneCamera frustumCulled={false} />
-          <MainOrbitControl
-            orbitControlRef={orbitControlRef}
-            frustumCulled={false}
-            onCameraMove={handleCameraMove}
           />
-          {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
-          <pointLight
-            position={[-10, -10, -10]}
-            decay={1}
-            intensity={Math.PI}
-            color='yellow'
-          />
+          {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
+        </group>
 
-          <Stats />
-        </Canvas>
-
-        {/* </Suspense> */}
-        <TombModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            clearSelectedTomb();
-            resetCameraPosition();
-            setIsShowUi(true)
-          }}
-          tombName={selectedTomb}
-          tombDetails={tombDetails}
-          tombId={tombId}
-          onTombClick={handleTombClick}
+        <SceneCamera frustumCulled={false} />
+        <MainOrbitControl
+          orbitControlRef={orbitControlRef}
+          frustumCulled={false}
+          onCameraMove={handleCameraMove}
         />
-      </div>
-      {/* )} */}
+        {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
+        <pointLight
+          position={[-10, -10, -10]}
+          decay={1}
+          intensity={Math.PI}
+          color='yellow'
+        />
+
+        <Stats />
+      </Canvas>
+
+      {/* </Suspense> */}
+      <TombModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          clearSelectedTomb();
+          resetCameraPosition();
+          setIsShowUi(true)
+        }}
+        tombName={selectedTomb}
+        tombDetails={tombDetails}
+        tombId={tombId}
+        onTombClick={handleTombClick}
+      />
     </div>
+    {/* )} */}
+  </div>
 
 
-  );
+);
 }
 
 export default Scene;
