@@ -319,8 +319,8 @@ function Scene() {
           !isModalOpen && isMobile &&
           <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
             <div className={`w-[416px] h-[76px] ${isSceneLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-1000`} >
-                  <Button btnValue="Passer en vue aérienne" />
-                </div>
+              <Button btnValue="Passer en vue aérienne" />
+            </div>
           </div>
         }
 
@@ -330,59 +330,54 @@ function Scene() {
           <UserInterface handleTombFocus={handleTombFocus} />
         </div>
         {/* <Suspense fallback={<Loading />}> */}
-          <Canvas
-            frameloop="demand"
-            style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
-            shadows
-            camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
-            id="tomb-canvas"
-            className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500 bg-red-500`}
-          >
+        <Canvas
+          frameloop="demand"
+          style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+          shadows
+          camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
+          id="tomb-canvas"
+          className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500 bg-red-500`}
+        >
 
-            <group>
-              {/* <Pointer /> */}
-              {/* <Entrance /> */}
-              {/* <Wall /> */}
-              {/* <Ground /> */}
-              {/* <Cross /> */}
-              {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
+          <group>
+            {/* <Pointer /> */}
+            {/* <Entrance /> */}
+            {/* <Wall /> */}
+            {/* <Ground /> */}
+            {/* <Cross /> */}
+            {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                       <Text fontSize={2} color="white">
                       Vous êtes ici
                       </Text>
                       </Billboard> */}
-              {/* <Road /> */}
-              {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
-              <ambientLight intensity={3} />
-              <Tombs
-                setTombClones={setTombClones}
-                onTombClick={isMobile ? handleTombFocus : handleTombClick}
-                selectedTombId={selectedTomb}
-                camera={camera}
-              />
-              {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
-            </group>
-           
-            <SceneCamera />
-            <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false}/>
+            {/* <Road /> */}
+            {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
+            <ambientLight intensity={3} />
+     
+            <Tombs
+              onTombClick={isMobile ? handleTombFocus : handleTombClick}
+              selectedTombId={selectedTomb}
+            />              
+            {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
+          </group>
 
+          {/* <SceneCamera frustumCulled={false} /> */}
+          <MainOrbitControl
+            orbitControlRef={orbitControlRef}
+            frustumCulled={false}
+            onCameraMove={handleCameraMove}
+          />
+          {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
+          <pointLight
+            position={[-10, -10, -10]}
+            decay={1}
+            intensity={Math.PI}
+            color='yellow'
+          />
 
-            {/* <SceneCamera frustumCulled={false} /> */}
-            <MainOrbitControl
-              orbitControlRef={orbitControlRef}
-              frustumCulled={false}
-              onCameraMove={handleCameraMove}
-            />           
-             {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
-            <pointLight
-              position={[-10, -10, -10]}
-              decay={1}
-              intensity={Math.PI}
-              color='yellow'
-            />
+          <Stats />
+        </Canvas>
 
-            <Stats />
-
-          </Canvas>
         {/* </Suspense> */}
         <TombModal
           isOpen={isModalOpen}
