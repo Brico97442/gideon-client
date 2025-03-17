@@ -24,8 +24,8 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
   // Seuils de distance pour les niveaux LOD
   const LOD_THRESHOLDS = {
-    HIGH: 20,
-    MEDIUM: 40
+    HIGH: 40,
+    MEDIUM: 80
   };
 
   // État du niveau de détail actuel
