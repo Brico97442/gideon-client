@@ -9,11 +9,12 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
   const [tombsData, setTombsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0); // État pour forcer le rendu
-  // const [instanceColors, setInstanceColors] = useState({});
-  // const [isClicked, setIsClicked] = useState(false)
-
+  
+  // Référence aux maillages instanciés
   const instancedMeshesRef = useRef({});
 
+  // Stockage des couleurs des instances
+  const instanceColorsRef = useRef({});
 
   // Niveaux de détail
   const lodLevels = {
@@ -62,7 +63,6 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
       medium: useGLTF("/3d-models/gltf/tomb/05/05mid.glb"),
       high: useGLTF("/3d-models/gltf/tomb/05/05high.glb"),
     },
-
   }), []);
 
   // Fonction pour récupérer les tombes depuis l'API
@@ -103,6 +103,13 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
             type: tomb.type
           };
         });
+
+        // Initialiser les couleurs pour chaque tombe
+        const colorMap = {};
+        flattenedTombs.forEach(tomb => {
+          colorMap[tomb.id] = new THREE.Color(0xFFFFFF);
+        });
+        instanceColorsRef.current = colorMap;
 
         setLoading(false);
       } catch (error) {
@@ -162,6 +169,63 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
     }
   });
 
+  // Effet pour mettre à jour la couleur de la tombe sélectionnée
+  useEffect(() => {
+    if (!selectedTombId || !tombsData.length) return;
+
+    const selectedTomb = tombsData.find(tomb => tomb.id === selectedTombId);
+    if (!selectedTomb) return;
+
+    // Réinitialiser toutes les couleurs d'abord
+    Object.keys(instanceColorsRef.current).forEach(tombId => {
+      instanceColorsRef.current[tombId] = new THREE.Color(0xFFFFFF);
+    });
+
+    // Définir la couleur de la tombe sélectionnée
+    instanceColorsRef.current[selectedTombId] = new THREE.Color(0xFF0000);
+
+    // Mettre à jour les couleurs dans les meshes instanciés
+    updateInstanceColors();
+
+  }, [selectedTombId, tombsData]);
+
+  // Fonction pour mettre à jour les couleurs des instances
+  const updateInstanceColors = () => {
+    if (!tombsData.length) return;
+
+    // Regrouper les tombes par type
+    const tombsByType = {};
+    tombsData.forEach(tomb => {
+      if (!tombsByType[tomb.type]) {
+        tombsByType[tomb.type] = [];
+      }
+      tombsByType[tomb.type].push(tomb);
+    });
+
+    // Mettre à jour les couleurs pour chaque type
+    Object.entries(tombsByType).forEach(([type, tombs]) => {
+      const mesh = instancedMeshesRef.current[type];
+      if (!mesh || !mesh.isInstancedMesh) return;
+
+      // Créer un nouveau tableau de couleurs
+      const colors = new Float32Array(tombs.length * 3);
+      
+      // Remplir le tableau avec les couleurs actuelles
+      tombs.forEach((tomb, index) => {
+        const color = instanceColorsRef.current[tomb.id] || new THREE.Color(0xFFFFFF);
+        color.toArray(colors, index * 3);
+      });
+
+      // Mettre à jour le buffer de couleurs
+      if (!mesh.instanceColor) {
+        mesh.instanceColor = new THREE.InstancedBufferAttribute(colors, 3);
+      } else {
+        mesh.instanceColor.set(colors);
+      }
+      mesh.instanceColor.needsUpdate = true;
+    });
+  };
+
   // Mise à jour des InstancedMesh en fonction du LOD
   useEffect(() => {
     if (loading || tombsData.length === 0) return;
@@ -174,8 +238,6 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
       4: [],
       5: []
     };
-
-    // console.log(tombsByType)
 
     tombsData.forEach(tomb => {
       if (tombsByType[tomb.type]) {
@@ -236,6 +298,9 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
       mesh.instanceMatrix.needsUpdate = true;
     });
 
+    // Mettre à jour les couleurs des instances après le changement de LOD
+    updateInstanceColors();
+
   }, [tombsData, loading, currentLOD, refresh]);
 
   // Fonction pour gérer le clic sur une tombe
@@ -243,8 +308,8 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
     if (!onTombClick) return;
 
     event.stopPropagation();
-    const instanceId = event.instanceId; // Identifie l'instance sur laquelle on a cliqué
-    const tombType = event.object.userData.type; // Récupère le type de la tombe (par exemple 1, 2, 3, etc.)
+    const instanceId = event.instanceId;
+    const tombType = event.object.userData.type;
 
     // Trouver la tombe correspondante par son type et instanceId
     const tombs = tombsData.filter(tomb => tomb.type === Number(tombType));
@@ -252,25 +317,9 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
     // Vérifier si l'instanceId est valide
     if (tombs[instanceId]) {
       const tomb = tombs[instanceId];
-      onTombClick(tomb.id); // Appelle la fonction de rappel avec l'ID de la tombe sélectionnée
-
-      const mesh = event.object; // C'est le `InstancedMesh` où la tombe est dessinée
-      console.log(mesh);
-
-      // Vérifier si le maillage existe et si le matériau a une propriété `color`
-      if (mesh && mesh.material && mesh.material instanceof THREE.MeshStandardMaterial) {
-        // On choisit la couleur, ici 0xFF0000 pour rouge
-        const newColor = new THREE.Color(0xFF0000); // Rouge
-
-        // Changer la couleur de l'instance cliquée seulement
-        mesh.setColorAt(instanceId, newColor); // Rouge
-
-        // Signaler que la couleur de l'instance a changé
-        mesh.instanceColor.needsUpdate = true; // Mettre à jour la couleur de l'instance
-      }
+      onTombClick(tomb.id); // Appeler le gestionnaire externe qui mettra à jour selectedTombId
     }
   };
-
 
   // Exposer la méthode forceLODUpdate au système global
   useEffect(() => {
@@ -299,17 +348,21 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
 
   return (
     <group>
-      {Object.entries(countByType).map(([type, count]) => (
-        <instancedMesh
-          key={type}
-          ref={(ref) => (instancedMeshesRef.current[type] = ref)}
-          args={[null, null, count]}
-          castShadow
-          receiveShadow
-          onClick={handleTombClick}
-          userData={{ type }}
-        />
-      ))}
+      {Object.entries(countByType).map(([type, count]) => {
+        return (
+          <instancedMesh
+            key={type}
+            ref={(ref) => {
+              instancedMeshesRef.current[type] = ref;
+            }}
+            args={[null, null, count]}
+            castShadow
+            receiveShadow
+            onClick={handleTombClick}
+            userData={{ type }}
+          />
+        );
+      })}
     </group>
   );
 };
