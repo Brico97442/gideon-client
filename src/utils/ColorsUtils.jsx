@@ -176,17 +176,54 @@ export const highlightTombSection = (selectedTombId) => {
 // };
 
 // Créer un objet de surbrillance pour une tombe spécifique
-export const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
-  if (!window.tombsSystem.highlightGroup) return;
+export const createHighlightForTomb = (tombId) => {
+  // Vérifier si le système est initialisé
+  if (!window.tombsSystem || !window.tombsSystem.tombPositions) {
+    console.warn("Système de tombes non disponible");
+    return;
+  }
+  
+  // Récupérer les données de la tombe
+  const tombData = window.tombsSystem.tombPositions[tombId];
+  if (!tombData) {
+    console.warn("Aucune tombe trouvée avec l'ID:", tombId);
+    return;
+  }
+  
+  // Vérifier si le groupe highlight existe
+  if (!window.tombsSystem.highlightGroup) {
+    // Créer le groupe s'il n'existe pas
+    window.tombsSystem.highlightGroup = new THREE.Group();
+    
+    // Ajouter le groupe à la scène
+    if (window.tombsSystem.scene) {
+      window.tombsSystem.scene.add(window.tombsSystem.highlightGroup);
+    } else {
+      console.warn("Scene not available for highlight group");
+      return;
+    }
+  }
+  
+  // Nettoyer les anciennes surbrillances
+  if (window.tombsSystem.highlightGroup) {
+    while (window.tombsSystem.highlightGroup.children.length > 0) {
+      const child = window.tombsSystem.highlightGroup.children[0];
+      window.tombsSystem.highlightGroup.remove(child);
+      
+      // Nettoyer la géométrie et le matériau
+      if (child.geometry) child.geometry.dispose();
+      if (child.material) child.material.dispose();
+    }
+  }
   
   // Créer une boîte englobante pour la tombe
   const boxGeometry = new THREE.BoxGeometry(1, 1, 1);
   
-  // Créer un matériau basique
+  // Créer un matériau basique pour la surbrillance
   const material = new THREE.MeshBasicMaterial({
-    color: new THREE.Color(color),
+    color: new THREE.Color(COLORS.SELECTED_TOMB),
     transparent: true,
-    opacity: isSelected ? 0.5 : 0.3,
+    opacity: 0.5,
     side: THREE.DoubleSide,
     depthTest: false,
     wireframe: false
@@ -199,37 +236,36 @@ export const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
   highlightMesh.userData = { 
     id: tombId,
     isHighlight: true,
-    isSelected: isSelected
+    isSelected: true
   };
   
   // Ajouter au groupe de surbrillance
   window.tombsSystem.highlightGroup.add(highlightMesh);
   
-  // Si c'est la tombe sélectionnée, ajouter un effet supplémentaire
-  if (isSelected) {
-    // Créer un matériau lumineux pour la tombe sélectionnée
-    const glowMaterial = new THREE.MeshBasicMaterial({
-      color: new THREE.Color(COLORS.GLOW),
-      transparent: true,
-      opacity: 0.9,
-      side: THREE.FrontSide,
-      depthTest: false,
-      wireframe: false
-    });
-    
-    // Créer un mesh supplémentaire pour l'effet de lueur
-    const glowMesh = new THREE.Mesh(boxGeometry, glowMaterial);
-    glowMesh.position.set(tombData.x, tombData.y, tombData.z);
-    glowMesh.scale.set(1.5, 1.5, 1.5); // Encore plus grand pour l'effet de lueur
-    glowMesh.userData = { 
-      id: tombId,
-      isHighlight: true,
-      isGlow: true
-    };
-    
-    // Ajouter au groupe de surbrillance
-    window.tombsSystem.highlightGroup.add(glowMesh);
-  }
+  // Créer un matériau lumineux pour l'effet de glow
+  const glowMaterial = new THREE.MeshBasicMaterial({
+    color: new THREE.Color(COLORS.GLOW),
+    transparent: true,
+    opacity: 0.9,
+    side: THREE.FrontSide,
+    depthTest: false,
+    wireframe: false
+  });
+  
+  // Créer un mesh supplémentaire pour l'effet de lueur
+  const glowMesh = new THREE.Mesh(boxGeometry, glowMaterial);
+  glowMesh.position.set(tombData.x, tombData.y, tombData.z);
+  glowMesh.scale.set(1.5, 1.5, 1.5); // Encore plus grand pour l'effet de lueur
+  glowMesh.userData = { 
+    id: tombId,
+    isHighlight: true,
+    isGlow: true
+  };
+  
+  // Ajouter au groupe de surbrillance
+  window.tombsSystem.highlightGroup.add(glowMesh);
+  
+  console.log("Glow effect added for tomb:", tombId);
 };
 
 export const initColorSystem = (tombsData) => {
