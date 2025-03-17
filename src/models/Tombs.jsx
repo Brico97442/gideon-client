@@ -9,26 +9,28 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
   const [tombsData, setTombsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0); // État pour forcer le rendu
+  // const [instanceColors, setInstanceColors] = useState({});
+  // const [isClicked, setIsClicked] = useState(false)
 
-  // Références pour les InstancedMesh
   const instancedMeshesRef = useRef({});
-  
+
+
   // Niveaux de détail
   const lodLevels = {
     LOW: 'low',
     MEDIUM: 'medium',
     HIGH: 'high'
   };
-  
+
   // Seuils de distance pour les niveaux LOD
   const LOD_THRESHOLDS = {
-    HIGH: 15, // Utiliser le modèle haute résolution en dessous de 15 unités
-    MEDIUM: 30 // Utiliser le modèle moyenne résolution entre 15 et 30 unités
+    HIGH: 20, // Utiliser le modèle haute résolution en dessous de 15 unités
+    MEDIUM: 40 // Utiliser le modèle moyenne résolution entre 15 et 30 unités
   };
-  
+
   // État du niveau de détail actuel
   const [currentLOD, setCurrentLOD] = useState(lodLevels.LOW);
-  
+
   // Surveillance des changements de position de la caméra
   const cameraPositionRef = useRef(new THREE.Vector3());
   const needsUpdate = useRef(true);
@@ -46,19 +48,19 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
       high: useGLTF("/3d-models/gltf/tomb/02/02high.glb"),
     },
     3: {
-      low: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
-      medium: useGLTF("/3d-models/gltf/tomb/02/02mid.glb"),
-      high: useGLTF("/3d-models/gltf/tomb/02/02high.glb"),
+      low: useGLTF("/3d-models/gltf/tomb/03/03low.glb"),
+      medium: useGLTF("/3d-models/gltf/tomb/03/03mid.glb"),
+      high: useGLTF("/3d-models/gltf/tomb/03/03high.glb"),
     },
     4: {
-      low: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
-      medium: useGLTF("/3d-models/gltf/tomb/02/02mid.glb"),
-      high: useGLTF("/3d-models/gltf/tomb/02/02high.glb"),
+      low: useGLTF("/3d-models/gltf/tomb/04/04low.glb"),
+      medium: useGLTF("/3d-models/gltf/tomb/04/04mid.glb"),
+      high: useGLTF("/3d-models/gltf/tomb/04/04high.glb"),
     },
     5: {
-      low: useGLTF("/3d-models/gltf/tomb/02/02low.glb"),
-      medium: useGLTF("/3d-models/gltf/tomb/02/02mid.glb"),
-      high: useGLTF("/3d-models/gltf/tomb/02/02high.glb"),
+      low: useGLTF("/3d-models/gltf/tomb/05/05low.glb"),
+      medium: useGLTF("/3d-models/gltf/tomb/05/05mid.glb"),
+      high: useGLTF("/3d-models/gltf/tomb/05/05high.glb"),
     },
 
   }), []);
@@ -85,12 +87,12 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
         });
 
         setTombsData(flattenedTombs);
-        
+
         // Initialiser le système global pour les tombes
         if (!window.tombsSystem) window.tombsSystem = {};
         window.tombsSystem.needsLODUpdate = true;
         window.tombsSystem.tombPositions = {};
-        
+
         // Enregistrer les positions de tombes
         flattenedTombs.forEach(tomb => {
           window.tombsSystem.tombPositions[tomb.id] = {
@@ -101,7 +103,7 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
             type: tomb.type
           };
         });
-        
+
         setLoading(false);
       } catch (error) {
         console.error("Erreur lors de la récupération des tombes:", error);
@@ -116,7 +118,7 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
   const updateLOD = () => {
     // Calculer la distance moyenne entre la caméra et le centre de la scène
     const distance = camera.position.length();
-    
+
     let newLOD;
     if (distance < LOD_THRESHOLDS.HIGH) {
       newLOD = lodLevels.HIGH;
@@ -125,14 +127,14 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
     } else {
       newLOD = lodLevels.LOW;
     }
-    
+
     // Mettre à jour le LOD seulement si nécessaire
     if (newLOD !== currentLOD) {
       console.log(`Distance: ${distance.toFixed(2)}, LOD: ${newLOD}`);
       setCurrentLOD(newLOD);
       return true;
     }
-    
+
     return false;
   };
 
@@ -143,16 +145,16 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
       cameraPositionRef.current.copy(camera.position);
       needsUpdate.current = true;
     }
-    
+
     // Mettre à jour le LOD si nécessaire
     if (needsUpdate.current || (window.tombsSystem && window.tombsSystem.needsLODUpdate)) {
       const changed = updateLOD();
-      
+
       // Forcer un rafraîchissement du rendu si le LOD a changé
       if (changed) {
         setRefresh(prev => prev + 1);
       }
-      
+
       needsUpdate.current = false;
       if (window.tombsSystem) {
         window.tombsSystem.needsLODUpdate = false;
@@ -163,7 +165,7 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
   // Mise à jour des InstancedMesh en fonction du LOD
   useEffect(() => {
     if (loading || tombsData.length === 0) return;
-    
+
     // Grouper les tombes par type
     const tombsByType = {
       1: [],
@@ -172,23 +174,25 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
       4: [],
       5: []
     };
-    
+
+    // console.log(tombsByType)
+
     tombsData.forEach(tomb => {
       if (tombsByType[tomb.type]) {
         tombsByType[tomb.type].push(tomb);
       }
     });
-    
+
     // Mise à jour des maillages instanciés pour chaque type
     Object.keys(tombsByType).forEach(type => {
       const tombs = tombsByType[type];
       const mesh = instancedMeshesRef.current[type];
       if (!mesh || tombs.length === 0) return;
-      
+
       // Obtenir le modèle 3D pour le niveau de détail actuel
       const model = tombModels[type][currentLOD];
       if (!model) return;
-      
+
       // Extraire la géométrie et le matériau
       let geometry, material;
       model.scene.traverse(child => {
@@ -197,23 +201,23 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
           material = child.material.clone();
         }
       });
-      
+
       if (!geometry || !material) return;
-      
+
       // Mettre à jour la géométrie et le matériau
       mesh.geometry = geometry;
       mesh.material = material;
-      
+
       // Positionner chaque instance
       tombs.forEach((tomb, index) => {
         const matrix = new THREE.Matrix4();
-        
+
         const position = new THREE.Vector3(
           tomb.tombTransform.position[0],
           tomb.tombTransform.position[2],
           -tomb.tombTransform.position[1]
         );
-        
+
         const quaternion = new THREE.Quaternion().setFromEuler(
           new THREE.Euler(
             tomb.tombTransform.rotation[0],
@@ -221,34 +225,60 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
             tomb.tombTransform.rotation[1]
           )
         );
-        
+
         const scale = new THREE.Vector3(1, 1, 1);
-        
+
         matrix.compose(position, quaternion, scale);
         mesh.setMatrixAt(index, matrix);
       });
-      
+
       // Mettre à jour la matrice d'instance
       mesh.instanceMatrix.needsUpdate = true;
     });
-    
+
   }, [tombsData, loading, currentLOD, refresh]);
 
   // Fonction pour gérer le clic sur une tombe
-  const handleTombClick = (event) => {
+  let previousInstanceId = null; // Stocker l'instance précédemment cliquée
+let previousMesh = null; // Stocker le dernier maillage cliqué
+
+const handleTombClick = (event) => {
     if (!onTombClick) return;
-    
+
     event.stopPropagation();
-    const instanceId = event.instanceId;
-    const tombType = event.object.userData.type;
-    
-    // Trouver la tombe correspondante
+    const mesh = event.object; // Récupérer l'InstancedMesh
+    const instanceId = event.instanceId; // ID de l'instance cliquée
+    const tombType = mesh.userData.type; // Type de la tombe
+
     const tombs = tombsData.filter(tomb => tomb.type === Number(tombType));
-    if (tombs && tombs[instanceId]) {
-      onTombClick(tombs[instanceId].id);
+
+    if (tombs[instanceId]) {
+        const tomb = tombs[instanceId];
+        onTombClick(tomb.id); 
+
+        if (mesh && mesh.material && mesh.material instanceof THREE.MeshStandardMaterial) {
+            const newColor = new THREE.Color(0xFF0000); // Rouge
+            const defaultColor = new THREE.Color(0xFFFFFF); // Blanc (ou couleur d'origine)
+
+            // Réinitialiser l'ancienne instance si elle existe
+            if (previousMesh && previousInstanceId !== null && (previousMesh !== mesh || previousInstanceId !== instanceId)) {
+                previousMesh.setColorAt(previousInstanceId, defaultColor);
+                previousMesh.instanceColor.needsUpdate = true;
+            }
+
+            // Appliquer la couleur rouge à la nouvelle instance cliquée
+            mesh.setColorAt(instanceId, newColor);
+            mesh.instanceColor.needsUpdate = true;
+
+            // Sauvegarder la nouvelle sélection
+            previousInstanceId = instanceId;
+            previousMesh = mesh;
+        }
     }
-  };
-  
+};
+
+
+
   // Exposer la méthode forceLODUpdate au système global
   useEffect(() => {
     if (window.tombsSystem) {
@@ -256,7 +286,7 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
         needsUpdate.current = true;
       };
     }
-    
+
     return () => {
       if (window.tombsSystem) {
         window.tombsSystem.forceLODUpdate = undefined;
