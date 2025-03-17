@@ -101,8 +101,8 @@ function Scene() {
   }
 
   const SceneCamera = () => {
-    const { camera, scene } = useThree();
-    window.tombsSystem.scene = scene;
+    const { camera } = useThree();
+    // window.tombsSystem.scene = scene;
     useEffect(() => {
 
       if (!initialCameraPosition) {
