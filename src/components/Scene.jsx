@@ -340,17 +340,17 @@ function Scene() {
         >
 
           <group>
-            <Pointer />
-            <Entrance />
+            {/* <Pointer /> */}
+            {/* <Entrance /> */}
             <Wall />
-            <Ground />
-            <Cross />
+            {/* <Ground /> */}
+            {/* <Cross /> */}
             {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                       <Text fontSize={2} color="white">
                       Vous êtes ici
                       </Text>
                       </Billboard> */}
-            <Road />
+            {/* <Road /> */}
             {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
             <ambientLight intensity={3} />
      
