@@ -96,44 +96,45 @@ function Scene() {
 
   const SceneCamera = () => {
     const { camera } = useThree();
-
+  
     useEffect(() => {
+
       if (!initialCameraPosition) {
         setInitialCameraPosition(camera.position.clone());
       }
-
       // Définir l'état de la caméra
       setCamera(camera);
 
+      // Initialiser les éléments de scène dans le système global
+      if (!window.tombsSystem) {
+        window.tombsSystem = {};
+      }
+      // Ajouter la caméra et les contrôles d'orbite au système global
+      window.tombsSystem.camera = camera;
+      window.tombsSystem.orbitControlRef = orbitControlRef;
+  
       // Initialiser les éléments de scène dans le contexte
       if (tombClones.length > 0) {
-        // console.log("Initialisation des éléments de scène avec", tombClones.length, "tombes");
         setSceneElements(camera, orbitControlRef, tombClones);
       }
     }, [camera, tombClones]);
-
+  
     return null;
   };
-
 
   const handleTombClick = (id) => {
     setIsModalOpen(true);
     setSelectedTomb(id);
 
-    if (camera && tombClones.length > 0 && orbitControlRef.current) {
+    if (camera && orbitControlRef.current) {
       console.log("Focus sur la tombe:", id);
-      focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);
-      highlightTombSection(tombClones, id, sectionColors);
-      addOutlineToTomb(tombClones, id)
+      focusOnObject(id, camera, orbitControlRef, sectionColors);
+      // highlightTombSection( id, sectionColors);
+      // addOutlineToTomb(id)
       fetchTombDetails(id);
       setIsShowUi(false);
 
     } else {
-      console.warn("État des dépendances:", {
-        camera: !!camera,
-        tombClonesLength: tombClones.length,
-        orbitControlRef: !!orbitControlRef.current
-      });
       fetchTombDetails(id);
     }
   };
@@ -142,19 +143,14 @@ function Scene() {
     setIsModalOpen(true);
     setSelectedTomb(id);
 
-    if (camera && tombClones.length > 0 && orbitControlRef.current) {
+    if (camera && orbitControlRef.current) {
       // console.log("Focus sur la tombe:", id);
-      focusOnObject(id, tombClones, camera, orbitControlRef, sectionColors);
-      highlightTombSection(tombClones, id, sectionColors);
-      addOutlineToTomb(tombClones, id)
+      focusOnObject(id,camera, orbitControlRef, sectionColors);
+      // highlightTombSection( id, sectionColors);
+      // addOutlineToTomb(id)
       fetchTombDetail(id);
       setIsShowUi(false);
     } else {
-      console.warn("État des dépendances:", {
-        camera: !!camera,
-        tombClonesLength: tombClones.length,
-        orbitControlRef: !!orbitControlRef.current
-      });
       fetchTombDetail(id);
     }
   };
@@ -208,20 +204,20 @@ function Scene() {
 
   useEffect(() => {
     const savedTomb = searchParams.get("name");
-    if (savedTomb && tombClones.length > 0 && camera && orbitControlRef.current) {
+    if (savedTomb && camera && orbitControlRef.current) {
 
       // Mettre à jour le contexte avec la tombe sélectionnée
       selectTomb(savedTomb);
 
       if (isMobile) {
         //console.log("Version mobile : uniquement surbrillance sans modal");
-        highlightTombSection(tombClones, savedTomb, sectionColors);
-        addOutlineToTomb(tombClones, savedTomb)
+        highlightTombSection( savedTomb, sectionColors);
+        addOutlineToTomb(savedTomb)
 
       } else {
         //console.log("Version desktop : surbrillance + modal + focus caméra");
         setIsModalOpen(true);
-        focusOnObject(savedTomb, tombClones, camera, orbitControlRef, sectionColors);
+        focusOnObject(savedTomb,camera, orbitControlRef, sectionColors);
       }
 
       // Récupérer les détails de la tombe
@@ -357,6 +353,8 @@ function Scene() {
             <Tombs
               onTombClick={isMobile ? handleTombFocus : handleTombClick}
               selectedTombId={selectedTomb}
+              orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
+
             />              
             {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
           </group>
