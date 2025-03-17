@@ -60,6 +60,7 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
       medium: useGLTF("/3d-models/gltf/tomb/02/02mid.glb"),
       high: useGLTF("/3d-models/gltf/tomb/02/02high.glb"),
     },
+
   }), []);
 
   // Fonction pour récupérer les tombes depuis l'API

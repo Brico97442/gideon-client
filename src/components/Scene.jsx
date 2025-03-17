@@ -353,12 +353,7 @@ function Scene() {
             {/* <Road /> */}
             {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
             <ambientLight intensity={3} />
-            {/* <Tombs
-                setTombClones={setTombClones}
-                onTombClick={isMobile ? handleTombFocus : handleTombClick}
-                selectedTombId={selectedTomb}
-                camera={camera}
-              /> */}
+     
             <Tombs
               onTombClick={isMobile ? handleTombFocus : handleTombClick}
               selectedTombId={selectedTomb}
@@ -382,6 +377,7 @@ function Scene() {
 
           <Stats />
         </Canvas>
+
         {/* </Suspense> */}
         <TombModal
           isOpen={isModalOpen}
