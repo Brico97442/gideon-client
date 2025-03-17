@@ -239,44 +239,37 @@ const Tombs = ({ onTombClick, selectedTombId }) => {
   }, [tombsData, loading, currentLOD, refresh]);
 
   // Fonction pour gérer le clic sur une tombe
-  let previousInstanceId = null; // Stocker l'instance précédemment cliquée
-let previousMesh = null; // Stocker le dernier maillage cliqué
-
-const handleTombClick = (event) => {
+  const handleTombClick = (event) => {
     if (!onTombClick) return;
 
     event.stopPropagation();
-    const mesh = event.object; // Récupérer l'InstancedMesh
-    const instanceId = event.instanceId; // ID de l'instance cliquée
-    const tombType = mesh.userData.type; // Type de la tombe
+    const instanceId = event.instanceId; // Identifie l'instance sur laquelle on a cliqué
+    const tombType = event.object.userData.type; // Récupère le type de la tombe (par exemple 1, 2, 3, etc.)
 
+    // Trouver la tombe correspondante par son type et instanceId
     const tombs = tombsData.filter(tomb => tomb.type === Number(tombType));
 
+    // Vérifier si l'instanceId est valide
     if (tombs[instanceId]) {
-        const tomb = tombs[instanceId];
-        onTombClick(tomb.id); 
+      const tomb = tombs[instanceId];
+      onTombClick(tomb.id); // Appelle la fonction de rappel avec l'ID de la tombe sélectionnée
 
-        if (mesh && mesh.material && mesh.material instanceof THREE.MeshStandardMaterial) {
-            const newColor = new THREE.Color(0xFF0000); // Rouge
-            const defaultColor = new THREE.Color(0xFFFFFF); // Blanc (ou couleur d'origine)
+      const mesh = event.object; // C'est le `InstancedMesh` où la tombe est dessinée
+      console.log(mesh);
 
-            // Réinitialiser l'ancienne instance si elle existe
-            if (previousMesh && previousInstanceId !== null && (previousMesh !== mesh || previousInstanceId !== instanceId)) {
-                previousMesh.setColorAt(previousInstanceId, defaultColor);
-                previousMesh.instanceColor.needsUpdate = true;
-            }
+      // Vérifier si le maillage existe et si le matériau a une propriété `color`
+      if (mesh && mesh.material && mesh.material instanceof THREE.MeshStandardMaterial) {
+        // On choisit la couleur, ici 0xFF0000 pour rouge
+        const newColor = new THREE.Color(0xFF0000); // Rouge
 
-            // Appliquer la couleur rouge à la nouvelle instance cliquée
-            mesh.setColorAt(instanceId, newColor);
-            mesh.instanceColor.needsUpdate = true;
+        // Changer la couleur de l'instance cliquée seulement
+        mesh.setColorAt(instanceId, newColor); // Rouge
 
-            // Sauvegarder la nouvelle sélection
-            previousInstanceId = instanceId;
-            previousMesh = mesh;
-        }
+        // Signaler que la couleur de l'instance a changé
+        mesh.instanceColor.needsUpdate = true; // Mettre à jour la couleur de l'instance
+      }
     }
-};
-
+  };
 
 
   // Exposer la méthode forceLODUpdate au système global
