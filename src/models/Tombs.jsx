@@ -24,7 +24,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
   // Seuils de distance pour les niveaux LOD
   const LOD_THRESHOLDS = {
-    HIGH: 40,
+    HIGH: 60,
     MEDIUM: 80
   };
 
@@ -73,7 +73,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
           throw new Error(`Erreur HTTP: ${response.status}`);
         }
         const data = await response.json();
-  
+
         // Transformation des données pour un accès facile
         const flattenedTombs = [];
         data.forEach((section) => {
@@ -84,9 +84,9 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
             });
           });
         });
-  
+
         setTombsData(flattenedTombs);
-  
+
 
         // Initialiser le système global pour les tombes
         if (!window.tombsSystem) window.tombsSystem = {};
@@ -94,7 +94,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
         window.tombsSystem.tombPositions = {};
         window.tombsSystem.camera = camera;
         window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
-  
+
         // Enregistrer les positions de tombes
         flattenedTombs.forEach(tomb => {
           window.tombsSystem.tombPositions[tomb.id] = {
@@ -105,7 +105,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
             type: tomb.type
           };
         });
-  
+
         // Initialiser le système de couleurs
         initColorSystem(flattenedTombs);
         if (window.tombsSystem) {
@@ -117,7 +117,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
         setLoading(false);
       }
     };
-  
+
     fetchTombs();
   }, [camera]);
 
@@ -171,10 +171,10 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   // Effet pour mettre à jour la couleur de la tombe sélectionnée
   useEffect(() => {
     if (!selectedTombId || !tombsData.length) return;
-  
+
     // Utiliser la fonction depuis ColorsUtils
     highlightSelectedTomb(selectedTombId);
-    
+
   }, [selectedTombId, tombsData]);
 
   // Mise à jour des InstancedMesh en fonction du LOD
@@ -195,7 +195,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
         tombsByType[tomb.type].push(tomb);
       }
     });
-    
+
     // Mettre à jour la référence aux tombes groupées dans le système global
     if (window.tombsSystem) {
       window.tombsSystem.tombsByType = tombsByType;
@@ -244,7 +244,14 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
             tomb.tombTransform.rotation[1]
           )
         );
-
+        window.tombsSystem.tombPositions[tomb.id] = {
+          x: tomb.tombTransform.position[0],
+          y: tomb.tombTransform.position[2],
+          z: -tomb.tombTransform.position[1],
+          sectionId: tomb.sectionId,
+          type: tomb.type,
+          quaternion: quaternion // Stocker le quaternion
+        };
         const scale = new THREE.Vector3(1, 1, 1);
 
         matrix.compose(position, quaternion, scale);
@@ -259,7 +266,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     if (window.tombsSystem) {
       window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
       updateInstanceColors();
-     
+
     }
 
   }, [tombsData, loading, currentLOD, refresh, tombModels]);
@@ -281,7 +288,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       focusOnObject(tomb.id);
     }
   };
-  
+
   // Exposer la méthode forceLODUpdate au système global
   useEffect(() => {
     if (window.tombsSystem) {
