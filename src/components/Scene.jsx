@@ -405,7 +405,7 @@ function Scene() {
         </div>
         <Suspense fallback={<Loading />}>
           <Canvas
-            // frameloop="demand"
+            frameloop="demand"
             style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
             shadows
             camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
@@ -434,7 +434,7 @@ function Scene() {
                 orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
                 glowLayer={[glowLayer]}
               />
-              <EffectComposer>
+              {/* <EffectComposer>
                 <Bloom
                   intensity={0.5}
                   luminanceThreshold={0.2}
@@ -444,7 +444,7 @@ function Scene() {
                   selectiveBloomEffect={true}
                   selection={[glowLayer]}
                 />
-              </EffectComposer>
+              </EffectComposer> */}
               <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
             </group>
 
