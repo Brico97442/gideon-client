@@ -2,7 +2,7 @@ import { lazy } from "react";
 
 const AppLayout = lazy(() => import("../layout/AppLayout"));
 const Willy = lazy(() => import("../layout/Willy"));
-const Damien = lazy(() => import("../layout/Damien"));
+const Vincent = lazy(() => import("../layout/Vincent"));
 
 export const ROUTES = [
   {
@@ -14,8 +14,8 @@ export const ROUTES = [
     element: <Willy/>,
   },
   {
-    path: "/damien", 
-    element: <Damien/>,
+    path: "/vincent", 
+    element: <Vincent/>,
   },
   {
     path: "*", 
