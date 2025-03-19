@@ -125,7 +125,7 @@ const TombModal = ({ isOpen, onClose }) => {
     <div id="ui" className={`lg:block lg:w-auto absolute ${modalPositionClass} transition-all duration-1000 ease-in-out mx-2 py-2 lg:mr-3 lg:py-6 h-full z-50`}>
       <div className="w-full lg:w-[400px] lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] pt-7 h-full relative">
         <img src={modalRightBackground} alt="modal droite background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" />
-        <div className="modal-shape-container relative font-orbitron flex flex-col items-center h-full text-white">
+        <div className="modal-shape-container relative font-orbitron flex flex-col items-center h-full text-dark-green">
           <div className="flex flex-col items-center h-full">
             <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center items-center p-2 rounded-xl`}>
               <QRCodeCanvas value={qrValue} size={150} bgColor="#C7D64F" fgColor="#174C53" />
