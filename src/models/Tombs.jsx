@@ -9,7 +9,7 @@ import { useModelWithDraco, preloadTombModels } from "../utils/ModelLoader";
 
 
 const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
-  const {invalidate, scene, camera } = useThree();
+  const {invalidate, camera } = useThree();
   const [tombsData, setTombsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);

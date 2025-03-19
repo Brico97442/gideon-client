@@ -227,7 +227,7 @@ function Scene() {
         x: 0,
         y: 0,
         z: 0,
-        duration: 1.5,
+        duration: 1,
         ease: "power2.out",
         onUpdate: () => orbitControlRef.current.update(),
       });
@@ -240,7 +240,7 @@ function Scene() {
         x: initialCameraPosition.x,
         y: initialCameraPosition.y,
         z: initialCameraPosition.z,
-        duration: 1.5,
+        duration: 1,
         ease: "power2.out",
         onUpdate: () => {
           camera.lookAt(0, 0, 0);
@@ -252,7 +252,7 @@ function Scene() {
           x: 0,
           y: 0,
           z: 0,
-          duration: 1.5,
+          duration: 1,
           ease: "power2.out",
           onUpdate: () => {
             orbitControlRef.current.update();
@@ -488,8 +488,6 @@ function Scene() {
         <TombModal
           isOpen={isModalOpen}
           onClose={() => {
-            // La fermeture est désormais gérée par le composant TombModal lui-même
-            // Il appellera cette fonction uniquement après l'animation
             setIsModalOpen(false);
             clearSelectedTomb();
             resetCameraPosition();

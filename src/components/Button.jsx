@@ -11,7 +11,7 @@ export default function Button({ btnValue }) {
         }, 100);
         setTimeout(() => {
             setIsActive(false);
-        }, 600);
+        }, 500);
     };
 
     return (
