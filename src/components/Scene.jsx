@@ -12,7 +12,7 @@ import UserInterface from "./UserInterface";
 import TombModal from "./TombModal";
 import Tombs from "../models/Tombs";
 import { useSearchParams } from "react-router-dom";
-// import ParticleSystem from './ParticlesScene';
+import ParticleSystem from './ParticlesScene';
 import MainOrbitControl from '../utils/MainOrbitControl';
 import { Suspense } from "react";
 import { focusOnObject, moveCameraToPosition } from "../utils/CameraUtils";
@@ -29,7 +29,7 @@ import Pointer from "../models/Pointer";
 import { useTomb, findTombMeshById } from '../context/TombContext';
 import gsap from "gsap";
 import Button from "./Button";
-// import playIcon from '../assets/play_arrow.svg';
+import playIcon from '../assets/play_arrow.svg';
 // import { TransitionEffect } from './TransitionEffect';
 // import Grass from "./Grass";
 // import Grass2 from "./Grass2";
@@ -58,7 +58,7 @@ function Scene() {
   const glowLayer = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTomb, setSelectedTomb] = useState("");
-  // const [applicationStart, setApplicationStart] = useState(false)
+  const [applicationStart, setApplicationStart] = useState(false)
   const { selectTomb, clearSelectedTomb, setSceneElements } = useTomb();
   const [tombDetails, setTombDetails] = useState(null);
   // const [isTransitioning, setIsTransitioning] = useState(false);
@@ -337,10 +337,10 @@ function Scene() {
     )
   }
 
-  // const handleStartApplication = () => {
-  //   setIsTransitioning(true);
-  //   setApplicationStart(true);
-  // };
+  const handleStartApplication = () => {
+    setIsTransitioning(true);
+    setApplicationStart(true);
+  };
 
   // useEffect(() => {
   //   setIsSceneLoaded(true)
@@ -362,92 +362,96 @@ function Scene() {
 
   return (
     <div className="main">
-      {/* <div className="fixed h-full w-full" onClick={handleStartApplication}>
-          <div
-            className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}
-          >
-            <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
-              <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
-              <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
-                <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
-                <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
-                  <img src={playIcon} alt="Play" />
-                </button>
-              </div>
+      <div className="fixed h-full w-full" onClick={handleStartApplication}>
+        <div
+          className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}
+        >
+          <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
+            <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
+            <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
+              <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
+              <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
+                <img src={playIcon} alt="Play" />
+              </button>
             </div>
           </div>
+        </div>
 
-          <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }} frameloop="demand">
-            <group>
-              {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
-      {/* <ParticleSystem /> */}
-      {/* <pointLight
+        <Canvas 
+        camera={{ near: 0.2, position: [-20, 20, -50] }} 
+        style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }} 
+        // frameloop="demand"
+        >
+          <group>
+            <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+            <ParticleSystem />
+            {/* <pointLight
                   position={[0, 0, 0]}
                   decay={0}
                   intensity={8}
                   color='yellow'
                 /> */}
-      {/* <ambientLight intensity={1} /> */}
-      {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-      {/* </Float> */}
-      {/* </group> */}
-      {/* {isTransitioning && (
+            {/* <ambientLight intensity={1} /> */}
+            {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
+          </Float>
+        </group>
+        {/* {isTransitioning && (
               <TransitionEffect
                 isTransitioning={isTransitioning}
                 onTransitionComplete={handleTransitionComplete}
               />
             )} */}
-      {/* </Canvas>
-        </div> */}
+      </Canvas>
+        </div> 
 
-      {/* {applicationStart && ( */}
-      <div className="w-full h-full relative">
-
-
-        <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
-          <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
-            <Button btnValue="Passer en vue aérienne" />
-          </div>
-        </div>
+{/* {applicationStart && ( */ }
+<div className="w-full h-full relative">
 
 
-        <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
+  <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
+    <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
+      <Button btnValue="Passer en vue aérienne" />
+    </div>
+  </div>
 
-        <div className={`transition-opacity duration-[1500] z-50`} >
-          <UserInterface handleTombFocus={handleTombFocus} />
-        </div>
-        <Suspense fallback={<Loading />}>
-          <Canvas
-            frameloop="demand"
-            style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
-            shadows
-            camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
-            id="tomb-canvas"
-            className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500 bg-red-500`}
-          >
 
-            <group>
-              <Pointer />
-              <Entrance />
-              <Wall />
-              <Ground />
-              <Cross />
-              {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
+  <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
+
+  <div className={`transition-opacity duration-[1500] z-50`} >
+    <UserInterface handleTombFocus={handleTombFocus} />
+  </div>
+  <Suspense fallback={<Loading />}>
+    <Canvas
+      frameloop="demand"
+      // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+      shadows
+      camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
+      id="tomb-canvas"
+      className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500`}
+    >
+
+      <group>
+        <Pointer />
+        <Entrance />
+        <Wall />
+        <Ground />
+        <Cross />
+        {/* <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
                       <Text fontSize={2} color="white">
                       Vous êtes ici
                       </Text>
                       </Billboard> */}
-              <Road />
-              {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
-              <ambientLight intensity={2.5} />
+        <Road />
+        {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
+        <ambientLight intensity={2.5} />
 
-              <Tombs
-                onTombClick={isMobile ? handleTombFocus : handleTombClick}
-                selectedTombId={selectedTomb}
-                orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
-                glowLayer={[glowLayer]}
-              />
-              {/* <EffectComposer>
+        <Tombs
+          onTombClick={isMobile ? handleTombFocus : handleTombClick}
+          selectedTombId={selectedTomb}
+          orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
+          glowLayer={[glowLayer]}
+        />
+        {/* <EffectComposer>
                 <Bloom
                   intensity={0.5}
                   luminanceThreshold={0.2}
@@ -458,43 +462,43 @@ function Scene() {
                   selection={[glowLayer]}
                 />
               </EffectComposer> */}
-              {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
-            </group>
+        {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
+      </group>
 
-            <SceneCamera frustumCulled={false} />
-            <MainOrbitControl
-              orbitControlRef={orbitControlRef}
-              frustumCulled={false}
-              onCameraMove={handleCameraMove}
-            />
-            {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
-            {/* <pointLight
+      <SceneCamera frustumCulled={false} />
+      <MainOrbitControl
+        orbitControlRef={orbitControlRef}
+        frustumCulled={false}
+        onCameraMove={handleCameraMove}
+      />
+      {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
+      {/* <pointLight
               position={[-10, -10, -10]}
               decay={1}
               intensity={Math.PI}
               color='yellow'
             /> */}
 
-            <Stats />
-          </Canvas>
+      <Stats />
+    </Canvas>
 
-        </Suspense>
-        <TombModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            clearSelectedTomb();
-            resetCameraPosition();
-            setIsShowUi(true)
-          }}
-          tombName={selectedTomb}
-          tombDetails={tombDetails}
-          tombId={tombId}
-          onTombClick={handleTombClick}
-        />
-      </div>
-      {/* )} */}
-    </div>
+  </Suspense>
+  <TombModal
+    isOpen={isModalOpen}
+    onClose={() => {
+      setIsModalOpen(false);
+      clearSelectedTomb();
+      resetCameraPosition();
+      setIsShowUi(true)
+    }}
+    tombName={selectedTomb}
+    tombDetails={tombDetails}
+    tombId={tombId}
+    onTombClick={handleTombClick}
+  />
+</div>
+{/* )} */ }
+    </div >
 
 
   );
