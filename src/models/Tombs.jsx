@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { GET_TOMBS } from "../config/api";
 import { focusOnObject } from "../utils/CameraUtils";
 import { initColorSystem, highlightSelectedTomb, updateInstanceColors } from "../utils/ColorsUtils";
+import { useModelWithDraco, preloadTombModels } from "../utils/ModelLoader";
 
 
 const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
@@ -12,7 +13,10 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   const [tombsData, setTombsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
-
+  
+  useEffect(() => {
+    preloadTombModels();
+  }, []);
   // Référence aux maillages instanciés
   const instancedMeshesRef = useRef({});
 
@@ -45,32 +49,31 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   // Charger les modèles
   const tombModels = useMemo(() => ({
     1: {
-      low: useGLTF("/3d-models/gltf/tomb/01/01low.glb", true, "/draco/"),
-      medium: useGLTF("/3d-models/gltf/tomb/01/01mid.glb", true, "/draco/"),
-      high: useGLTF("/3d-models/gltf/tomb/01/01high.glb", true, "/draco/"),
+      low: useModelWithDraco("/3d-models/gltf/tomb/01/01low.glb"),
+      medium: useModelWithDraco("/3d-models/gltf/tomb/01/01mid.glb"),
+      high: useModelWithDraco("/3d-models/gltf/tomb/01/01high.glb"),
     },
     2: {
-      low: useGLTF("/3d-models/gltf/tomb/02/02low.glb", true, "/draco/"),
-      medium: useGLTF("/3d-models/gltf/tomb/02/02mid.glb", true, "/draco/"),
-      high: useGLTF("/3d-models/gltf/tomb/02/02high.glb", true, "/draco/"),
+      low: useModelWithDraco("/3d-models/gltf/tomb/02/02low.glb"),
+      medium: useModelWithDraco("/3d-models/gltf/tomb/02/02mid.glb"),
+      high: useModelWithDraco("/3d-models/gltf/tomb/02/02high.glb"),
     },
     3: {
-      low: useGLTF("/3d-models/gltf/tomb/03/03low.glb", true, "/draco/"),
-      medium: useGLTF("/3d-models/gltf/tomb/03/03mid.glb", true, "/draco/"),
-      high: useGLTF("/3d-models/gltf/tomb/03/03high.glb", true, "/draco/"),
+      low: useModelWithDraco("/3d-models/gltf/tomb/03/03low.glb"),
+      medium: useModelWithDraco("/3d-models/gltf/tomb/03/03mid.glb"),
+      high: useModelWithDraco("/3d-models/gltf/tomb/03/03high.glb"),
     },
     4: {
-      low: useGLTF("/3d-models/gltf/tomb/04/04low.glb", true, "/draco/"),
-      medium: useGLTF("/3d-models/gltf/tomb/04/04mid.glb", true, "/draco/"),
-      high: useGLTF("/3d-models/gltf/tomb/04/04high.glb", true, "/draco/"),
+      low: useModelWithDraco("/3d-models/gltf/tomb/04/04low.glb"),
+      medium: useModelWithDraco("/3d-models/gltf/tomb/04/04mid.glb"),
+      high: useModelWithDraco("/3d-models/gltf/tomb/04/04high.glb"),
     },
     5: {
-      low: useGLTF("/3d-models/gltf/tomb/05/05low.glb", true, "/draco/"),
-      medium: useGLTF("/3d-models/gltf/tomb/05/05mid.glb", true, "/draco/"),
-      high: useGLTF("/3d-models/gltf/tomb/05/05high.glb", true, "/draco/"),
+      low: useModelWithDraco("/3d-models/gltf/tomb/05/05low.glb"),
+      medium: useModelWithDraco("/3d-models/gltf/tomb/05/05mid.glb"),
+      high: useModelWithDraco("/3d-models/gltf/tomb/05/05high.glb"),
     },
   }), []);
-
   // Fonction pour récupérer les tombes depuis l'API
   useEffect(() => {
     const fetchTombs = async () => {
