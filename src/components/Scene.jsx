@@ -425,7 +425,7 @@ function Scene() {
             id="tomb-canvas"
             className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500 bg-red-500`}
           >
-      <ParticleSystem />
+      {/* <ParticleSystem /> */}
 
             <group>
               <Pointer />
