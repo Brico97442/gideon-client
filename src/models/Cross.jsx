@@ -3,7 +3,7 @@ import { useGLTF } from "@react-three/drei";
 
 
 const Cross = () => {
-    const crossGLB = useGLTF("/3d-models/gltf/cimetarylayout/cross.glb");
+    const crossGLB = useGLTF("/3d-models/gltf/cimetarylayout/cross.glb", true, "/draco/");
     return (
         <mesh position={[0,0,0]} rotation={[0,0,0]}>
             <primitive object={crossGLB.scene}/>
@@ -12,4 +12,4 @@ const Cross = () => {
 };
 
 export default Cross    
-useGLTF.preload("/3d-models/gltf/cimetarylayout/cross.glb");
+useGLTF.preload("/3d-models/gltf/cimetarylayout/cross.glb", true, "/draco/");
