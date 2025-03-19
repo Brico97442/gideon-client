@@ -28,8 +28,14 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     MEDIUM: 80
   };
 
-  // État du niveau de détail actuel
-  const [currentLOD, setCurrentLOD] = useState(lodLevels.LOW);
+  // État du niveau de détail actuel pour chaque type de tombe
+  const [currentLODs, setCurrentLODs] = useState({
+    1: lodLevels.LOW,
+    2: lodLevels.LOW,
+    3: lodLevels.LOW,
+    4: lodLevels.LOW,
+    5: lodLevels.LOW
+  });
 
   // Surveillance des changements de position de la caméra
   const cameraPositionRef = useRef(new THREE.Vector3());
@@ -87,7 +93,6 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
         setTombsData(flattenedTombs);
 
-
         // Initialiser le système global pour les tombes
         if (!window.tombsSystem) window.tombsSystem = {};
         window.tombsSystem.needsLODUpdate = true;
@@ -121,27 +126,95 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     fetchTombs();
   }, [camera]);
 
-  const updateLOD = () => {
-    // Calculer la distance moyenne entre la caméra et le centre de la scène
-    const distance = camera.position.length();
+  // Nouvelle fonction pour calculer la distance entre la caméra et une tombe
+  const calculateDistanceToTomb = (tombPosition) => {
+    const cameraPosition = camera.position;
+    return Math.sqrt(
+      Math.pow(cameraPosition.x - tombPosition.x, 2) +
+      Math.pow(cameraPosition.y - tombPosition.y, 2) +
+      Math.pow(cameraPosition.z - tombPosition.z, 2)
+    );
+  };
 
-    let newLOD;
+  // Fonction pour déterminer le niveau de détail en fonction de la distance
+  const determineLOD = (distance) => {
     if (distance < LOD_THRESHOLDS.HIGH) {
-      newLOD = lodLevels.HIGH;
+      return lodLevels.HIGH;
     } else if (distance < LOD_THRESHOLDS.MEDIUM) {
-      newLOD = lodLevels.MEDIUM;
+      return lodLevels.MEDIUM;
     } else {
-      newLOD = lodLevels.LOW;
+      return lodLevels.LOW;
+    }
+  };
+
+  // Mise à jour du LOD pour chaque type de tombe
+  const updateLODs = () => {
+    if (!window.tombsSystem || !window.tombsSystem.tombPositions) return false;
+
+    // Créer un objet pour stocker le LOD de chaque tombe
+    if (!window.tombsSystem.tombLODs) {
+      window.tombsSystem.tombLODs = {};
     }
 
-    // Mettre à jour le LOD seulement si nécessaire
-    if (newLOD !== currentLOD) {
-      console.log(`Distance: ${distance.toFixed(2)}, LOD: ${newLOD}`);
-      setCurrentLOD(newLOD);
-      return true;
+    // Parcourir toutes les tombes
+    let hasChanged = false;
+    Object.entries(window.tombsSystem.tombPositions).forEach(([tombId, position]) => {
+      // Calculer la distance pour cette tombe spécifique
+      const distance = calculateDistanceToTomb(position);
+
+      // Déterminer le LOD pour cette tombe
+      const lod = determineLOD(distance);
+
+      // Stocker le LOD pour cette tombe
+      if (window.tombsSystem.tombLODs[tombId] !== lod) {
+        window.tombsSystem.tombLODs[tombId] = lod;
+        hasChanged = true;
+      }
+    });
+
+    // Mettre à jour l'état des LODs
+    if (hasChanged) {
+      // Déterminer le LOD le plus élevé pour chaque type de tombe
+      const newLODs = { ...currentLODs };
+
+      // Regrouper les tombes par type
+      const tombsByType = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+      Object.entries(window.tombsSystem.tombPositions).forEach(([tombId, position]) => {
+        if (tombsByType[position.type]) {
+          tombsByType[position.type].push({
+            id: tombId,
+            lod: window.tombsSystem.tombLODs[tombId]
+          });
+        }
+      });
+
+      // Pour chaque type, déterminer le LOD le plus élevé à utiliser
+      Object.entries(tombsByType).forEach(([type, tombs]) => {
+        if (tombs.length === 0) return;
+
+        // Priorité : HIGH > MEDIUM > LOW
+        const hasHigh = tombs.some(tomb => tomb.lod === lodLevels.HIGH);
+        const hasMedium = tombs.some(tomb => tomb.lod === lodLevels.MEDIUM);
+
+        let bestLOD;
+        if (hasHigh) {
+          bestLOD = lodLevels.HIGH;
+        } else if (hasMedium) {
+          bestLOD = lodLevels.MEDIUM;
+        } else {
+          bestLOD = lodLevels.LOW;
+        }
+
+        if (newLODs[type] !== bestLOD) {
+          newLODs[type] = bestLOD;
+          console.log(`Type ${type} LOD updated to ${bestLOD}`);
+        }
+      });
+
+      setCurrentLODs(newLODs);
     }
 
-    return false;
+    return hasChanged;
   };
 
   // Vérifier si une mise à jour LOD est nécessaire
@@ -154,7 +227,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
     // Mettre à jour le LOD si nécessaire
     if (needsUpdate.current || (window.tombsSystem && window.tombsSystem.needsLODUpdate)) {
-      const changed = updateLOD();
+      const changed = updateLODs();
 
       // Forcer un rafraîchissement du rendu si le LOD a changé
       if (changed) {
@@ -201,15 +274,17 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       window.tombsSystem.tombsByType = tombsByType;
     }
 
-
     // Mise à jour des maillages instanciés pour chaque type
     Object.keys(tombsByType).forEach(type => {
       const tombs = tombsByType[type];
       const mesh = instancedMeshesRef.current[type];
       if (!mesh || tombs.length === 0) return;
 
+      // Obtenir le LOD spécifique pour ce type de tombe
+      const lodLevel = currentLODs[type];
+
       // Obtenir le modèle 3D pour le niveau de détail actuel
-      const model = tombModels[type][currentLOD];
+      const model = tombModels[type][lodLevel];
       if (!model) return;
 
       // Extraire la géométrie et le matériau
@@ -266,10 +341,9 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     if (window.tombsSystem) {
       window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
       updateInstanceColors();
-
     }
 
-  }, [tombsData, loading, currentLOD, refresh, tombModels]);
+  }, [tombsData, loading, currentLODs, refresh, tombModels]);
 
   // Fonction pour gérer le clic sur une tombe
   const handleTombClick = (event) => {
@@ -328,8 +402,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
               }
             }}
             args={[null, null, count]}
-            castShadow
-            receiveShadow
+
             onClick={handleTombClick}
             userData={{ type }}
           />
