@@ -7,7 +7,7 @@ import { focusOnObject } from "../utils/CameraUtils";
 import { initColorSystem, highlightSelectedTomb, updateInstanceColors } from "../utils/ColorsUtils";
 
 const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
-  const { scene, camera } = useThree();
+  const {invalidate, scene, camera } = useThree();
   const [tombsData, setTombsData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refresh, setRefresh] = useState(0);
@@ -403,7 +403,11 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
             }}
             args={[null, null, count]}
 
-            onClick={handleTombClick}
+            onClick={(event) => { 
+              handleTombClick(event);
+              invalidate();
+              requestAnimationFrame(() => orbitControlRef.current.dolly(1, true));
+            }}
             userData={{ type }}
           />
         );

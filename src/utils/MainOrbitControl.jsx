@@ -5,7 +5,7 @@ import { isMobile } from "react-device-detect";
 import * as THREE from 'three'
 
 const MainOrbitControl = ({ orbitControlRef, onCameraMove }) => {
-  const { camera, gl } = useThree();
+  const {invalidate, camera, gl } = useThree();
 
   useEffect(() => {
     const controls = orbitControlRef.current;
@@ -34,11 +34,11 @@ const MainOrbitControl = ({ orbitControlRef, onCameraMove }) => {
       }
     };
 
-    controls.addEventListener('change', handleChange);
+    controls.addEventListener('change', handleChange,invalidate);
 
     return () => {
       if (controls) {
-        controls.removeEventListener('change', handleChange);
+        controls.removeEventListener('change', handleChange,invalidate);
       }
     };
   }, [orbitControlRef, camera, onCameraMove]);
