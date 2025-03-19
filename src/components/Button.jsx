@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import btnImg from '../assets/ui_element/btn.png';
-import btnHoveredImg from '../assets/ui_element/btn_hover.png';
+import btnImg from '../assets/ui_element/btn.webp';
+import btnHoveredImg from '../assets/ui_element/btn_hover.webp';
 
 export default function Button({ btnValue }) {
     const [isActive, setIsActive] = useState(false);
