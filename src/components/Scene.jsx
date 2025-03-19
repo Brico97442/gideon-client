@@ -488,8 +488,6 @@ function Scene() {
         <TombModal
           isOpen={isModalOpen}
           onClose={() => {
-            // La fermeture est désormais gérée par le composant TombModal lui-même
-            // Il appellera cette fonction uniquement après l'animation
             setIsModalOpen(false);
             clearSelectedTomb();
             resetCameraPosition();
