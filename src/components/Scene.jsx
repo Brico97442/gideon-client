@@ -321,34 +321,7 @@ function Scene() {
   const LocalVideo = () => {
     const videoRef = useRef(null);
   
-    useEffect(() => {
-      // More robust video playback approach
-      if (videoRef.current) {
-        // Try to play immediately
-        const playPromise = videoRef.current.play();
-        
-        // Handle the promise to avoid uncaught promise errors
-        if (playPromise !== undefined) {
-          playPromise.then(() => {
-            // Playback started successfully
-            console.log("Video playback started");
-          }).catch(error => {
-            // Auto-play was prevented
-            console.error("Autoplay was prevented:", error);
-            
-            // Add a user interaction event listener to play the video later
-            const playVideoOnInteraction = () => {
-              videoRef.current.play();
-              document.removeEventListener('click', playVideoOnInteraction);
-              document.removeEventListener('touchstart', playVideoOnInteraction);
-            };
-            
-            document.addEventListener('click', playVideoOnInteraction);
-            document.addEventListener('touchstart', playVideoOnInteraction);
-          });
-        }
-      }
-    }, []);
+   
     
     return (
       <video
@@ -463,7 +436,7 @@ function Scene() {
         <div className={`transition-opacity duration-[1500] z-50`} >
           <UserInterface handleTombFocus={handleTombFocus} />
         </div>
-        <LocalVideo/>
+        {/* <LocalVideo/> */}
         <Suspense fallback={<Loading />}>
           <Canvas
             // frameloop="demand"
