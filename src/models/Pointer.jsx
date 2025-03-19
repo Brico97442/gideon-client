@@ -3,7 +3,7 @@ import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber"; // Assurez-vous de l'importer ici
 
 const Pointer = () => {
-    const PointerGLB = useGLTF("/3d-models/gltf/cimetarylayout/pointer.glb");
+    const PointerGLB = useGLTF("/3d-models/gltf/cimetarylayout/pointer.glb", true, "/draco/");
     const pointerRef = useRef();
 
     // Utiliser useFrame pour faire tourner l'élément en continu sur l'axe Z
@@ -23,4 +23,4 @@ const Pointer = () => {
 
 export default Pointer;
 
-useGLTF.preload("/3d-models/gltf/cimetarylayout/pointer.glb");
+useGLTF.preload("/3d-models/gltf/cimetarylayout/pointer.glb", true, "/draco/");

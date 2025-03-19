@@ -3,7 +3,7 @@ import { useGLTF } from "@react-three/drei";
 
 
 const Road = () => {
-    const RoadGLB = useGLTF("/3d-models/gltf/cimetarylayout/road.glb");
+    const RoadGLB = useGLTF("/3d-models/gltf/cimetarylayout/road.glb", true, "/draco/");
     return (
         <mesh 
             position={[0,0,0]} 
@@ -15,4 +15,4 @@ const Road = () => {
 };
 
 export default Road    
-useGLTF.preload("/3d-models/gltf/cimetarylayout/road.glb");
+useGLTF.preload("/3d-models/gltf/cimetarylayout/road.glb", true, "/draco/");

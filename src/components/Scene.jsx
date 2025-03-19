@@ -318,24 +318,6 @@ function Scene() {
     }
   }, [searchParams]);
 
-  const LocalVideo = () => {
-    const videoRef = useRef(null);
-  
-   
-    
-    return (
-      <video
-        ref={videoRef}
-        className="w-full"
-        src={videoFile}
-        muted={true} // Add muted attribute - critical for autoplay
-        autoPlay
-        playsInline
-        loop
-        preload="auto" // Ensure the video is pre-loaded
-      />
-    );
-  };
     
   useEffect(() => {
     const button = document.getElementById("top-view-btn");
@@ -436,7 +418,6 @@ function Scene() {
         <div className={`transition-opacity duration-[1500] z-50`} >
           <UserInterface handleTombFocus={handleTombFocus} />
         </div>
-        {/* <LocalVideo/> */}
         <Suspense fallback={<Loading />}>
           <Canvas
             frameloop="demand"
