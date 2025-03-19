@@ -3,7 +3,7 @@ import axios from "axios";
 import PropTypes from 'prop-types';
 import { useTomb } from '../context/TombContext';
 import { SEARCH_DECEASED } from '../config/api';
-import modalBackground from '../assets/ui_element/left_modal.png';
+import modalBackground from '../assets/ui_element/left_modal.webp';
 import logo from '../assets/ui_element/logo_st_paul.svg';
 import { formatDate } from '../utils/DateUtils';
 import Button from "./Button";

@@ -4,7 +4,7 @@ import { isMobile } from 'react-device-detect';
 import { useTomb } from '../context/TombContext';
 import { highlightTombSection } from '../utils/ColorsUtils';
 import { formatDate } from '../utils/DateUtils';
-import modalRightBackground from '../assets/ui_element/right-modal.png';
+import modalRightBackground from '../assets/ui_element/right-modal.webp';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import Button from './Button';
@@ -17,11 +17,24 @@ const TombModal = ({ isOpen, onClose }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [comment, setComment] = useState('');
   const [formStatus, setFormStatus] = useState(null);
-
+  const [isVisible, setIsVisible] = useState(false);
 
   // Variables pour stocker les positions de départ et de fin du toucher
   let touchStartY = 0;
   let touchEndY = 0;
+
+  // Gestion de l'animation à l'ouverture
+  useEffect(() => {
+    if (isOpen) {
+      // Un petit délai pour permettre au composant de se rendre avant d'animer
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 50);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(false);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     if (selectedTomb && tombClones.length > 0) {
@@ -50,12 +63,12 @@ const TombModal = ({ isOpen, onClose }) => {
       }
       if (touchEndY - touchStartY > 50) {
         // Swipe down
-        onClose(); // Fermer la modal
+        handleClose(); // Utiliser handleClose au lieu de onClose directement
       }
     };
 
     const modalElement = document.getElementById('ui');
-    if (modalElement) {
+    if (modalElement && isOpen) {
       modalElement.addEventListener('touchstart', handleTouchStart);
       modalElement.addEventListener('touchmove', handleTouchMove);
       modalElement.addEventListener('touchend', handleTouchEnd);
@@ -68,7 +81,14 @@ const TombModal = ({ isOpen, onClose }) => {
         modalElement.removeEventListener('touchend', handleTouchEnd);
       }
     };
-  }, [onClose]);
+  }, [isOpen]);
+
+  const handleClose = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onClose();
+    }, 400);
+  };
 
   if (!isOpen) return null;
 
@@ -99,8 +119,11 @@ const TombModal = ({ isOpen, onClose }) => {
     }
   };
 
+  // Calculer la classe CSS pour l'animation
+  const modalPositionClass = isVisible ? "right-0" : "-right-[400px]";
+
   return (
-    <div id="ui" className=" lg:block lg:w-auto absolute right-0 mx-2 py-2 lg:mr-3 lg:py-6 h-full z-50">
+    <div id="ui" className={`lg:block lg:w-auto absolute ${modalPositionClass} transition-all duration-300 ease-in mx-2 py-2 lg:mr-3 lg:py-6 h-full z-50`}>
       <div className="w-full lg:w-[400px] lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] pt-7 h-full relative">
         <img src={modalRightBackground} alt="modal droite background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" />
         <div className="modal-shape-container relative font-orbitron flex flex-col items-center h-full text-white">
@@ -109,7 +132,7 @@ const TombModal = ({ isOpen, onClose }) => {
               <QRCodeCanvas value={qrValue} size={150} bgColor="#C7D64F" fgColor="#174C53" />
             </div>
             <div className="flex h-full w-auto lg:w-full flex-col px-[19px] mt-8">
-              <h2 className="text-[22px]">Emplacement n°{selectedTomb}</h2>
+              <h2 className="text-[18px]">Emplacement n°{selectedTomb}</h2>
               {tombDetails && (
                 <div className="my-[22px] box-border overflow-hidden">
                   <h3 className='mb-3'>Ici repose</h3>
@@ -118,7 +141,7 @@ const TombModal = ({ isOpen, onClose }) => {
                       {tombDetails.map((person, index) => (
                         <li key={index} className="flex-col flex">
                           <span className='text-lg font-semibold capitalize underline'>{person.firstname} {person.lastname}</span>
-                          <span className='flex space-x-6 normal-case'><span>* Née le {formatDate(person.birthdate)}</span> <span>* Mort le {formatDate(person.deathDate)}</span></span>
+                          <span className='flex space-x-6 normal-case'><span>* Née le {formatDate(person.birthdate)}</span> <span>* Décédé le {formatDate(person.deathDate)}</span></span>
                         </li>
                       ))}
                     </ul>
@@ -162,7 +185,7 @@ const TombModal = ({ isOpen, onClose }) => {
                 </div>
               )}
             </div>
-            <div className='w-full' onClick={onClose}>
+            <div className='w-full' onClick={handleClose}>
               <Button btnValue="Retourner à l'Accueil"/>
             </div>
           </div>
