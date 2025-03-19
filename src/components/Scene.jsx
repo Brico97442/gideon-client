@@ -104,33 +104,37 @@ function Scene() {
 
   const SceneCamera = () => {
     const { camera, scene } = useThree();
-    // window.tombsSystem.scene = scene;
-    useEffect(() => {
 
+    useEffect(() => {
       if (!initialCameraPosition) {
         setInitialCameraPosition(camera.position.clone());
       }
+
       // Définir l'état de la caméra
       setCamera(camera);
 
       // Initialiser les éléments de scène dans le système global
       if (!window.tombsSystem) {
+        console.log("Initialisation du système global");
         window.tombsSystem = {};
       }
+
       if (!window.tombsSystem.highlightGroup) {
+        console.log("Création du groupe de surbrillance");
         window.tombsSystem.highlightGroup = new THREE.Group();
         // Assurez-vous que le groupe est ajouté à la scène
         scene.add(window.tombsSystem.highlightGroup);
       }
+
       // Ajouter la caméra et les contrôles d'orbite au système global
-      window.tombsSystem.camera = camera
-      window.tombsSystem.scene = scene; // Ajoutez cette ligne
+      window.tombsSystem.camera = camera;
+      window.tombsSystem.scene = scene;
       window.tombsSystem.orbitControlRef = orbitControlRef;
 
       // Initialiser les éléments de scène dans le contexte
-
       setSceneElements(camera, orbitControlRef, tombClones);
 
+      console.log("Configuration de la scène terminée");
     }, [camera, tombClones]);
 
     return null;
@@ -145,6 +149,14 @@ function Scene() {
     if (camera && orbitControlRef.current) {
       console.log("Focus sur la tombe:", id);
 
+      // Vérifier si window.tombsSystem est correctement initialisé
+      if (!window.tombsSystem || !window.tombsSystem.tombPositions || !window.tombsSystem.tombPositions[id]) {
+        console.warn("Données de tombe non disponibles pour l'ID:", id);
+        // Récupérer quand même les détails de la tombe
+        fetchTombDetails(id);
+        return;
+      }
+
       // Centrer la caméra sur la tombe
       focusOnObject(id, camera, orbitControlRef, sectionColors);
 
@@ -153,6 +165,7 @@ function Scene() {
           window.tombsSystem.highlightGroup.remove(window.tombsSystem.highlightGroup.children[0]);
         }
       }
+
       // Appliquer la surbrillance de section
       highlightTombSection(id);
 
@@ -426,7 +439,7 @@ function Scene() {
                       </Billboard> */}
               <Road />
               {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
-              <ambientLight intensity={3} />
+              <ambientLight intensity={2.5} />
 
               <Tombs
                 onTombClick={isMobile ? handleTombFocus : handleTombClick}
@@ -445,7 +458,7 @@ function Scene() {
                   selection={[glowLayer]}
                 />
               </EffectComposer> */}
-              <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
+              {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
             </group>
 
             <SceneCamera frustumCulled={false} />
@@ -455,12 +468,12 @@ function Scene() {
               onCameraMove={handleCameraMove}
             />
             {/* <CameraControls orbitControlRef={orbitControlRef} /> */}
-            <pointLight
+            {/* <pointLight
               position={[-10, -10, -10]}
               decay={1}
               intensity={Math.PI}
               color='yellow'
-            />
+            /> */}
 
             <Stats />
           </Canvas>
