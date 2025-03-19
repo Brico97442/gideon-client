@@ -383,7 +383,7 @@ function Scene() {
         // frameloop="demand"
         >
           <group>
-            <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+            {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
             <ParticleSystem />
             {/* <pointLight
                   position={[0, 0, 0]}
@@ -393,7 +393,7 @@ function Scene() {
                 /> */}
             {/* <ambientLight intensity={1} /> */}
             {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-          </Float>
+          {/* </Float> */}
         </group>
         {/* {isTransitioning && (
               <TransitionEffect
