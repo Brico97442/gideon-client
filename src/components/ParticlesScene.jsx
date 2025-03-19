@@ -1,155 +1,131 @@
-import { useRef, useMemo, useEffect } from "react";
-import { useFrame, useThree } from "@react-three/fiber";
+import { Float } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { useMemo, useRef } from "react";
 import * as THREE from "three";
 
-const InstancedParticleSystem = ({
-  spacingBetweenClusters = 50,
-  clusterSpread = 90,
-  lowPerformanceMode = false
-}) => {
-  // Référence à l'InstancedMesh
-  const instancedMeshRef = useRef();
-  const { camera } = useThree();
-  
-  // Paramètres ajustables en fonction des performances
-  const particleCount = lowPerformanceMode ? 500 : 1500;
-  const maxSpeed = lowPerformanceMode ? 0.001 : 0.002;
-  
-  // Stocker les velocités et positions pour l'animation
-  const velocities = useRef(new Float32Array(particleCount * 3));
-  const positions = useRef(new Float32Array(particleCount * 3));
-  
-  // Utiliser une géométrie plus simple pour les particules
-  const particleGeometry = useMemo(() => {
-    return new THREE.SphereGeometry(0.5, lowPerformanceMode ? 4 : 8, lowPerformanceMode ? 4 : 8);
-  }, [lowPerformanceMode]);
-  
-  // Créer un matériau simple et efficace
-  const particleMaterial = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      color: new THREE.Color(0x4477ff),
-      transparent: true,
-      opacity: 0.7,
-      fog: false,
-    });
+const ParticleSystem = ({ spacingBetweenClusters = 50, clusterSpread = 90 }) => {
+  const pointsRef = useRef();
+  const particleCount = 500; // Nombre total de particules
+  const maxSpeed = 0.002; // Vitesse max des particules
+
+  // Création de la texture pour les particules
+  const particleTexture = useMemo(() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+    const context = canvas.getContext("2d");
+    const centerX = canvas.width / 2;
+    const centerY = canvas.height / 2;
+    const radius = canvas.width / 3;
+    const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+    gradient.addColorStop(0, "rgba(255, 255, 255, 1)");
+    gradient.addColorStop(1, "rgba(255, 255, 255, 1)");
+    context.beginPath();
+    context.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+    context.fillStyle = gradient;
+    context.fill();
+
+    return new THREE.CanvasTexture(canvas);
   }, []);
-  
-  // Initialiser les positions et les matrices
-  useEffect(() => {
-    if (!instancedMeshRef.current) return;
-    
-    const dummy = new THREE.Object3D();
-    const posArray = positions.current;
-    const velArray = velocities.current;
-    
+
+  // Matériau des particules
+  const pointsMaterial = useMemo(
+    () =>
+      new THREE.PointsMaterial({
+        size: 2,
+        sizeAttenuation: true,
+        transparent: true,
+        opacity: 0.9,
+        map: particleTexture,
+        alphaTest: 0.1,
+        depthWrite: false,
+        vertexColors: true,
+      }),
+    [particleTexture]
+  );
+
+  // Génération des positions et vitesses en 2 amas
+  const [positions, velocities, colors] = useMemo(() => {
+    const positions = new Float32Array(particleCount * 3);
+    const velocities = new Float32Array(particleCount * 3);
+    const colors = new Float32Array(particleCount * 3);
+
     for (let i = 0; i < particleCount; i++) {
-      // Déterminer le cluster (gauche ou droite)
-      const isLeftCluster = i < particleCount / 2;
-      const xOffset = isLeftCluster ? -spacingBetweenClusters : spacingBetweenClusters;
-      
-      // Position aléatoire dans le cluster
+      const isLeftCluster = i < particleCount / 2; // Détermine si la particule est à gauche ou à droite
+      const xOffset = isLeftCluster ? -spacingBetweenClusters : spacingBetweenClusters; // Distance entre les amas
+
+      // Répartition aléatoire autour du centre du cluster
       const x = xOffset + (Math.random() - 0.5) * clusterSpread;
       const y = (Math.random() - 0.5) * clusterSpread;
       const z = (Math.random() - 0.5) * clusterSpread;
-      
-      // Stocker la position
-      posArray[i * 3] = x;
-      posArray[i * 3 + 1] = y;
-      posArray[i * 3 + 2] = z;
-      
-      // Initialiser les vitesses
-      velArray[i * 3] = (Math.random() - 0.5) * maxSpeed;
-      velArray[i * 3 + 1] = (Math.random() - 0.5) * maxSpeed;
-      velArray[i * 3 + 2] = (Math.random() - 0.5) * maxSpeed;
-      
-      // Configurer la matrice de l'instance
-      dummy.position.set(x, y, z);
-      
-      // Taille aléatoire des particules pour plus de naturel
-      const scale = 0.5 + Math.random() * 0.5;
-      dummy.scale.set(scale, scale, scale);
-      
-      // Rotation aléatoire
-      dummy.rotation.set(Math.random() * Math.PI, Math.random() * Math.PI, Math.random() * Math.PI);
-      
-      dummy.updateMatrix();
-      instancedMeshRef.current.setMatrixAt(i, dummy.matrix);
+
+      positions[i * 3] = x;
+      positions[i * 3 + 1] = y;
+      positions[i * 3 + 2] = z;
+
+      // Couleurs aléatoires
+      colors[i * 3] = 0.2 + Math.random() * 0.2;
+      colors[i * 3 + 1] = 0.3 + Math.random() * 0.2;
+      colors[i * 3 + 2] = 0.6 + Math.random() * 0.4;
+
+      // Vitesse initiale pour un mouvement fluide
+      velocities[i * 3] = (Math.random() - 0.5) * maxSpeed;
+      velocities[i * 3 + 1] = (Math.random() - 0.5) * maxSpeed;
+      velocities[i * 3 + 2] = (Math.random() - 0.5) * maxSpeed;
     }
-    
-    // Marquer l'InstancedMesh comme nécessitant une mise à jour
-    instancedMeshRef.current.instanceMatrix.needsUpdate = true;
-  }, [particleCount, clusterSpread, spacingBetweenClusters, maxSpeed]);
-  
-  // Variable pour limiter les mises à jour
-  const lastUpdateTime = useRef(0);
-  const updateInterval = lowPerformanceMode ? 50 : 16;
-  
+
+    return [positions, velocities, colors];
+  }, [particleCount, clusterSpread, spacingBetweenClusters]);
+
   // Animation des particules
   useFrame((state, delta) => {
-    if (!instancedMeshRef.current) return;
-    
-    // Mettre à jour seulement à intervalles réguliers
-    const currentTime = state.clock.getElapsedTime() * 1000;
-    if (currentTime - lastUpdateTime.current < updateInterval) return;
-    lastUpdateTime.current = currentTime;
-    
-    const dummy = new THREE.Object3D();
-    const posArray = positions.current;
-    const velArray = velocities.current;
-    
-    // Facteur de mise à jour plus bas pour les configurations obsolètes
-    const updateFactor = lowPerformanceMode ? 0.3 : 1;
-    
-    // Déterminer combien de particules mettre à jour par frame
-    const particlesToUpdate = lowPerformanceMode ? Math.floor(particleCount / 3) : particleCount;
-    const startIdx = Math.floor(Math.random() * (particleCount - particlesToUpdate));
-    
-    for (let i = startIdx; i < startIdx + particlesToUpdate; i++) {
-      const idx = i % particleCount;
-      const pIdx = idx * 3;
-      
-      // Appliquer la vitesse à la position
-      posArray[pIdx] += velArray[pIdx] * delta * 60 * updateFactor;
-      posArray[pIdx + 1] += velArray[pIdx + 1] * delta * 60 * updateFactor;
-      posArray[pIdx + 2] += velArray[pIdx + 2] * delta * 60 * updateFactor;
-      
-      // Simple oscillation pour plus de naturel, mais réduit pour les performances
-      if (!lowPerformanceMode || idx % 5 === 0) {
-        const timeScale = 0.2;
-        velArray[pIdx] += Math.sin(state.clock.elapsedTime * timeScale) * 0.0001;
-        velArray[pIdx + 1] += Math.cos(state.clock.elapsedTime * timeScale) * 0.0001;
-        velArray[pIdx + 2] += Math.sin(state.clock.elapsedTime * 0.15) * 0.0001;
+    if (pointsRef.current) {
+      const positions = pointsRef.current.geometry.attributes.position.array;
+      const velocities = pointsRef.current.userData.velocities;
+
+      for (let i = 0; i < positions.length; i += 3) {
+        // Appliquer la vitesse
+        positions[i] += velocities[i] * delta * 60;
+        positions[i + 1] += velocities[i + 1] * delta * 60;
+        positions[i + 2] += velocities[i + 2] * delta * 60;
+
+        // Légère oscillation pour rendre le mouvement plus naturel
+        velocities[i] += Math.sin(state.clock.elapsedTime * 0.2) * 0.0001;
+        velocities[i + 1] += Math.cos(state.clock.elapsedTime * 0.2) * 0.0001;
+        velocities[i + 2] += Math.sin(state.clock.elapsedTime * 0.15) * 0.0001;
+
+        // Limitation des vitesses pour éviter la dispersion trop forte
+        velocities[i] = THREE.MathUtils.clamp(velocities[i], -maxSpeed, maxSpeed);
+        velocities[i + 1] = THREE.MathUtils.clamp(velocities[i + 1], -maxSpeed, maxSpeed);
+        velocities[i + 2] = THREE.MathUtils.clamp(velocities[i + 2], -maxSpeed, maxSpeed);
       }
-      
-      // Limite des vitesses
-      velArray[pIdx] = THREE.MathUtils.clamp(velArray[pIdx], -maxSpeed, maxSpeed);
-      velArray[pIdx + 1] = THREE.MathUtils.clamp(velArray[pIdx + 1], -maxSpeed, maxSpeed);
-      velArray[pIdx + 2] = THREE.MathUtils.clamp(velArray[pIdx + 2], -maxSpeed, maxSpeed);
-      
-      // Mettre à jour la matrice de l'instance
-      dummy.position.set(posArray[pIdx], posArray[pIdx + 1], posArray[pIdx + 2]);
-      
-      // Rotation lente pour un effet plus naturel (seulement si non basse performance)
-      if (!lowPerformanceMode || idx % 10 === 0) {
-        dummy.rotation.x += delta * 0.1;
-        dummy.rotation.y += delta * 0.1;
-      }
-      
-      dummy.updateMatrix();
-      instancedMeshRef.current.setMatrixAt(idx, dummy.matrix);
+
+      pointsRef.current.geometry.attributes.position.needsUpdate = true;
     }
-    
-    // Marquer la matrice comme nécessitant une mise à jour
-    instancedMeshRef.current.instanceMatrix.needsUpdate = true;
   });
-  
+
   return (
-    <instancedMesh
-      ref={instancedMeshRef}
-      args={[particleGeometry, particleMaterial, particleCount]}
-      frustumCulled={true}
-    />
+        <points ref={pointsRef} castShadow receiveShadow userData={{ velocities }}>
+          <bufferGeometry>
+            <bufferAttribute
+              attach="attributes-position"
+              count={positions.length / 3}
+              array={positions}
+              itemSize={3}
+              usage={THREE.DynamicDrawUsage}
+            />
+            <bufferAttribute
+              attach="attributes-color"
+              count={colors.length / 3}
+              array={colors}
+              itemSize={3}
+              usage={THREE.StaticDrawUsage}
+            />
+          </bufferGeometry>
+          <primitive object={pointsMaterial} />
+        </points>
+
   );
 };
 
-export default InstancedParticleSystem;
+export default ParticleSystem;
