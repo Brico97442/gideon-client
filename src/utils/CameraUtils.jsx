@@ -11,7 +11,7 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
     x: targetPosition.x,
     y: targetPosition.y,
     z: targetPosition.z,
-    duration: 1.5,
+    duration: 1,
     ease: "power2.out",
   });
 
@@ -19,7 +19,7 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
     x: target.x,
     y: target.y,
     z: target.z,
-    duration: 1.5,
+    duration: 1,
     ease: "power2.out",
     onUpdate: () => orbitControlRef.current.update(),
   });
