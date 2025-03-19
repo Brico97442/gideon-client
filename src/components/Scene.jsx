@@ -22,15 +22,16 @@ import {
   createHighlightForTomb,
   COLORS
 } from "../utils/ColorsUtils";
-import videoFile from "/particle.mp4";
 
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
-// import { Bloom, EffectComposer, DepthOfField, Outline } from '@react-three/postprocessing';
 import Pointer from "../models/Pointer";
+// import { Bloom, EffectComposer, DepthOfField, Outline } from '@react-three/postprocessing';
 import { useTomb, findTombMeshById } from '../context/TombContext';
 import gsap from "gsap";
 import Button from "./Button";
+
+
 // import playIcon from '../assets/play_arrow.svg';
 // import { TransitionEffect } from './TransitionEffect';
 // import Grass from "./Grass";
@@ -73,6 +74,7 @@ function Scene() {
   // }
 
   // console.log('cet tombe est selectionné', selectTomb, 'et', selectedTomb)
+  // Configurez le chemin vers les fichiers décodeurs
 
   const fetchTombDetails = async (tombId) => {
     try {
@@ -318,7 +320,7 @@ function Scene() {
     }
   }, [searchParams]);
 
-    
+
   useEffect(() => {
     const button = document.getElementById("top-view-btn");
     if (button) {
@@ -427,8 +429,8 @@ function Scene() {
             id="tomb-canvas"
             className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500`}
           >
-      {/* <ParticleSystem /> */}
-      
+            {/* <ParticleSystem /> */}
+
 
             <group>
               <Pointer />
