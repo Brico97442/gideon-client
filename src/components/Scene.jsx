@@ -22,6 +22,8 @@ import {
   createHighlightForTomb,
   COLORS
 } from "../utils/ColorsUtils";
+import videoFile from "/particle.mp4";
+
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
 // import { Bloom, EffectComposer, DepthOfField, Outline } from '@react-three/postprocessing';
@@ -316,7 +318,52 @@ function Scene() {
     }
   }, [searchParams]);
 
-
+  const LocalVideo = () => {
+    const videoRef = useRef(null);
+  
+    useEffect(() => {
+      // More robust video playback approach
+      if (videoRef.current) {
+        // Try to play immediately
+        const playPromise = videoRef.current.play();
+        
+        // Handle the promise to avoid uncaught promise errors
+        if (playPromise !== undefined) {
+          playPromise.then(() => {
+            // Playback started successfully
+            console.log("Video playback started");
+          }).catch(error => {
+            // Auto-play was prevented
+            console.error("Autoplay was prevented:", error);
+            
+            // Add a user interaction event listener to play the video later
+            const playVideoOnInteraction = () => {
+              videoRef.current.play();
+              document.removeEventListener('click', playVideoOnInteraction);
+              document.removeEventListener('touchstart', playVideoOnInteraction);
+            };
+            
+            document.addEventListener('click', playVideoOnInteraction);
+            document.addEventListener('touchstart', playVideoOnInteraction);
+          });
+        }
+      }
+    }, []);
+    
+    return (
+      <video
+        ref={videoRef}
+        className="w-full"
+        src={videoFile}
+        muted={true} // Add muted attribute - critical for autoplay
+        autoPlay
+        playsInline
+        loop
+        preload="auto" // Ensure the video is pre-loaded
+      />
+    );
+  };
+    
   useEffect(() => {
     const button = document.getElementById("top-view-btn");
     if (button) {
@@ -416,16 +463,18 @@ function Scene() {
         <div className={`transition-opacity duration-[1500] z-50`} >
           <UserInterface handleTombFocus={handleTombFocus} />
         </div>
+        <LocalVideo/>
         <Suspense fallback={<Loading />}>
           <Canvas
             // frameloop="demand"
-            style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+            // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
             shadows
             camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
             id="tomb-canvas"
-            className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500 bg-red-500`}
+            className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500`}
           >
       {/* <ParticleSystem /> */}
+      
 
             <group>
               <Pointer />
