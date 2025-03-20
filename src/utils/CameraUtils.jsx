@@ -18,7 +18,9 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
     ease: "power2.out",
     onUpdate: () => {
       // Invalidate the renderer on each update
-      if (invalidate) invalidate();
+      if (window.tombsSystem && window.tombsSystem.invalidate) {
+        window.tombsSystem.invalidate();
+      }
     }
   });
 
