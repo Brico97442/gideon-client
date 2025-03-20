@@ -305,7 +305,6 @@ function Scene() {
         return false;
       };
 
-      // Essayer immédiatement
       if (!checkSystem()) {
         const intervalId = setInterval(() => {
           if (checkSystem()) {

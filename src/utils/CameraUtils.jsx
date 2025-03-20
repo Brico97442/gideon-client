@@ -74,7 +74,7 @@ export const focusOnObject = (tombId) => {
   // Position cible de la caméra
   const targetPosition = {
     x: tombPosition.x + 4,
-    y: tombPosition.y + 2,
+    y: tombPosition.y + 1,
     z: tombPosition.z + 1.1,
   };
 
