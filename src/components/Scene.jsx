@@ -445,12 +445,12 @@ function Scene() {
 
         <div className="w-full h-full relative">
           {isMobile && !isModalOpen && (<div className="w-full flex justify-center absolute top-[6vh] px-[7px] z-60" id='mobile-top-view-btn'>
-            <div className={`w-[416px] h-[104px]  'opacity-100' transition-opacity duration-1000`} >
+            <div className={`w-[416px] h-[104px] opacity-100 transition-opacity duration-1000`} >
               <Button btnValue="Passer en vue aérienne" />
             </div>
           </div>)}
           <div className="w-full lg:flex hidden justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
-            <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
+            <div className={`w-[20%] h-[76px] opacity-100 transition-opacity duration-1000`} >
               <Button btnValue="Passer en vue aérienne" />
             </div>
           </div>
