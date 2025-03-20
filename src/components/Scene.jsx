@@ -343,7 +343,15 @@ function Scene() {
   const Loading = () => {
     return (
       <div className="z-60 h-full w-full text-white flex justify-center items-center" style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
-        <p>Chargement de la carte en cours</p>
+        <div className="flex items-center gap-2 justify-center p-6">
+          <p>Chargement de la carte en cours veuillez patientez</p>
+          <div className="relative w-16 h-16 flex items-center justify-center">
+            <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-[spin_1.5s_cubic-bezier(0.25,1,0.5,1)_infinite]"></div>
+            <div className="absolute top-0 left-0 w-6 h-6 rounded-full"
+              style={{ clipPath: "polygon(50% 50%, 100% 0, 100% 100%)" }}>
+            </div>
+          </div>
+        </div>
       </div>
     )
   }
@@ -437,7 +445,7 @@ function Scene() {
       {applicationStart && (
 
         <div className="w-full h-full relative">
-          {isMobile && !isModalOpen && isMobile && (<div className="w-full flex justify-center absolute top-[64px] px-[7px] z-60" id='mobile-top-view-btn'>
+          {isMobile && !isModalOpen && (<div className="w-full flex justify-center absolute top-[6vh] px-[7px] z-60" id='mobile-top-view-btn'>
             <div className={`w-[416px] h-[104px]  'opacity-100' transition-opacity duration-1000`} >
               <Button btnValue="Passer en vue aérienne" />
             </div>
