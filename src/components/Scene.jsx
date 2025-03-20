@@ -470,7 +470,7 @@ function Scene() {
           <Suspense fallback={<Loading />}>
 
             <Canvas
-              frameloop="demand"
+              frameloop="always"
               style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
               camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
               id="tomb-canvas"
@@ -505,8 +505,7 @@ function Scene() {
 
               <SceneCamera />
               <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-              <StatsGl />
-
+              <StatsGl/>
               <Stats />
               <PerformanceMonitor />
             </Canvas>
