@@ -134,17 +134,17 @@ const TombModal = ({ isOpen, onClose }) => {
                 className={`z-50 left-0 h-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
               >
                 {tombDetails && !isCommentOpen && (
-                  <div className="my-[22px] overflow-hidden">
+                  <div className="my-[22px] mx-5 lg:mx-0 overflow-hidden">
                     <h2 className="text-[1em] ">Emplacement n°{selectedTomb}</h2>
                     <h3 className="mt-[1.2vh] text-[1em]">Ici repose</h3>
                     <div className="h-full flex flex-col">
-                      <div id='scroll' className="space-y-[5vh] flex-col lg:max-h-[40vh] max-h-[48vh] overflow-y-auto mt-[0.vh]">
+                      <div id='scroll' className="space-y-[5vh] flex-col lg:max-h-[40vh] max-h-[45vh] overflow-y-auto mt-[2vh] lg:mt-[0vh]">
                         {tombDetails.map((person, index) => (
                           <div key={index} className="flex-col flex pr-[1vw]">
                             <span className="text-[1.5em] font-semibold capitalize">
                               {person.firstname} {person.lastname}
                             </span>
-                            <span className="flex flex-col lg:gap-4 lg:flex-row lg:space-x-1 normal-case text-left text-[1em]">
+                            <span className="flex flex-col lg:gap-4 lg:flex-row lg:space-x-1 space-y-2 lg:space-y-0 normal-case text-left text-[1em]">
                               <li className='list-disc leading-none'>Née le {formatDate(person.birthdate)}</li>
                               <li className='list-disc leading-none text-left'>Décédé le {formatDate(person.deathDate)}</li>
                             </span>
@@ -160,7 +160,7 @@ const TombModal = ({ isOpen, onClose }) => {
                 className={`z-50 absolute top-0 left-0 h-full w-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}
               >
                 {isCommentOpen && (
-                  <div id="comments" className="w-full h-full p-3">
+                  <div id="comments" className="w-full h-full px-5 py-3">
                     <form onSubmit={handleSubmit} className="h-full w-full relative pt-14 overflow-hidden">
                       <input
                         type="text"
