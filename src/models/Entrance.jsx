@@ -12,4 +12,4 @@ const Entrance = () => {
 };
 
 export default Entrance    
-useGLTF.preload("/3d-models/gltf/cimetarylayout/entrance3.glb", true, "/draco/");
+useGLTF.preload("/3d-models/gltf/cimetarylayout/entrance3.glb", true,"/draco/");
