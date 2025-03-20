@@ -5,6 +5,7 @@ import { useTomb } from '../context/TombContext';
 import { highlightTombSection } from '../utils/ColorsUtils';
 import { formatDate } from '../utils/DateUtils';
 import modalRightBackground from '../assets/ui_element/right-modal.webp';
+import closeBtn from '../assets/ui_element/close_btn.svg';
 import PropTypes from 'prop-types';
 import axios from 'axios';
 import Button from './Button';
@@ -122,74 +123,99 @@ const TombModal = ({ isOpen, onClose }) => {
   const modalPositionClass = isVisible ? "right-0" : "-right-[500px]";
 
   return (
-    <div id="ui" className={`lg:block lg:w-auto absolute ${modalPositionClass} transition-all duration-1000 ease-in-out mx-2 py-2 lg:mr-3 lg:py-6 h-full z-50`}>
-      <div className="w-full lg:w-[400px] lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] pt-7 h-full relative">
+    <div id="ui" className={`lg:block w-full lg:w-auto absolute ${modalPositionClass} transition-all duration-1000 ease-in-out px-4 py-4 lg:mr-3 lg:py-6 h-full z-50`}>
+      <div className={`w-full lg:w-[400px] lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] lg:pt-7 h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs" : "bg-transparent border-none"}`}>
         {(!isMobile && <img src={modalRightBackground} alt="modal droite background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" />)}
         <div className="modal-shape-container relative font-orbitron flex flex-col items-center h-full text-dark-green">
-          <div className="flex flex-col items-center h-full">
+          <div className="flex flex-col items-center h-full overflow-hidden ">
             <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center items-center p-2 rounded-xl`}>
               <QRCodeCanvas value={qrValue} size={150} bgColor="#C7D64F" fgColor="#174C53" />
             </div>
-            <div className="flex h-full w-auto lg:w-full flex-col px-[19px] mt-8">
-              <h2 className="text-[18px]">Emplacement n°{selectedTomb}</h2>
-              {tombDetails && (
-                <div className="my-[22px] box-border overflow-hidden">
-                  <h3 className='mb-3'>Ici repose</h3>
-                  <div className='h-full flex flex-col'>
-                    <ul className="space-y-2 flex-col lg:max-h-[30vh] max-h-[15vh] overflow-y-auto">
-                      {tombDetails.map((person, index) => (
-                        <li key={index} className="flex-col flex">
-                          <span className='text-lg font-semibold capitalize underline'>{person.firstname} {person.lastname}</span>
-                          <span className='flex space-x-6 normal-case'><span>* Née le {formatDate(person.birthdate)}</span> <span>* Décédé le {formatDate(person.deathDate)}</span></span>
-                        </li>
-                      ))}
-                    </ul>
+            <div className="flex h-full w-auto lg:w-full flex-col px-[22px] mt-8">
+              <div
+                className={`z-50 left-0 h-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
+              >
+                {tombDetails && !isCommentOpen && (
+                  <div className="my-[22px] overflow-hidden">
+                    <h2 className="text-[18px]">Emplacement n°{selectedTomb}</h2>
+                    <h3 className="mb-3">Ici repose</h3>
+                    <div className="h-full flex flex-col">
+                      <ul className="space-y-2 flex-col lg:max-h-[30vh] max-h-[42vh] overflow-y-auto">
+                        {tombDetails.map((person, index) => (
+                          <li key={index} className="flex-col flex">
+                            <span className="text-lg font-semibold capitalize underline">
+                              {person.firstname} {person.lastname}
+                            </span>
+                            <span className="flex space-x-6 normal-case text-sm">
+                              <span>* Née le {formatDate(person.birthdate)}</span>{' '}
+                              <span>* Décédé le {formatDate(person.deathDate)}</span>
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                </div>
-              )}
-              {isMobile && <button onClick={() => setIsCommentOpen(!isCommentOpen)} className='h-10 w-10 z-50 rounded-full flex justify-center items-center bg-dark-green cursor-pointer'>i</button>}
-              {isCommentOpen && (
-                <div id='comments' className='absolute top-0 left-0 w-full h-full bg-yellow-500'>
-                  <form onSubmit={handleSubmit} className='h-full w-full'>
-                    <input
-                      type="text"
-                      value={lastname}
-                      onChange={(e) => setLastname(e.target.value)}
-                      placeholder="Nom"
-                      className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
-                    />
-                    <input
-                      type="text"
-                      value={firstname}
-                      onChange={(e) => setFirstname(e.target.value)}
-                      placeholder="Prénom"
-                      className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
-                    />
-                    <input
-                      type='text'
-                      value={phoneNumber}
-                      placeholder='Numéro de téléphone'
-                      onChange={(e) => setPhoneNumber(e.target.value)}
-                      className="w-full placeholder:text-white placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-white"
-                    />
-                    <textarea
-                      value={comment}
-                      className='w-full placeholder:text-white placeholder:uppercase h-auto border-b mb-4 focus:outline-none bg-transparent text-white'
-                      placeholder='Laisser un message'
-                      onChange={(e) => setComment(e.target.value)}
-                    />
-                    <button type='submit' className="h-10 lg:h-[76px] w-full rounded-lg bg-[#0E1C36] hover:bg-[#0E1C36]/70 text-white hover:text-green-300 transition-all duration-150">Envoyer</button>
-                  </form>
-                  {formStatus === 'success' && <p className="text-green-500 mt-2">Commentaire envoyé avec succès!</p>}
-                  {formStatus === 'error' && <p className="text-red-500 mt-2">Erreur lors de l'envoi du commentaire.</p>}
-                </div>
-              )}
+                )}
+              </div>
+
+              <div
+                className={`z-50 absolute top-0 left-0 h-full w-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}
+              >
+                {isCommentOpen && (
+                  <div id="comments" className="w-full h-full p-3">
+                    <form onSubmit={handleSubmit} className="h-full w-full relative pt-14 ">
+                      <input
+                        type="text"
+                        value={lastname}
+                        onChange={(e) => setLastname(e.target.value)}
+                        placeholder="Nom"
+                        className="w-full placeholder:text-dark-green placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-dark-green"
+                      />
+                      <input
+                        type="text"
+                        value={firstname}
+                        onChange={(e) => setFirstname(e.target.value)}
+                        placeholder="Prénom"
+                        className="w-full placeholder:text-dark-green placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-dark-green"
+                      />
+                      <input
+                        type="text"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        placeholder="Numéro de téléphone"
+                        className="w-full placeholder:text-dark-green placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-dark-green"
+                      />
+                      <textarea
+                        value={comment}
+                        className="w-full placeholder:text-dark-green placeholder:uppercase h-auto border-b mb-4 focus:outline-none bg-transparent text-dark-green"
+                        placeholder="Laisser un message"
+                        onChange={(e) => setComment(e.target.value)}
+                      />
+                      {formStatus === 'success' && <p className="text-green-800 mt-1">Commentaire envoyé avec succès!</p>}
+                      {formStatus === 'error' && <p className="text-red-800 mt-1">Erreur lors de l'envoi du commentaire.</p>}
+                      <div className="w-full absolute bottom-3">
+                        <Button type="submit" className="lg:h-[76px] w-full rounded-lg bg-[#0E1C36] hover:bg-[#0E1C36]/70 text-white hover:text-green-300 transition-all duration-150" btnValue="Envoyer" />
+                      </div>
+                    </form>
+                  </div>
+                )}
+              </div>
+
             </div>
-            <div className='w-full' onClick={handleClose}>
-              <Button btnValue="Retourner à l'Accueil" />
-            </div>
+            {isMobile && !isCommentOpen &&
+              <div className='w-full z-40 px-5 mb-3' onClick={() => setIsCommentOpen(!isCommentOpen)}>
+                <Button btnValue="Laisser un commentaire" className='cursor-pointer h-[82px]' />
+              </div>
+            }
+            {(!isMobile &&
+              <div className='w-full' onClick={handleClose} id='btn_close_modal-desktop'>
+                <Button btnValue="Retourner à l'Accueil" />
+              </div>
+            )}
           </div>
         </div>
+        {isMobile && !isCommentOpen && <button onClick={handleClose} id='btn_close_modal-mobile' className='absolute top-[16px] right-[16px] h-[43px] w-[43px] z-50 rounded-full flex justify-center items-center cursor-pointer'><img src={closeBtn} alt="modal droite background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" /></button>}
+        {isMobile && isCommentOpen && <button onClick={() => setIsCommentOpen(false)} id='btn_close_modal-mobile' className='absolute top-[16px] right-[16px] h-[43px] w-[43px] z-50 rounded-full flex justify-center items-center cursor-pointer'><img src={closeBtn} alt="modal droite background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" /></button>}
       </div>
     </div>
   );
