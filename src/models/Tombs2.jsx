@@ -7,6 +7,7 @@ import { focusOnObject } from "../utils/CameraUtils";
 import { initColorSystem, highlightSelectedTomb, updateInstanceColors } from "../utils/ColorsUtils";
 import { useModelWithDraco, preloadTombModels } from "../utils/ModelLoader";
 
+
 const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   const { invalidate, camera } = useThree();
   const [tombsData, setTombsData] = useState([]);
@@ -16,7 +17,6 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   useEffect(() => {
     preloadTombModels();
   }, []);
-
   // Référence aux maillages instanciés
   const instancedMeshesRef = useRef({});
 
@@ -27,14 +27,20 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     HIGH: 'high'
   };
 
-  // Seuils de distance pour les niveaux LOD (en unités)
+  // Seuils de distance pour les niveaux LOD
   const LOD_THRESHOLDS = {
-    HIGH: 20,    // Rayon pour le modèle haute résolution
-    MEDIUM: 40   // Rayon pour le modèle moyenne résolution
+    HIGH: 60,
+    MEDIUM: 80
   };
 
-  // État du niveau de détail actuel pour chaque tombe
-  const [currentLODs, setCurrentLODs] = useState({});
+  // État du niveau de détail actuel pour chaque type de tombe
+  const [currentLODs, setCurrentLODs] = useState({
+    1: lodLevels.LOW,
+    2: lodLevels.LOW,
+    3: lodLevels.LOW,
+    4: lodLevels.LOW,
+    5: lodLevels.LOW
+  });
 
   // Surveillance des changements de position de la caméra
   const cameraPositionRef = useRef(new THREE.Vector3());
@@ -68,7 +74,6 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       high: useModelWithDraco("/3d-models/gltf/tomb/05/05high.glb"),
     },
   }), []);
-
   // Fonction pour récupérer les tombes depuis l'API
   useEffect(() => {
     const fetchTombs = async () => {
@@ -97,7 +102,6 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
         window.tombsSystem.needsLODUpdate = true;
         window.tombsSystem.tombPositions = {};
         window.tombsSystem.camera = camera;
-        window.tombsSystem.orbitControlRef = orbitControlRef; // Ajouter la référence aux contrôles d'orbite
         window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
 
         // Enregistrer les positions de tombes
@@ -124,9 +128,9 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     };
 
     fetchTombs();
-  }, [camera, orbitControlRef]);
+  }, [camera]);
 
-  // Fonction pour calculer la distance entre la caméra et une tombe
+  // Nouvelle fonction pour calculer la distance entre la caméra et une tombe
   const calculateDistanceToTomb = (tombPosition) => {
     const cameraPosition = camera.position;
     return Math.sqrt(
@@ -147,25 +151,70 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     }
   };
 
-  // Mise à jour du LOD pour chaque tombe individuellement
+  // Mise à jour du LOD pour chaque type de tombe
   const updateLODs = () => {
     if (!window.tombsSystem || !window.tombsSystem.tombPositions) return false;
 
-    let hasChanged = false;
-    const newLODs = { ...currentLODs };
+    // Créer un objet pour stocker le LOD de chaque tombe
+    if (!window.tombsSystem.tombLODs) {
+      window.tombsSystem.tombLODs = {};
+    }
 
     // Parcourir toutes les tombes
+    let hasChanged = false;
     Object.entries(window.tombsSystem.tombPositions).forEach(([tombId, position]) => {
+      // Calculer la distance pour cette tombe spécifique
       const distance = calculateDistanceToTomb(position);
+
+      // Déterminer le LOD pour cette tombe
       const lod = determineLOD(distance);
 
-      if (newLODs[tombId] !== lod) {
-        newLODs[tombId] = lod;
+      // Stocker le LOD pour cette tombe
+      if (window.tombsSystem.tombLODs[tombId] !== lod) {
+        window.tombsSystem.tombLODs[tombId] = lod;
         hasChanged = true;
       }
     });
 
+    // Mettre à jour l'état des LODs
     if (hasChanged) {
+      // Déterminer le LOD le plus élevé pour chaque type de tombe
+      const newLODs = { ...currentLODs };
+
+      // Regrouper les tombes par type
+      const tombsByType = { 1: [], 2: [], 3: [], 4: [], 5: [] };
+      Object.entries(window.tombsSystem.tombPositions).forEach(([tombId, position]) => {
+        if (tombsByType[position.type]) {
+          tombsByType[position.type].push({
+            id: tombId,
+            lod: window.tombsSystem.tombLODs[tombId]
+          });
+        }
+      });
+
+      // Pour chaque type, déterminer le LOD le plus élevé à utiliser
+      Object.entries(tombsByType).forEach(([type, tombs]) => {
+        if (tombs.length === 0) return;
+
+        // Priorité : HIGH > MEDIUM > LOW
+        const hasHigh = tombs.some(tomb => tomb.lod === lodLevels.HIGH);
+        const hasMedium = tombs.some(tomb => tomb.lod === lodLevels.MEDIUM);
+
+        let bestLOD;
+        if (hasHigh) {
+          bestLOD = lodLevels.HIGH;
+        } else if (hasMedium) {
+          bestLOD = lodLevels.MEDIUM;
+        } else {
+          bestLOD = lodLevels.LOW;
+        }
+
+        if (newLODs[type] !== bestLOD) {
+          newLODs[type] = bestLOD;
+          console.log(`Type ${type} LOD updated to ${bestLOD}`);
+        }
+      });
+
       setCurrentLODs(newLODs);
     }
 
@@ -205,152 +254,100 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
   }, [selectedTombId, tombsData]);
 
-  // Créer des groupes séparés pour chaque niveau de LOD
-  const createLODGroups = () => {
-    if (loading || tombsData.length === 0) return {};
-
-    // Organiser les tombes par type et par LOD
-    const tombsByTypeLOD = {};
-    const DEFAULT_COLOR = 0xCCCCCC;
-
-    // Initialiser la structure
-    Object.keys(tombModels).forEach(type => {
-      tombsByTypeLOD[type] = {
-        low: [],
-        medium: [],
-        high: []
-      };
-    });
-
-    // Répartir les tombes par type et LOD
-    tombsData.forEach(tomb => {
-      const lod = currentLODs[tomb.id] || lodLevels.LOW;
-      if (tombsByTypeLOD[tomb.type]) {
-        tombsByTypeLOD[tomb.type][lod].push(tomb);
-      }
-    });
-
-    return tombsByTypeLOD;
-  };
-
-  // Création des groupes de LOD
-  const tombsByTypeLOD = useMemo(() => createLODGroups(), [tombsData, currentLODs, refresh]);
-
-  // Effet pour mettre à jour les maillages instanciés
+  // Mise à jour des InstancedMesh en fonction du LOD
   useEffect(() => {
     if (loading || tombsData.length === 0) return;
 
-    // Mettre à jour la référence globale aux maillages instanciés
-    if (window.tombsSystem) {
-      window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
+    // Grouper les tombes par type
+    const tombsByType = {
+      1: [],
+      2: [],
+      3: [],
+      4: [],
+      5: []
+    };
 
-      // Créer une carte de correspondance entre les tombes et leurs indices dans chaque maillage
-      window.tombsSystem.tombInstanceMap = {};
-    }
-
-    Object.entries(tombsByTypeLOD).forEach(([type, lodGroups]) => {
-      Object.entries(lodGroups).forEach(([lod, tombs]) => {
-        const key = `${type}_${lod}`;
-        const mesh = instancedMeshesRef.current[key];
-
-        if (!mesh || tombs.length === 0) return;
-
-        // Créer les matrices de transformation
-        const matrices = [];
-        const colors = [];
-
-        // Créer une carte de correspondance pour cette combinaison type_lod
-        const instanceMap = {};
-
-        tombs.forEach((tomb, index) => {
-          // Stocker l'index de l'instance pour cette tombe
-          instanceMap[tomb.id] = index;
-
-          // Position et rotation
-          const position = new THREE.Vector3(
-            tomb.tombTransform.position[0],
-            tomb.tombTransform.position[2],
-            -tomb.tombTransform.position[1]
-          );
-
-          const quaternion = new THREE.Quaternion().setFromEuler(
-            new THREE.Euler(
-              tomb.tombTransform.rotation[0],
-              tomb.tombTransform.rotation[2],
-              tomb.tombTransform.rotation[1]
-            )
-          );
-
-          const scale = new THREE.Vector3(1, 1, 1);
-          const matrix = new THREE.Matrix4();
-          matrix.compose(position, quaternion, scale);
-          matrices.push(matrix);
-
-          // Couleur
-          const color = window.tombsSystem?.instanceColors?.[tomb.id] || new THREE.Color(0xCCCCCC);
-          colors.push(color.r, color.g, color.b);
-        });
-
-        // Stocker la carte de correspondance dans le système global
-        if (window.tombsSystem) {
-          if (!window.tombsSystem.tombInstanceMap) {
-            window.tombsSystem.tombInstanceMap = {};
-          }
-          window.tombsSystem.tombInstanceMap[key] = instanceMap;
-        }
-
-        // Mettre à jour le nombre d'instances
-        mesh.count = matrices.length;
-
-        // Mettre à jour les matrices d'instance
-        if (matrices.length > 0) {
-          // Réinitialiser l'instanceMatrix si nécessaire
-          if (mesh.instanceMatrix.count !== matrices.length) {
-            mesh.instanceMatrix = new THREE.InstancedBufferAttribute(
-              new Float32Array(matrices.length * 16), 16
-            );
-          }
-
-          // Mettre à jour chaque matrice
-          for (let i = 0; i < matrices.length; i++) {
-            mesh.setMatrixAt(i, matrices[i]);
-          }
-          mesh.instanceMatrix.needsUpdate = true;
-        }
-
-        // Mettre à jour les couleurs d'instance
-        if (colors.length > 0) {
-          if (!mesh.instanceColor || mesh.instanceColor.count !== tombs.length) {
-            mesh.instanceColor = new THREE.InstancedBufferAttribute(
-              new Float32Array(colors), 3
-            );
-          } else {
-            for (let i = 0; i < colors.length; i++) {
-              mesh.instanceColor.array[i] = colors[i];
-            }
-          }
-          mesh.instanceColor.needsUpdate = true;
-        }
-
-        // Appliquer le modèle 3D correspondant au LOD
-        const model = tombModels[type][lod];
-        if (model) {
-          model.scene.traverse(child => {
-            if (child.isMesh) {
-              mesh.geometry = child.geometry;
-              mesh.material = child.material.clone();
-            }
-          });
-        }
-      });
+    tombsData.forEach(tomb => {
+      if (tombsByType[tomb.type]) {
+        tombsByType[tomb.type].push(tomb);
+      }
     });
 
-    // Mise à jour pour le système de couleurs
+    // Mettre à jour la référence aux tombes groupées dans le système global
     if (window.tombsSystem) {
-      window.tombsSystem.tombsByTypeLOD = tombsByTypeLOD;
+      window.tombsSystem.tombsByType = tombsByType;
     }
 
-  }, [tombsByTypeLOD, tombModels, loading]);
+    // Mise à jour des maillages instanciés pour chaque type
+    Object.keys(tombsByType).forEach(type => {
+      const tombs = tombsByType[type];
+      const mesh = instancedMeshesRef.current[type];
+      if (!mesh || tombs.length === 0) return;
+
+      // Obtenir le LOD spécifique pour ce type de tombe
+      const lodLevel = currentLODs[type];
+
+      // Obtenir le modèle 3D pour le niveau de détail actuel
+      const model = tombModels[type][lodLevel];
+      if (!model) return;
+
+      // Extraire la géométrie et le matériau
+      let geometry, material;
+      model.scene.traverse(child => {
+        if (child.isMesh) {
+          geometry = child.geometry;
+          material = child.material.clone();
+        }
+      });
+
+      if (!geometry || !material) return;
+
+      // Mettre à jour la géométrie et le matériau
+      mesh.geometry = geometry;
+      mesh.material = material;
+
+      // Positionner chaque instance
+      tombs.forEach((tomb, index) => {
+        const matrix = new THREE.Matrix4();
+
+        const position = new THREE.Vector3(
+          tomb.tombTransform.position[0],
+          tomb.tombTransform.position[2],
+          -tomb.tombTransform.position[1]
+        );
+
+        const quaternion = new THREE.Quaternion().setFromEuler(
+          new THREE.Euler(
+            tomb.tombTransform.rotation[0],
+            tomb.tombTransform.rotation[2],
+            tomb.tombTransform.rotation[1]
+          )
+        );
+        window.tombsSystem.tombPositions[tomb.id] = {
+          x: tomb.tombTransform.position[0],
+          y: tomb.tombTransform.position[2],
+          z: -tomb.tombTransform.position[1],
+          sectionId: tomb.sectionId,
+          type: tomb.type,
+          quaternion: quaternion // Stocker le quaternion
+        };
+        const scale = new THREE.Vector3(1, 1, 1);
+
+        matrix.compose(position, quaternion, scale);
+        mesh.setMatrixAt(index, matrix);
+      });
+
+      // Mettre à jour la matrice d'instance
+      mesh.instanceMatrix.needsUpdate = true;
+    });
+
+    // Mettre à jour les couleurs des instances après le changement de LOD
+    if (window.tombsSystem) {
+      window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
+      updateInstanceColors();
+    }
+
+  }, [tombsData, loading, currentLODs, refresh, tombModels]);
 
   // Fonction pour gérer le clic sur une tombe
   const handleTombClick = (event) => {
@@ -358,12 +355,12 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
     event.stopPropagation();
     const instanceId = event.instanceId;
-    const meshKey = event.object.userData.key;
-    const [type, lod] = meshKey.split('_');
+    const tombType = event.object.userData.type;
 
-    // Trouver la tombe correspondante
-    const tombs = tombsByTypeLOD[type][lod];
-    if (tombs && tombs[instanceId]) {
+    // Trouver la tombe correspondante par son type et instanceId
+    const tombs = tombsData.filter(tomb => tomb.type === Number(tombType));
+
+    if (tombs[instanceId]) {
       const tomb = tombs[instanceId];
       onTombClick(tomb.id);
       focusOnObject(tomb.id);
@@ -389,35 +386,37 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     return <group />;
   }
 
+  // Compter le nombre de tombes par type
+  const countByType = {};
+  tombsData.forEach(tomb => {
+    countByType[tomb.type] = (countByType[tomb.type] || 0) + 1;
+  });
+
   return (
     <group>
-      {Object.entries(tombsByTypeLOD).map(([type, lodGroups]) => (
-        Object.entries(lodGroups).map(([lod, tombs]) => {
-          const key = `${type}_${lod}`;
-          return tombs.length > 0 ? (
-            <instancedMesh
-              key={key}
-              ref={(ref) => {
-                instancedMeshesRef.current[key] = ref;
-                if (window.tombsSystem) {
-                  window.tombsSystem.instancedMeshesRef = {
-                    ...window.tombsSystem.instancedMeshesRef,
-                    [key]: ref
-                  };
-                }
-              }}
-              args={[null, null, tombs.length]}
-              onClick={(event) => {
-                handleTombClick(event);
-                invalidate();
-                // Remplacer dolly par une méthode qui existe dans OrbitControls
-                requestAnimationFrame(() => orbitControlRef.current?.update());
-              }}
-              userData={{ key, type, lod }}
-            />
-          ) : null;
-        })
-      ))}
+      {Object.entries(countByType).map(([type, count]) => {
+        return (
+          <instancedMesh
+            key={type}
+            ref={(ref) => {
+              instancedMeshesRef.current[type] = ref;
+              // Mettre à jour la référence dans le système global
+              if (window.tombsSystem) {
+                window.tombsSystem.instancedMeshesRef = instancedMeshesRef.current;
+              }
+            }}
+            args={[null, null, count]}
+
+            onClick={(event) => {
+              handleTombClick(event);
+              invalidate();
+              // Remplacer dolly par une méthode qui existe dans OrbitControls
+              requestAnimationFrame(() => orbitControlRef.current?.update());
+            }}
+            userData={{ type }}
+          />
+        );
+      })}
     </group>
   );
 };

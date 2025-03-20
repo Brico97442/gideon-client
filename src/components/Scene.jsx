@@ -11,6 +11,7 @@ import Ground from "../models/Ground";
 import UserInterface from "./UserInterface";
 import TombModal from "./TombModal";
 import Tombs from "../models/Tombs";
+import Tombs2 from "../models/Tombs2";
 import { useSearchParams } from "react-router-dom";
 import ParticleSystem from './ParticlesScene';
 import MainOrbitControl from '../utils/MainOrbitControl';
@@ -347,6 +348,7 @@ function Scene() {
     )
   }
 
+
   const handleStartApplication = () => {
     setIsTransitioning(true);
     setApplicationStart(true);
@@ -355,10 +357,10 @@ function Scene() {
   useEffect(() => {
     setIsSceneLoaded(true)
 
-    // if (isMobile && !isSceneLoaded) {
-    //   setApplicationStart(true);
-    //   setIsSceneLoaded(true)
-    // }
+    if (isMobile && !isSceneLoaded) {
+      setApplicationStart(true);
+      setIsSceneLoaded(true)
+    }
   }, [])
 
   const handleTransitionComplete = () => {
@@ -416,7 +418,7 @@ function Scene() {
       <div className="fixed h-full w-full" onClick={handleStartApplication} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
         <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}>
           <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
-            <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
+            <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
             <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
               <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
               <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
@@ -435,14 +437,18 @@ function Scene() {
       {applicationStart && (
 
         <div className="w-full h-full relative">
-          <div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
+          {isMobile && !isModalOpen && isMobile && (<div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
+            <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
+              <Button btnValue="Passer en vue aérienne" />
+            </div>
+          </div>)}
+          <div className="w-full lg:flex hidden justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
             <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
               <Button btnValue="Passer en vue aérienne" />
             </div>
           </div>
 
-
-          <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'}  absolute top-[60px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
+          <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute top-[100px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
 
           <div className={`transition-opacity duration-[1500] z-50`} >
             <UserInterface handleTombFocus={handleTombFocus} />
@@ -459,7 +465,6 @@ function Scene() {
             >
 
               <group>
-
                 <Pointer />
                 <Entrance />
                 <Wall />
@@ -474,14 +479,14 @@ function Scene() {
                 {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
                 <ambientLight intensity={2.5} />
 
-                <Tombs
+                <Tombs2
                   onTombClick={isMobile ? handleTombFocus : handleTombClick}
                   selectedTombId={selectedTomb}
                   orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
                   glowLayer={[glowLayer]}
                 />
                 <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
-                <pointLight position={[-10, -10, -10]} decay={1} intensity={Math.PI} color='yellow'/>
+                <pointLight position={[-10, -10, -10]} decay={1} intensity={Math.PI} color='yellow' />
 
               </group>
 
