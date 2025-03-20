@@ -147,7 +147,8 @@ const TombModal = ({ isOpen, onClose }) => {
                   </div>
                 </div>
               )}
-              {isMobile && <button onClick={() => setIsCommentOpen(!isCommentOpen)} className='h-10 w-10 z-50 rounded-full flex justify-center items-center bg-dark-green cursor-pointer'>i</button>}              {isCommentOpen && (
+              {isMobile && <button onClick={() => setIsCommentOpen(!isCommentOpen)} className='h-10 w-10 z-50 rounded-full flex justify-center items-center bg-dark-green cursor-pointer'>i</button>}              
+              {isCommentOpen && (
                 <div id='comments' className='absolute top-0 left-0 w-full h-full bg-yellow-500'>
                   <form onSubmit={handleSubmit} className='h-full w-full'>
                     <input
