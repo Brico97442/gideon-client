@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls } from "@react-three/drei";
+import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import axios from 'axios';
@@ -23,7 +23,7 @@ import {
   createHighlightForTomb,
   COLORS
 } from "../utils/ColorsUtils";
-
+// import { Perf } from 'r3f-perf'
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
 import Pointer from "../models/Pointer";
@@ -108,8 +108,16 @@ function Scene() {
   }
 
   const SceneCamera = () => {
-    const { camera, scene } = useThree();
+    const { camera, scene, } = useThree();
+    const { gl } = useThree();
 
+    useEffect(() => {
+      const interval = setInterval(() => {
+        console.log(gl.info.render);
+      }, 1000);
+  
+      return () => clearInterval(interval);
+    }, [gl]);
     useEffect(() => {
       if (!initialCameraPosition) {
         setInitialCameraPosition(camera.position.clone());
@@ -320,14 +328,13 @@ function Scene() {
     }
   }, [searchParams]);
 
-
   useEffect(() => {
     const button = document.getElementById("top-view-btn");
     if (button) {
       button.addEventListener("click", handleTopView);
     }
   }, [camera]);
-
+ 
   const handleCameraMove = (position) => {
     // Déclencher une mise à jour des LOD sur le composant Tombs
     if (window.tombsSystem) {
@@ -497,10 +504,12 @@ function Scene() {
 
               </group>
 
-              <SceneCamera frustumCulled={false} />
-              <MainOrbitControl orbitControlRef={orbitControlRef} frustumCulled={false} onCameraMove={handleCameraMove} />
+              <SceneCamera />
+              <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
+              <StatsGl />
 
               <Stats />
+              <PerformanceMonitor />
             </Canvas>
 
           </Suspense>
