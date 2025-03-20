@@ -3,8 +3,26 @@
 @import "@fontsource/orbitron/500.css";
 @import "@fontsource/orbitron/700.css";
 
+
+@font-face {
+  font-family: "Avenir LT Std";
+  src: url("/fonts/Avenir LT Std 85 Heavy.otf") format("otf");
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Avenir LT Std";
+  src: url("/fonts/Avenir LT Std 45 Book.otf") format("otf");
+  font-weight: lighter;
+  font-style: normal;
+}
+
+
+
 @theme {
   --font-orbitron: 'Orbitron', 'Arial', sans-serif;
+  --font-avenir: 'Avenir LT Std', 'Arial', sans-serif;
 }
 
 @theme {
@@ -70,6 +88,34 @@ ul::-webkit-scrollbar-thumb {
 
 ul::-webkit-scrollbar-thumb:hover {
   background: #29285BE5; /* Couleur de la barre de défilement au survol */
+}
+
+#scroll::-webkit-scrollbar {
+  width: 2px; /* Largeur de la barre de défilement */
+}
+
+#scroll::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Couleur de l'arrière-plan de la piste */
+}
+
+#scroll::-webkit-scrollbar-thumb {
+  background: #888;
+  height: 4px; /* Couleur de la barre de défilement */
+}
+
+#scroll::-webkit-scrollbar-thumb:hover {
+  background: #29285BE5; /* Couleur de la barre de défilement au survol */
+}
+
+input[type="date"]::-webkit-datetime-edit {
+  color: transparent; /* Masque le texte du placeholder natif */
+}
+input[type="date"]:focus::-webkit-datetime-edit {
+  color: inherit; /* Affiche le texte normal après sélection */
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  opacity: 0;              /* Rendre l'icône invisible */
+  pointer-events: auto;     /* S'assurer que l'élément reste cliquable */
 }
 
 .fade-out {

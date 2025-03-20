@@ -5,6 +5,7 @@ import { useTomb } from '../context/TombContext';
 import { SEARCH_DECEASED } from '../config/api';
 import modalBackground from '../assets/ui_element/left_modal.webp';
 import logo from '../assets/ui_element/logo_st_paul.svg';
+import calendarIcon from '../assets/ui_element/calendar_icon.svg';
 import { formatDate } from '../utils/DateUtils';
 import Button from "./Button";
 
@@ -18,6 +19,8 @@ function UserInterface({ handleTombFocus }) {
     const [isLoading, setIsLoading] = useState(false);
     const [cachedData, setCachedData] = useState(null);
     const { selectTomb, focusOnTomb } = useTomb();
+    const [isBirthdateFocused, setIsBirthdateFocused] = useState(false);
+    const [isDeathdateFocused, setIsDeathdateFocused] = useState(false);
 
 
     // Index des données pour une recherche plus rapide
@@ -210,57 +213,89 @@ function UserInterface({ handleTombFocus }) {
     };
 
     return (
-        <div id="ui" className="hidden lg:block absolute left-0 pl-3 py-6 h-full z-50">
-            <div className="w-[400px] pl-[38.5px] pr-[48.5px] h-full relative">
-                <img src={modalBackground} alt="modal gauche background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" />
+        <div id="ui" className="hidden lg:w-[26%] lg:block absolute left-0 pl-3 py-6 h-full z-50">
+            <div className="w-full pl-[26px] pr-[2.1vw] h-full relative">
+                <img src={modalBackground} alt="modal gauche background" className="h-full  w-full object-fill absolute top-0 left-0" />
 
-                <h1 className="absolute -left-[60px] top-[11vh] font-bold text-[38px] -rotate-90 leading-none">GIDEON</h1>
+                <h1 className="absolute font-orbitron -left-[44px] top-[11vh] font-black text-[1.6em] -rotate-90 leading-none">GIDEON</h1>
 
-                <div className="h-full w-full relative font-orbitron flex flex-col text-dark-green">
+                <div className="h-full w-full font-avenir relative flex flex-col text-dark-green">
 
-                    <div id="logo_container" className="w-full flex justify-end">
-                        <img src={logo} alt="Saint paul logo" width={224} height={122} />
+                    <div id="logo_container" className="w-full flex justify-end mt-0.5">
+                        <img src={logo} alt="Saint paul logo" width={150} height={120} />
                     </div>
 
-                    <div className=" h-full">
-                        <div className="flex flex-col pr-4">
-                            <h2 className="font-orbitron w-full text-xl text-center tracking-wide font-normal mt-[6vh] mb-14">Rechercher un défunt</h2>
-
-                            <input
-                                type="text"
-                                value={lastname}
-                                onChange={(e) => setLastname(e.target.value)}
-                                placeholder="Nom"
-                                className="w-full placeholder:text-dark-green placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-dark-green"
-                            />
-                            <input
-                                type="text"
-                                value={firstname}
-                                onChange={(e) => setFirstname(e.target.value)}
-                                placeholder="Prénom"
-                                className="w-full placeholder:text-dark-green placeholder:uppercase h-10 border-b mb-4 focus:outline-none bg-transparent text-dark-green"
-                            />
-                            <div className=" mb-4">
-                                <label className="block text-sm mb-1">Date de naissance</label>
+                    <div className="w-full h-full">
+                        <div className="flex flex-col">
+                            <h2 className=" flex ml-[2.2vw] w-full text-[1.3em] font-normal mt-[5.8vh] mb-[5vh]">Rechercher un défunt</h2>
+                            <form className="pr-[1vw] ">
                                 <input
-                                    type="date"
-                                    value={birthdate}
-                                    onChange={(e) => setBirthdate(e.target.value)}
-                                    className="w-full border-b h-10 placeholder:uppercase focus:outline-none bg-transparent text-dark-green"
+                                    type="text"
+                                    value={lastname}
+                                    onChange={(e) => setLastname(e.target.value)}
+                                    placeholder="Nom"
+                                    className="w-full font-normal border-b-white placeholder:text-dark-green text-[1.5em] h-7 border-b mb-7 focus:outline-none bg-transparent text-dark-green"
                                 />
-                            </div>
-                            <div className=" mb-4">
-                                <label className="block text-sm mb-1">Date de décès</label>
                                 <input
-                                    type="date"
-                                    value={deathdate}
-                                    onChange={(e) => setDeathdate(e.target.value)}
-                                    className="w-full border-b h-10 placeholder:uppercase focus:outline-none bg-transparent text-dark-green"
+                                    type="text"
+                                    value={firstname}
+                                    onChange={(e) => setFirstname(e.target.value)}
+                                    placeholder="Prénom"
+                                    className="w-full font-normal placeholder:text-dark-green h-7 text-[1.5em] border-b-white border-b mb-7 focus:outline-none bg-transparent text-dark-green"
                                 />
-                            </div>
 
-                            {error && <p className="text-red-500 text-center mt-2">{error}</p>}
-                            {isLoading && <p className="text-center mt-2">Chargement...</p>}
+                                <div className="relative mb-7 flex items-center">
+                                    {!birthdate && !isBirthdateFocused && (
+                                        <div
+                                            className="absolute left-0 text-dark-green text-[1.5em] cursor-text"
+                                            onClick={() => {
+                                                setIsBirthdateFocused(true);
+                                                document.getElementById("birthdate-input").focus();
+                                            }}
+                                        >
+                                            Date de naissance
+                                        </div>
+                                    )}
+                                    <input
+                                        id="birthdate-input"
+                                        type="date"
+                                        value={birthdate}
+                                        onChange={(e) => setBirthdate(e.target.value)}
+                                        onFocus={() => setIsBirthdateFocused(true)}
+                                        onBlur={() => !birthdate && setIsBirthdateFocused(false)}
+                                        className="w-full font-normal placeholder:text-[1.5em] text-[1.5em] border-b-white border-b h-7 bg-transparent text-dark-green focus:outline-none"
+                                    />
+                                    <img src={calendarIcon} alt="calendrier icône" className="pointer-events-none h-[30px] w-[30px] mb-[0.5vh] mr-3 object-fill absolute right-0 " />
+
+                                </div>
+
+                                <div className="relative flex items-center">
+                                    {!deathdate && !isDeathdateFocused && (
+                                        <div
+                                            className="absolute left-0 placeholder:text-[1.5em] text-[1.5em] cursor-text"
+                                            onClick={() => {
+                                                setIsDeathdateFocused(true);
+                                                document.getElementById("deathdate-input").focus();
+                                            }}
+                                        >
+                                            Date de décès
+                                        </div>
+                                    )}
+                                    <input
+                                        id="deathdate-input"
+                                        type="date"
+                                        value={deathdate}
+                                        onChange={(e) => setDeathdate(e.target.value)}
+                                        onFocus={() => setIsDeathdateFocused(true)}
+                                        onBlur={() => !deathdate && setIsDeathdateFocused(false)}
+                                        className="w-full font-normal placeholder:text-[1.5em] text-[1.5em] border-b-white border-b h-7 bg-transparent text-dark-green focus:outline-none"
+                                    />
+                                    <img src={calendarIcon} alt="calendrier icône" className="pointer-events-none h-[30px] w-[30px] mb-[0.5vh] mr-3 object-fill absolute right-0" />
+                                </div>
+                                {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+                                {isLoading && <p className="text-center mt-2">Chargement...</p>}
+                            </form>
+
 
                             {results.length > 0 && (
                                 <div className="w-full mt-2 overflow-hidden z-20 text-dark-green">
@@ -277,9 +312,9 @@ function UserInterface({ handleTombFocus }) {
                                                 <div className="flex flex-col">
                                                     <span className="font-semibold">{person.firstname} {person.lastname}</span>
                                                     <div className="text-sm opacity-80">
-                                                        <span>
-                                                            {person.birthdate && `Né(e) le ${formatDate(person.birthdate)}`}
-                                                            {person.deathDate && ` - Décédé(e) le ${formatDate(person.deathDate)}`}
+                                                        <span className="flex flex-col">
+                                                            <span>{person.birthdate && `Né(e) le ${formatDate(person.birthdate)}`}</span>
+                                                            <span>{person.deathDate && `Décédé(e) le ${formatDate(person.deathDate)}`}</span>
                                                         </span>
                                                     </div>
                                                 </div>
@@ -291,8 +326,8 @@ function UserInterface({ handleTombFocus }) {
                         </div>
                     </div>
 
-                    <div className='w-full mb-[5vh]' onClick={handleSearch}>
-                        <Button btnValue="Rechercher" />
+                    <div className='w-full mb-[4.5vh]' onClick={handleSearch}>
+                        <Button btnValue="Rechercher" className='font-extralight'/>
                     </div>
                 </div>
             </div>
