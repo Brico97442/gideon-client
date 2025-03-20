@@ -228,7 +228,7 @@ function UserInterface({ handleTombFocus }) {
                     <div className="w-full h-full">
                         <div className="flex flex-col">
                             <h2 className=" flex ml-[2.2vw] w-full text-[1.3em] font-normal mt-[5.8vh] mb-[5vh]">Rechercher un défunt</h2>
-                            <form className="pr-[1vw] ">
+                            <form className="pr-[1vw]">
                                 <input
                                     type="text"
                                     value={lastname}
@@ -302,11 +302,11 @@ function UserInterface({ handleTombFocus }) {
                                     <h3 className="text-center mb-2">
                                         {results.length} résultat{results.length > 1 ? 's' : ''} trouvé{results.length > 1 ? 's' : ''}
                                     </h3>
-                                    <ul className="max-h-40 overflow-y-auto space-y-2">
+                                    <ul className="max-h-[18vh] overflow-y-auto space-y-1">
                                         {results.map((person, index) => (
                                             <li
                                                 key={`${person.id}-${index}`}
-                                                className="border-b border-white/20 py-2 px-3 hover:bg-[#0E1C36]/30 transition-all duration-150 rounded cursor-pointer"
+                                                className="border-b border-white/20  hover:bg-[#0E1C36]/30 transition-all duration-150 rounded cursor-pointer"
                                                 onClick={() => handleLocate(person)}
                                             >
                                                 <div className="flex flex-col">
