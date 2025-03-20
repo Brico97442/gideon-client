@@ -119,7 +119,7 @@ const TombModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const modalPositionClass = isVisible ? "right-0" : "-right-[450px]";
+  const modalPositionClass = isVisible ? "right-0" : "-right-[500px]";
 
   return (
     <div id="ui" className={`lg:block lg:w-auto absolute ${modalPositionClass} transition-all duration-1000 ease-in-out mx-2 py-2 lg:mr-3 lg:py-6 h-full z-50`}>
