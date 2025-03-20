@@ -396,6 +396,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
           const key = `${type}_${lod}`;
           return tombs.length > 0 ? (
             <instancedMesh
+            frustumCulled={true}
               key={key}
               ref={(ref) => {
                 instancedMeshesRef.current[key] = ref;
@@ -410,7 +411,6 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
               onClick={(event) => {
                 handleTombClick(event);
                 invalidate();
-                // Remplacer dolly par une méthode qui existe dans OrbitControls
                 requestAnimationFrame(() => orbitControlRef.current?.update());
               }}
               userData={{ key, type, lod }}

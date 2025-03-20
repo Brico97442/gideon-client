@@ -29,8 +29,8 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
   // Seuils de distance pour les niveaux LOD
   const LOD_THRESHOLDS = {
-    HIGH: 60,
-    MEDIUM: 80
+    HIGH: 20,
+    MEDIUM: 40
   };
 
   // État du niveau de détail actuel pour chaque type de tombe
@@ -397,6 +397,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       {Object.entries(countByType).map(([type, count]) => {
         return (
           <instancedMesh
+          frustumCulled={true}
             key={type}
             ref={(ref) => {
               instancedMeshesRef.current[type] = ref;

@@ -472,7 +472,6 @@ function Scene() {
             <Canvas
               frameloop="demand"
               style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
-              shadows
               camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
               id="tomb-canvas"
               className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500`}
@@ -499,8 +498,8 @@ function Scene() {
                   orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
                   glowLayer={[glowLayer]}
                 />
-                <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' />
-                <pointLight position={[-10, -10, -10]} decay={1} intensity={Math.PI} color='yellow' />
+                {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
+                {/* <pointLight position={[-10, -10, -10]} decay={1} intensity={Math.PI} color='yellow' /> */}
 
               </group>
 
