@@ -108,8 +108,7 @@ function Scene() {
   }
 
   const SceneCamera = () => {
-    const { camera, scene, } = useThree();
-    const { gl } = useThree();
+    const { camera, scene, gl, invalidate } = useThree();
 
     useEffect(() => {
       const interval = setInterval(() => {
@@ -131,6 +130,7 @@ function Scene() {
         console.log("Initialisation du système global");
         window.tombsSystem = {};
       }
+      window.tombsSystem.invalidate = invalidate;
 
       if (!window.tombsSystem.highlightGroup) {
         console.log("Création du groupe de surbrillance");
@@ -148,7 +148,7 @@ function Scene() {
       setSceneElements(camera, orbitControlRef, tombClones);
 
       console.log("Configuration de la scène terminée");
-    }, [camera, tombClones]);
+    }, [camera, invalidate,scene]);
 
     return null;
   };
@@ -228,9 +228,9 @@ function Scene() {
     if (!camera) return;
     setIsShowUi(true)
     const topViewPosition = { x: 0, y: 120, z: 0.001 };
-
+  
     moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
-
+  
     if (orbitControlRef.current) {
       gsap.to(orbitControlRef.current.target, {
         x: 0,
@@ -238,11 +238,14 @@ function Scene() {
         z: 0,
         duration: 1.5,
         ease: "power2.out",
-        onUpdate: () => orbitControlRef.current.update(),
+        onUpdate: () => {
+          orbitControlRef.current.update();
+          // Invalidate here too
+          if (window.tombsSystem?.invalidate) window.tombsSystem.invalidate();
+        }
       });
     }
   };
-
   const resetCameraPosition = () => {
     if (initialCameraPosition) {
       gsap.to(camera.position, {
@@ -253,9 +256,11 @@ function Scene() {
         ease: "power2.out",
         onUpdate: () => {
           camera.lookAt(0, 0, 0);
+          // Invalidate here
+          if (window.tombsSystem?.invalidate) window.tombsSystem.invalidate();
         },
       });
-
+  
       if (orbitControlRef.current) {
         gsap.to(orbitControlRef.current.target, {
           x: 0,
@@ -265,6 +270,8 @@ function Scene() {
           ease: "power2.out",
           onUpdate: () => {
             orbitControlRef.current.update();
+            // Invalidate here too
+            if (window.tombsSystem?.invalidate) window.tombsSystem.invalidate();
           },
         });
       }
@@ -470,7 +477,7 @@ function Scene() {
           <Suspense fallback={<Loading />}>
 
             <Canvas
-              frameloop="always"
+              frameloop="demand"
               style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
               camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
               id="tomb-canvas"

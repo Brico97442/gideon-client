@@ -6,6 +6,9 @@ import * as THREE from "three";
 export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, target) => {
   if (!camera || !orbitControlRef.current) return;
 
+  // Get the invalidate function from the Three.js context
+  const invalidate = window.tombsSystem?.invalidate;
+
   // Déplacement de la caméra vers la nouvelle position
   gsap.to(camera.position, {
     x: targetPosition.x,
@@ -13,6 +16,10 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
     z: targetPosition.z,
     duration: 1.5,
     ease: "power2.out",
+    onUpdate: () => {
+      // Invalidate the renderer on each update
+      if (invalidate) invalidate();
+    }
   });
 
   gsap.to(orbitControlRef.current.target, {
@@ -21,11 +28,14 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
     z: target.z,
     duration: 1.5,
     ease: "power2.out",
-    onUpdate: () => orbitControlRef.current.update(),
+    onUpdate: () => {
+      orbitControlRef.current.update();
+      // Invalidate the renderer on each update
+      if (invalidate) invalidate();
+    }
   });
 };
 
-// Dans CameraUtils.jsx, modifiez la fonction focusOnObject comme suit :
 export const focusOnObject = (tombId) => {
   console.log(`Focus sur la tombe ID: ${tombId}`);
 
@@ -37,6 +47,7 @@ export const focusOnObject = (tombId) => {
   // Récupérer la caméra et les contrôles depuis le système global
   const camera = window.tombsSystem.camera;
   const orbitControlRef = window.tombsSystem.orbitControlRef;
+  const invalidate = window.tombsSystem.invalidate;
 
   if (!camera || !orbitControlRef || !orbitControlRef.current) {
     console.warn("Caméra ou contrôles d'orbite non disponibles");
@@ -94,6 +105,8 @@ export const focusOnObject = (tombId) => {
     ease: "power2.out",
     onUpdate: () => {
       camera.lookAt(target);
+      // Invalidate renderer on each GSAP update
+      if (invalidate) invalidate();
     }
   });
 
@@ -104,7 +117,10 @@ export const focusOnObject = (tombId) => {
     z: target.z,
     duration: 1.5,
     ease: "power2.out",
-    onUpdate: () => orbitControlRef.current.update(),
+    onUpdate: () => {
+      orbitControlRef.current.update();
+      // Invalidate renderer on each GSAP update
+      if (invalidate) invalidate();
+    }
   });
 };
-
