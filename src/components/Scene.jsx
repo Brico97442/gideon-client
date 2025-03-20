@@ -208,10 +208,10 @@ function Scene() {
       }
 
       // Récupérer les détails de la tombe
-      fetchTombDetails(id);
+      fetchTombDetail(id);
       setIsShowUi(false);
     } else {
-      fetchTombDetails(id);
+      fetchTombDetail(id);
     }
 
   };;
@@ -437,8 +437,8 @@ function Scene() {
       {applicationStart && (
 
         <div className="w-full h-full relative">
-          {isMobile && !isModalOpen && isMobile && (<div className="w-full flex justify-center absolute top-2 lg:top-[30px] z-60" id='top-view-btn'>
-            <div className={`w-[416px] h-[76px]  'opacity-100' transition-opacity duration-1000`} >
+          {isMobile && !isModalOpen && isMobile && (<div className="w-full flex justify-center absolute top-[64px] px-[7px] z-60" id='mobile-top-view-btn'>
+            <div className={`w-[416px] h-[104px]  'opacity-100' transition-opacity duration-1000`} >
               <Button btnValue="Passer en vue aérienne" />
             </div>
           </div>)}
@@ -448,7 +448,7 @@ function Scene() {
             </div>
           </div>
 
-          <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute top-[100px] text-white p-4 w-full text-center breath`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
+          <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute bottom-[32px] text-white p-4 w-full text-center bg-dark-green`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
 
           <div className={`transition-opacity duration-[1500] z-50`} >
             <UserInterface handleTombFocus={handleTombFocus} />
@@ -459,7 +459,7 @@ function Scene() {
               frameloop="demand"
               style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
               shadows
-              camera={{ near: 0.2, position: isMobile ? [0, 80, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
+              camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
               id="tomb-canvas"
               className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500`}
             >

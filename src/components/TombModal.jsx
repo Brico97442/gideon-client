@@ -124,7 +124,7 @@ const TombModal = ({ isOpen, onClose }) => {
   return (
     <div id="ui" className={`lg:block lg:w-auto absolute ${modalPositionClass} transition-all duration-1000 ease-in-out mx-2 py-2 lg:mr-3 lg:py-6 h-full z-50`}>
       <div className="w-full lg:w-[400px] lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] pt-7 h-full relative">
-        <img src={modalRightBackground} alt="modal droite background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" />
+        {(!isMobile && <img src={modalRightBackground} alt="modal droite background" width={400} className="h-full w-[400px] object-fill absolute top-0 left-0" />)}
         <div className="modal-shape-container relative font-orbitron flex flex-col items-center h-full text-dark-green">
           <div className="flex flex-col items-center h-full">
             <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center items-center p-2 rounded-xl`}>
@@ -136,7 +136,7 @@ const TombModal = ({ isOpen, onClose }) => {
                 <div className="my-[22px] box-border overflow-hidden">
                   <h3 className='mb-3'>Ici repose</h3>
                   <div className='h-full flex flex-col'>
-                    <ul className="space-y-2 flex-col max-h-[30vh] overflow-y-auto">
+                    <ul className="space-y-2 flex-col lg:max-h-[30vh] max-h-[15vh] overflow-y-auto">
                       {tombDetails.map((person, index) => (
                         <li key={index} className="flex-col flex">
                           <span className='text-lg font-semibold capitalize underline'>{person.firstname} {person.lastname}</span>
@@ -147,7 +147,7 @@ const TombModal = ({ isOpen, onClose }) => {
                   </div>
                 </div>
               )}
-              {isMobile && <button onClick={() => setIsCommentOpen(!isCommentOpen)} className='h-10 w-10 z-50 rounded-full flex justify-center items-center bg-dark-green cursor-pointer'>i</button>}              
+              {isMobile && <button onClick={() => setIsCommentOpen(!isCommentOpen)} className='h-10 w-10 z-50 rounded-full flex justify-center items-center bg-dark-green cursor-pointer'>i</button>}
               {isCommentOpen && (
                 <div id='comments' className='absolute top-0 left-0 w-full h-full bg-yellow-500'>
                   <form onSubmit={handleSubmit} className='h-full w-full'>
@@ -186,7 +186,7 @@ const TombModal = ({ isOpen, onClose }) => {
               )}
             </div>
             <div className='w-full' onClick={handleClose}>
-              <Button btnValue="Retourner à l'Accueil"/>
+              <Button btnValue="Retourner à l'Accueil" />
             </div>
           </div>
         </div>
