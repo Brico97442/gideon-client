@@ -121,32 +121,32 @@ const TombModal = ({ isOpen, onClose }) => {
   const modalPositionClass = isVisible ? "right-0" : "-right-[500px]";
 
   return (
-    <div id="ui" className={`lg:block lg:w-[26%] w-full  absolute ${modalPositionClass} transition-all duration-1000 ease-in-out px-4 py-4 lg:mr-3 lg:py-6 h-full z-50`}>
-      <div className={`w-full lg:pl-[48px] lg:pr-[37.4px] lg:pb-[55px] lg:pt-7 h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"}`}>
+    <div id="ui" className={`lg:block lg:w-[26%] w-full  absolute ${modalPositionClass} transition-all duration-1000 ease-in-out px-4 py-4 lg:py-6 h-full z-50`}>
+      <div className={`w-full lg:pl-[3vw] lg:pr-[2vw] lg:pb-[5vh] lg:pt-[2.8vh] h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"}`}>
         {(!isMobile && <img src={modalRightBackground} alt="modal droite background" width={400} className="h-full w-full object-fill absolute top-0 left-0" />)}
-        <div className="modal-shape-container relative font-orbitron flex flex-col items-center h-full text-dark-green">
+        <div className="modal-shape-container relative flex flex-col items-center h-full text-dark-green">
           <div className="flex flex-col items-center w-full h-full overflow-hidden ">
-            <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center items-center p-2 rounded-xl`}>
-              <QRCodeCanvas value={qrValue} size={150} bgColor="#C7D64F" fgColor="#174C53" />
+            <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center border border-lite-blue items-center p-2 rounded-xl`}>
+              <QRCodeCanvas value={qrValue} size={116} bgColor="#C7D64F" fgColor="#174C53"/>
             </div>
-            <div className="flex h-full w-full lg:w-full flex-col px-[20px] mt-8 overflow-hidden">
+            <div className="flex h-full w-full lg:w-full flex-col mt-8 overflow-hidden">
               <div
                 className={`z-50 left-0 h-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
               >
                 {tombDetails && !isCommentOpen && (
-                  <div className="my-[22px] overflow-hidden">
-                    <h2 className="text-[18px]">Emplacement n°{selectedTomb}</h2>
-                    <h3 className="mb-3">Ici repose</h3>
+                  <div className="my-[22px] mx-5 lg:mx-0 overflow-hidden">
+                    <h2 className="text-[1em] ">Emplacement n°{selectedTomb}</h2>
+                    <h3 className="mt-[1.2vh] text-[1em]">Ici repose</h3>
                     <div className="h-full flex flex-col">
-                      <div id='scroll' className="space-y-2 flex-col lg:max-h-[30vh] max-h-[48vh] overflow-y-auto">
+                      <div id='scroll' className="space-y-[5vh] flex-col lg:max-h-[40vh] max-h-[45vh] overflow-y-auto mt-[2vh] lg:mt-[0vh]">
                         {tombDetails.map((person, index) => (
-                          <div key={index} className="flex-col flex">
-                            <span className="text-lg font-semibold capitalize underline">
+                          <div key={index} className="flex-col flex pr-[1vw]">
+                            <span className="text-[1.5em] font-semibold capitalize">
                               {person.firstname} {person.lastname}
                             </span>
-                            <span className="flex flex-col gap-1 lg:flex-row lg:space-x-1 normal-case text-sm">
-                              <li className='list-disc'>Née le {formatDate(person.birthdate)}</li>
-                              <li className='list-disc'>Décédé le {formatDate(person.deathDate)}</li>
+                            <span className="flex flex-col lg:gap-4 lg:flex-row lg:space-x-1 space-y-2 lg:space-y-0 normal-case text-left text-[1em]">
+                              <li className='list-disc leading-none'>Née le {formatDate(person.birthdate)}</li>
+                              <li className='list-disc leading-none text-left'>Décédé le {formatDate(person.deathDate)}</li>
                             </span>
                           </div>
                         ))}
@@ -160,7 +160,7 @@ const TombModal = ({ isOpen, onClose }) => {
                 className={`z-50 absolute top-0 left-0 h-full w-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'}`}
               >
                 {isCommentOpen && (
-                  <div id="comments" className="w-full h-full p-3">
+                  <div id="comments" className="w-full h-full px-5 py-3">
                     <form onSubmit={handleSubmit} className="h-full w-full relative pt-14 overflow-hidden">
                       <input
                         type="text"
@@ -208,7 +208,7 @@ const TombModal = ({ isOpen, onClose }) => {
             }
             {(!isMobile &&
               <div className='w-full' onClick={handleClose} id='btn_close_modal-desktop'>
-                <Button btnValue="Retourner à l'Accueil" />
+                <Button btnValue="Retour" />
               </div>
             )}
           </div>
