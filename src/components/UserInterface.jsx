@@ -291,7 +291,7 @@ function UserInterface({ handleTombFocus }) {
                         </div>
                     </div>
 
-                    <div className='w-full mb-12' onClick={handleSearch}>
+                    <div className='w-full mb-[5vh]' onClick={handleSearch}>
                         <Button btnValue="Rechercher" />
                     </div>
                 </div>
