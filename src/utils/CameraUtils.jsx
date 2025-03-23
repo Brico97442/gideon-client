@@ -1,7 +1,5 @@
 import gsap from "gsap";
 import * as THREE from "three";
-// La référence à highlightTombSection peut être maintenue si vous l'utilisez ailleurs
-// import { highlightTombSection } from '../utils/ColorsUtils';
 
 export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, target) => {
   if (!camera || !orbitControlRef.current) return;
@@ -74,6 +72,12 @@ export const focusOnObject = (tombId) => {
   
   console.log("Position de la tombe trouvée:", tombPosition);
 
+  // Optimisation: Forcer un niveau de détail élevé pour la tombe ciblée
+  // Cette partie est cruciale pour afficher la tombe en haute résolution
+  if (window.tombsSystem.currentLODs) {
+    window.tombsSystem.currentLODs[tombId] = 'high';
+  }
+  
   // Forcer une mise à jour du LOD
   if (window.tombsSystem.forceLODUpdate) {
     window.tombsSystem.forceLODUpdate();
@@ -123,6 +127,12 @@ export const focusOnObject = (tombId) => {
       orbitControlRef.current.update();
       // Invalidate renderer on each GSAP update
       if (invalidate) invalidate();
+    },
+    onComplete: () => {
+      // Ensure the LOD update is called after animation completes 
+      if (window.tombsSystem.forceLODUpdate) {
+        window.tombsSystem.forceLODUpdate();
+      }
     }
   });
 };
