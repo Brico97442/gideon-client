@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect ,useCallback} from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
@@ -156,9 +156,10 @@ function Scene() {
 
 
   const handleTombClick = (id) => {
+    console.log("✅ handleTombClick triggered:", id);
+
     setIsModalOpen(true);
     setSelectedTomb(id);
-
     if (camera && orbitControlRef.current) {
       console.log("Focus sur la tombe:", id);
 
@@ -197,6 +198,8 @@ function Scene() {
     }
   };
 
+
+  
   // Et mettez également à jour la fonction handleTombFocus pour maintenir la cohérence
 
   const handleTombFocus = (id) => {
@@ -392,6 +395,10 @@ function Scene() {
   // useEffect(() => {
   //   // console.log("Tombes reçues :", tombClones);
   // }, [tombClones]);
+  useEffect(() => {
+    console.log("🔄 Scene re-rendered. Current selectedTomb:", selectedTomb);
+  }, [selectedTomb]);
+  console.log("🚀 Scene is passing onTombClick:", handleTombClick);
 
   return (
     <div className="main">
@@ -477,7 +484,7 @@ function Scene() {
           <Suspense fallback={<Loading />}>
 
             <Canvas
-              frameloop="demand"
+              // frameloop="demand"
               style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
               camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
               id="tomb-canvas"
@@ -500,7 +507,12 @@ function Scene() {
                 <ambientLight intensity={2.5} />
 
                 <Tombs2
-                  onTombClick={isMobile ? handleTombFocus : handleTombClick}
+                   
+                  onTombClick={
+                    isMobile ?
+                     handleTombFocus : 
+                     handleTombClick
+                  }
                   selectedTombId={selectedTomb}
                   orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
                   glowLayer={[glowLayer]}
