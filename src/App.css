@@ -26,19 +26,22 @@
 }
 
 @theme {
-  --color-dark-green:oklch(38.53% 0.0556 207.51);
-  --color-lite-blue : oklch(72.05% 0.1173 210.79);
-  --color-apple-green:oklch(83.94% 0.1577 115.26);
+  --color-dark-green: oklch(38.53% 0.0556 207.51);
+  --color-lite-blue: oklch(72.05% 0.1173 210.79);
+  --color-apple-green: oklch(83.94% 0.1577 115.26);
 }
 
 @layer utilities {
   .scrollbar-hidden {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE et Edge */
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE et Edge */
   }
 
   .scrollbar-hidden::-webkit-scrollbar {
-    display: none; /* Chrome, Safari */
+    display: none;
+    /* Chrome, Safari */
   }
 }
 
@@ -60,13 +63,13 @@ body {
   background: #f0f0f0;
 }
 
-.main{
-  width:100%;
-  height:100%;
+.main {
+  width: 100%;
+  height: 100%;
 }
 
-#tomb-canvas{
-  position: absolute !important; 
+#tomb-canvas {
+  position: absolute !important;
 }
 
 ul {
@@ -74,48 +77,63 @@ ul {
 }
 
 ul::-webkit-scrollbar {
-  width: 2px; /* Largeur de la barre de défilement */
+  width: 2px;
+  /* Largeur de la barre de défilement */
 }
 
 ul::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Couleur de l'arrière-plan de la piste */
+  background: #f1f1f1;
+  /* Couleur de l'arrière-plan de la piste */
 }
 
 ul::-webkit-scrollbar-thumb {
   background: #888;
-  height: 4px; /* Couleur de la barre de défilement */
+  height: 4px;
+  /* Couleur de la barre de défilement */
 }
 
 ul::-webkit-scrollbar-thumb:hover {
-  background: #29285BE5; /* Couleur de la barre de défilement au survol */
+  background: #29285BE5;
+  /* Couleur de la barre de défilement au survol */
 }
+
 
 #scroll::-webkit-scrollbar {
-  width: 2px; /* Largeur de la barre de défilement */
+  width: 1em;
+  /* Largeur de la barre de défilement */
 }
 
-#scroll::-webkit-scrollbar-track {
-  background: #f1f1f1; /* Couleur de l'arrière-plan de la piste */
-}
+/* #scroll::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  }/* Couleur de l'arrière-plan de la piste */
+
 
 #scroll::-webkit-scrollbar-thumb {
-  background: #888;
-  height: 4px; /* Couleur de la barre de défilement */
-}
-
-#scroll::-webkit-scrollbar-thumb:hover {
-  background: #29285BE5; /* Couleur de la barre de défilement au survol */
+  /* background: #888; */
+  height: 100%;
+  max-height: 16vh;
+  min-height: 16vh;
+  width: 1em;
+  background: url("/src/assets/ui_element/scroll.png");
+  box-sizing: border-box;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 input[type="date"]::-webkit-datetime-edit {
-  color: transparent; /* Masque le texte du placeholder natif */
+  color: transparent;
+  /* Masque le texte du placeholder natif */
 }
+
 input[type="date"]:focus::-webkit-datetime-edit {
-  color: inherit; /* Affiche le texte normal après sélection */
+  color: inherit;
+  /* Affiche le texte normal après sélection */
 }
+
 input[type="date"]::-webkit-calendar-picker-indicator {
-  opacity: 0;              /* Rendre l'icône invisible */
-  pointer-events: auto;     /* S'assurer que l'élément reste cliquable */
+  opacity: 0;
+  pointer-events: auto;
+  /* S'assurer que l'élément reste cliquable */
 }
 
 .fade-out {
@@ -131,10 +149,13 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 @keyframes breath {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1.02);
   }
+
   50% {
     opacity: 0;
     transform: scale(1);

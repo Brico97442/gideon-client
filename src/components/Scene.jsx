@@ -1,4 +1,4 @@
-import { useState, useEffect ,useCallback} from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
@@ -34,6 +34,9 @@ import Button from "./Button";
 
 
 import playIcon from '../assets/play_arrow.svg';
+import willyImg from '../assets/teams_logo/willprod_white.png';
+import vinceImg from '../assets/teams_logo/vince.png';
+import damienImg from '../assets/teams_logo/damien_white.png';
 // import { TransitionEffect } from './TransitionEffect';
 // import Grass from "./Grass";
 // import Grass2 from "./Grass2";
@@ -42,7 +45,6 @@ import Road from "../models/Road";
 import { Bloom, EffectComposer } from "@react-three/postprocessing";
 // import Button from "./Button";
 // import Test from "./Test";
-// import { initColorSystem, highlightSelectedTomb, updateInstanceColors } from "../utils/ColorsUtils";
 
 // Définition des couleurs des sections
 const sectionColors = {
@@ -65,17 +67,11 @@ function Scene() {
   const [applicationStart, setApplicationStart] = useState(false)
   const { selectTomb, clearSelectedTomb, setSceneElements } = useTomb();
   const [tombDetails, setTombDetails] = useState(null);
-  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(true);
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
   const [isShowUi, setIsShowUi] = useState(true)
 
-  // function CameraControls() {
-  //   const { invalidate } = useThree();
-  //   return <OrbitControls onChange={() => invalidate()} />;
-  // }
 
-  // console.log('cet tombe est selectionné', selectTomb, 'et', selectedTomb)
-  // Configurez le chemin vers les fichiers décodeurs
 
   const fetchTombDetails = async (tombId) => {
     try {
@@ -114,9 +110,10 @@ function Scene() {
       const interval = setInterval(() => {
         console.log(gl.info.render);
       }, 1000);
-  
+
       return () => clearInterval(interval);
     }, [gl]);
+
     useEffect(() => {
       if (!initialCameraPosition) {
         setInitialCameraPosition(camera.position.clone());
@@ -129,26 +126,27 @@ function Scene() {
       if (!window.tombsSystem) {
         console.log("Initialisation du système global");
         window.tombsSystem = {};
+
       }
       window.tombsSystem.invalidate = invalidate;
 
       if (!window.tombsSystem.highlightGroup) {
-        console.log("Création du groupe de surbrillance");
+        // console.log("Création du groupe de surbrillance");
         window.tombsSystem.highlightGroup = new THREE.Group();
-        // Assurez-vous que le groupe est ajouté à la scène
         scene.add(window.tombsSystem.highlightGroup);
       }
 
-      // Ajouter la caméra et les contrôles d'orbite au système global
       window.tombsSystem.camera = camera;
       window.tombsSystem.scene = scene;
       window.tombsSystem.orbitControlRef = orbitControlRef;
 
-      // Initialiser les éléments de scène dans le contexte
       setSceneElements(camera, orbitControlRef, tombClones);
 
+
       console.log("Configuration de la scène terminée");
-    }, [camera, invalidate,scene]);
+      setIsTransitioning(true);
+
+    }, [camera, invalidate, scene]);
 
     return null;
   };
@@ -199,9 +197,6 @@ function Scene() {
   };
 
 
-  
-  // Et mettez également à jour la fonction handleTombFocus pour maintenir la cohérence
-
   const handleTombFocus = (id) => {
     setIsModalOpen(true);
     setSelectedTomb(id);
@@ -227,13 +222,14 @@ function Scene() {
 
   };;
 
+
   const handleTopView = () => {
     if (!camera) return;
     setIsShowUi(true)
     const topViewPosition = { x: 0, y: 120, z: 0.001 };
-  
+
     moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
-  
+
     if (orbitControlRef.current) {
       gsap.to(orbitControlRef.current.target, {
         x: 0,
@@ -249,6 +245,7 @@ function Scene() {
       });
     }
   };
+
   const resetCameraPosition = () => {
     if (initialCameraPosition) {
       gsap.to(camera.position, {
@@ -263,7 +260,7 @@ function Scene() {
           if (window.tombsSystem?.invalidate) window.tombsSystem.invalidate();
         },
       });
-  
+
       if (orbitControlRef.current) {
         gsap.to(orbitControlRef.current.target, {
           x: 0,
@@ -344,7 +341,7 @@ function Scene() {
       button.addEventListener("click", handleTopView);
     }
   }, [camera]);
- 
+
   const handleCameraMove = (position) => {
     // Déclencher une mise à jour des LOD sur le composant Tombs
     if (window.tombsSystem) {
@@ -374,8 +371,10 @@ function Scene() {
 
 
   const handleStartApplication = () => {
-    setIsTransitioning(true);
+    setIsTransitioning(false);
     setApplicationStart(true);
+    setIsSceneLoaded(true);
+
   };
 
   useEffect(() => {
@@ -392,13 +391,10 @@ function Scene() {
     setIsSceneLoaded(true);
   };
 
-  // useEffect(() => {
-  //   // console.log("Tombes reçues :", tombClones);
-  // }, [tombClones]);
   useEffect(() => {
-    console.log("🔄 Scene re-rendered. Current selectedTomb:", selectedTomb);
-  }, [selectedTomb]);
-  console.log("🚀 Scene is passing onTombClick:", handleTombClick);
+    console.log("Tombes reçues :", tombClones);
+  }, [tombClones]);
+
 
   return (
     <div className="main">
@@ -443,15 +439,21 @@ function Scene() {
 
       </div> */}
 
-      <div className="fixed h-full w-full" onClick={handleStartApplication} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}>
+      <div className="fixed h-full w-full" onClick={handleStartApplication}>
+        <div className="h-full w-full z-10" style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}></div>
         <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}>
           <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
-            <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
+            <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
             <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
               <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
               <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
                 <img src={playIcon} alt="Play" />
               </button>
+            </div>
+            <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
+              <img src={willyImg} alt="Play" width={60} className="object-contain" />
+              <img src={vinceImg} alt="Play" width={60} className="object-contain" />
+              <img src={damienImg} alt="Play" width={80} className="object-contain" />
             </div>
           </div>
         </div>
@@ -478,17 +480,17 @@ function Scene() {
 
           <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute bottom-[32px] text-white p-4 w-full text-center bg-dark-green`}>Cliquez sur la tombe en surbrillance pour obtenir des détails</h1>
 
-          <div className={`transition-opacity duration-[1500] z-50`} >
+          <div className={`transition-opacity ${!isTransitioning ? "opacity-0" : "opacity-100"} duration-[1500] z-50`} >
             <UserInterface handleTombFocus={handleTombFocus} />
           </div>
           <Suspense fallback={<Loading />}>
 
             <Canvas
               // frameloop="demand"
-              style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+              // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)"}}
               camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
               id="tomb-canvas"
-              className={`absolute h-full w-full top-0 left-0 transition-opacity duration-500`}
+              className={`absolute h-full w-full top-0 left-0 transition-opacity ${!isTransitioning ? "opacity-0" : "opacity-100"} duration-[1500]`}
             >
 
               <group>
@@ -507,11 +509,11 @@ function Scene() {
                 <ambientLight intensity={2.5} />
 
                 <Tombs2
-                   
+
                   onTombClick={
                     isMobile ?
-                     handleTombFocus : 
-                     handleTombClick
+                      handleTombFocus :
+                      handleTombClick
                   }
                   selectedTombId={selectedTomb}
                   orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
@@ -524,7 +526,7 @@ function Scene() {
 
               <SceneCamera />
               <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-              <StatsGl/>
+              <StatsGl />
               <Stats />
               <PerformanceMonitor />
             </Canvas>
