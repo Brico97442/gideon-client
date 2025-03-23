@@ -246,14 +246,14 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   });
 
   // Effet pour mettre à jour la couleur de la tombe sélectionnée
+
   useEffect(() => {
     if (!selectedTombId || !tombsData.length) return;
-
-    // Utiliser la fonction depuis ColorsUtils
+    
+    console.log(`Applying highlight to tomb: ${selectedTombId}`);
     highlightSelectedTomb(selectedTombId);
-
   }, [selectedTombId, tombsData]);
-
+  
   // Mise à jour des InstancedMesh en fonction du LOD
   useEffect(() => {
     if (loading || tombsData.length === 0) return;
