@@ -412,7 +412,7 @@ function Scene() {
           </div> */}
       {/* </div> */}
 
-        {/* <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ zIndex: "0" ,opacity:""}} >
+      {/* <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ zIndex: "0" ,opacity:""}} >
       <group>
           <ParticleSystem />
           <pointLight
@@ -424,10 +424,10 @@ function Scene() {
           <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
 
             {/* <ambientLight intensity={1} /> */}
-            {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-          {/* </Float> */}
+      {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
+      {/* </Float> */}
       {/* // </group> */}
-        {/* // </Canvas> */}
+      {/* // </Canvas> */}
 
 
       {/* {isTransitioning && (
@@ -486,26 +486,26 @@ function Scene() {
           <Suspense fallback={<Loading />}>
 
             <Canvas
-              frameloop="demand"
+              // frameloop="demand"
               // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)"}}
               camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
               id="tomb-canvas"
               className={`absolute h-full w-full top-0 left-0 transition-opacity z-50 ${!isTransitioning ? "opacity-0" : "opacity-100"} duration-[1500]`}
             >
- <group>
-          <ParticleSystem />
-          <pointLight
-            position={[0, 0, 0]}
-            decay={0}
-            intensity={8}
-            color='yellow'
-          />
-          <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+              <group>
+                <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+                  <ParticleSystem />
+                  {/* <pointLight
+                    position={[0, 0, 0]}
+                    decay={0}
+                    intensity={8}
+                    color='yellow'
+                  /> */}
 
-            {/* <ambientLight intensity={1} /> */}
-            {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-          </Float>
-      </group>
+                  {/* <ambientLight intensity={1} /> */}
+                  {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
+                </Float>
+              </group>
               <group>
                 <Pointer />
                 <Entrance />
