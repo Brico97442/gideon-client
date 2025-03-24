@@ -105,7 +105,7 @@ const ParticleSystem = ({ spacingBetweenClusters = 50, clusterSpread = 90 }) => 
   });
 
   return (
-        <points ref={pointsRef} castShadow receiveShadow userData={{ velocities }}>
+        <points ref={pointsRef} userData={{ velocities }}>
           <bufferGeometry>
             <bufferAttribute
               attach="attributes-position"

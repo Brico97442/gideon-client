@@ -23,6 +23,7 @@ import {
   createHighlightForTomb,
   COLORS
 } from "../utils/ColorsUtils";
+import logo from '../assets/ui_element/logo_st_paul.svg';
 // import { Perf } from 'r3f-perf'
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
@@ -229,7 +230,7 @@ function Scene() {
   const handleTopView = () => {
     if (!camera) return;
     setIsShowUi(true)
-    const topViewPosition = { x: 0, y: 120, z: 0.001 };
+    const topViewPosition = isMobile ? { x: 0, y: 120, z: 0.001 } : { x: 0, y: 90, z: 0.001 };
 
     moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
 
@@ -301,7 +302,6 @@ function Scene() {
         return false;
       };
 
-      // Créer un système de vérification périodique plus robuste
       let attempts = 0;
       const maxAttempts = 20; // Nombre maximal de tentatives
 
@@ -402,9 +402,9 @@ function Scene() {
 
   const Loading = () => {
     return (
-      <div className={`z-50 relative h-full w-full text-white flex justify-center  flex-col items-center bg-dark-green`}>
-        
-        <h1 className="font-orbitron  text-apple-green tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
+      <div className={`z-30 relative h-full w-full backdrop-blur-[6px] transition-colors text-white flex justify-center flex-col items-center`}>
+
+        <h1 className="font-orbitron text-apple-green tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
         <div className="absolute bottom-[20vh] flex items-center gap-2 justify-center p-6">
           <p>Initialisation de l'application</p>
           <div className="relative w-16 h-16 flex items-center justify-center">
@@ -414,33 +414,23 @@ function Scene() {
             </div>
           </div>
         </div>
+        <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
+          <img src={logo} alt="Saint paul logo" width={100} height={80}/>
+          <img src={willyImg} alt="Play" width={80} height={80} className="object-cover" />
+          <img src={vinceImg} alt="Play" width={80} height={80} className="object-cover" />
+          <img src={damienImg} alt="Play" width={100} height={80} className="object-contain" />
+          <img src={patoumaImg} alt="Play" width={80} height={80} className="object-contain" />
+
+          </div>
       </div>
     )
   }
 
   return (
-    <div className="main">
-      {/* <div className="fixed h-full w-full" onClick={handleStartApplication}> */}
-      {/* <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}>
-            <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
-              <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
-              <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
-                <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
-                <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
-                  <img src={playIcon} alt="Play" />
-                </button>
-              </div>
-            </div>
-          </div> */}
-      {/* </div>
+    <div className="main relative">
 
-      {/* <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ zIndex: "-10", opacity: "100" }} 
-              style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
->
-        
-        <group>
+      {/* <group>
           <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
-            <ParticleSystem />
             <pointLight
               position={[0, 0, 0]}
               decay={0}
@@ -450,16 +440,15 @@ function Scene() {
             <ambientLight intensity={1} />
             <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" />
           </Float>
-        </group>
-      </Canvas> */}
+        </group> */}
 
       <Suspense fallback={<Loading />}>
         <Canvas
           // frameloop="demand"
-          camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
+          camera={{ near: 0.2, position: isMobile ? [0, 100, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
           id="tomb-canvas"
           className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart ? "opacity-0 z-0" : "opacity-100 z-30"} duration-2000`}
-        style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+        // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
 
           <group>
@@ -468,11 +457,13 @@ function Scene() {
             <Wall />
             <Ground />
             <Cross />
+
             <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
               <Text fontSize={2} color="white" >
                 Vous êtes ici
               </Text>
             </Billboard>
+
             <Road />
             {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
             <ambientLight intensity={2.5} />
@@ -495,18 +486,16 @@ function Scene() {
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
           {/* <StatsGl /> */}
-          <Stats />
+          {/* <Stats /> */}
           {/* <PerformanceMonitor /> */}
         </Canvas>
-        {/* <Loading /> */}
 
       </Suspense>
 
-      {/* </div> */}
 
       <div className={`fixed h-full w-full`} onClick={handleStartApplication}>
         <div className={`h-full w-full`}
-          style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+        // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
           <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full`}>
             <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
@@ -518,22 +507,23 @@ function Scene() {
                 </button>
               </div>
               <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
-                <img src={willyImg} alt="Play" width={60} className="object-contain" />
-                <img src={vinceImg} alt="Play" width={60} className="object-contain" />
-                <img src={damienImg} alt="Play" width={80} className="object-contain" />
-                <img src={patoumaImg} alt="Play" width={80} className="object-contain" />
-              </div>
+                <img src={logo} alt="Saint paul logo" width={100} height={80}/>
+                <img src={willyImg} alt="Play" width={80} height={80} className="object-cover" />
+                <img src={vinceImg} alt="Play" width={80} height={80} className="object-contain" />
+                <img src={damienImg} alt="Play" width={100} height={80} className="object-contain" />
+                <img src={patoumaImg} alt="Play" width={80} height={80} className="object-contain" />
+                </div>
             </div>
           </div>
         </div>
-
       </div>
 
-      <div className={`transition-opacity ${!applicationStart ? "opacity-0" : "opacity-100"} duration-100 z-50`}>
-        <UserInterface handleTombFocus={handleTombFocus} />
-      </div>
-      <div className={`w-full lg:flex hidden justify-center ${!applicationStart ? "opacity-0" : "opacity-100"} absolute top-2 lg:top-[30px] z-50`} id='top-view-btn'>
-        <div className={`w-[20%] h-[76px] opacity-100 transition-opacity duration-1000`}>
+        <div className={`transition ${!applicationStart ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"} absolute h-full w-[26%] ease-in-out duration-1000 z-50`}>
+          <UserInterface handleTombFocus={handleTombFocus} handleStartApplication={applicationStart} />
+        </div>
+
+      <div className={`w-full lg:flex hidden justify-center ${!applicationStart ? "opacity-0" : "opacity-100"} duration-1000 absolute top-2 lg:top-[30px] z-50`} id='top-view-btn'>
+        <div className={`w-[20%] h-[76px] `}>
           <Button btnValue="Passer en vue aérienne" />
         </div>
       </div>
