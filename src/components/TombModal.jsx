@@ -123,7 +123,7 @@ const TombModal = ({ isOpen, onClose }) => {
   return (
     <div id="ui" className={`lg:block lg:w-[26%] w-full  absolute ${modalPositionClass} transition-all duration-1000 ease-in-out px-4 py-4 lg:py-6 h-full z-50`}>
       <div className={`w-full lg:pl-[3vw] lg:pr-[2vw] lg:pb-[5vh] lg:pt-[2.8vh] h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"}`}>
-        {(!isMobile && <img src={modalRightBackground} alt="modal droite background" width={400} className="h-full w-full object-fill absolute top-0 left-0" />)}
+        {(!isMobile && <img src={modalRightBackground} alt="modal droite background " width={400} className="h-full w-full object-fill absolute top-0 left-0 opacity-95"/>)}
         <div className="modal-shape-container relative flex flex-col items-center h-full text-dark-green">
           <div className="flex flex-col items-center w-full h-full overflow-hidden ">
             <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center border border-lite-blue items-center p-2 rounded-xl`}>
