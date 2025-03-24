@@ -438,8 +438,8 @@ function Scene() {
           // frameloop="demand"
           camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
           id="tomb-canvas"
-          className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart? "opacity-0 z-0" : "opacity-100 z-10"} duration-2000`}
-          // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+          className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart ? "opacity-0 z-0" : "opacity-100 z-10"} duration-2000`}
+        // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
           {/* <group> */}
           {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
@@ -502,22 +502,22 @@ function Scene() {
         <div className={`h-full w-full`}
           style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
-        <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full`}>
-          <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
-            <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
-            <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
-              <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
-              <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
-                <img src={playIcon} alt="Play" />
-              </button>
-            </div>
-            <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
-              <img src={willyImg} alt="Play" width={60} className="object-contain" />
-              <img src={vinceImg} alt="Play" width={60} className="object-contain" />
-              <img src={damienImg} alt="Play" width={80} className="object-contain" />
+          <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full`}>
+            <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
+              <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
+              <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
+                <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
+                <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
+                  <img src={playIcon} alt="Play" />
+                </button>
+              </div>
+              <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
+                <img src={willyImg} alt="Play" width={60} className="object-contain" />
+                <img src={vinceImg} alt="Play" width={60} className="object-contain" />
+                <img src={damienImg} alt="Play" width={80} className="object-contain" />
+              </div>
             </div>
           </div>
-        </div>
         </div>
 
       </div>
@@ -525,11 +525,16 @@ function Scene() {
       <div className={`transition-opacity ${!applicationStart ? "opacity-0" : "opacity-100"} duration-100 z-50`}>
         <UserInterface handleTombFocus={handleTombFocus} />
       </div>
-
+      <div className={`w-full lg:flex hidden justify-center ${!applicationStart ? "opacity-0" : "opacity-100"} absolute top-2 lg:top-[30px] z-50`} id='top-view-btn'>
+        <div className={`w-[20%] h-[76px] opacity-100 transition-opacity duration-1000`}>
+          <Button btnValue="Passer en vue aérienne" />
+        </div>
+      </div>
       {applicationStart && !isLoading && (
         <div className="w-full h-full relative">
           {/* {isLoading && <Loading />} */}
           <>
+
             {isMobile && !isModalOpen && (
               <div className="w-full flex justify-center absolute top-[6vh] px-[7px] z-50" id='mobile-top-view-btn'>
                 <div className={`w-[416px] h-[104px] opacity-100 transition-opacity duration-3000`}>
@@ -538,11 +543,6 @@ function Scene() {
               </div>
             )}
 
-            <div className="w-full lg:flex hidden justify-center absolute top-2 lg:top-[30px] z-50" id='top-view-btn'>
-              <div className={`w-[20%] h-[76px] opacity-100 transition-opacity duration-1000`}>
-                <Button btnValue="Passer en vue aérienne" />
-              </div>
-            </div>
 
             <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute bottom-[32px] text-white p-4 w-full text-center bg-dark-green`}>
               Cliquez sur la tombe en surbrillance pour obtenir des détails
