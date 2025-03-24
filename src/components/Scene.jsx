@@ -37,6 +37,7 @@ import playIcon from '../assets/play_arrow.svg';
 import willyImg from '../assets/teams_logo/willprod_white.png';
 import vinceImg from '../assets/teams_logo/vince.png';
 import damienImg from '../assets/teams_logo/damien_white.png';
+import patoumaImg from '../assets/teams_logo/patouma.png';
 import { TransitionEffect } from './TransitionEffect';
 // import Grass from "./Grass";
 // import Grass2 from "./Grass2";
@@ -515,6 +516,7 @@ function Scene() {
                 <img src={willyImg} alt="Play" width={60} className="object-contain" />
                 <img src={vinceImg} alt="Play" width={60} className="object-contain" />
                 <img src={damienImg} alt="Play" width={80} className="object-contain" />
+                <img src={patoumaImg} alt="Play" width={80} className="object-contain" />
               </div>
             </div>
           </div>
