@@ -398,8 +398,8 @@ function Scene() {
 
   return (
     <div className="main">
-      {/* <div className="fixed h-full w-full" onClick={handleStartApplication}>
-          <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}>
+      {/* {/* <div className="fixed h-full w-full" onClick={handleStartApplication}> */}
+      {/* <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}>
             <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
               <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
               <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
@@ -409,25 +409,26 @@ function Scene() {
                 </button>
               </div>
             </div>
-          </div>
-        </div>
+          </div> */}
+      {/* </div> */}
 
-          <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }} frameloop="demand">
-            
-          <group>
-              {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
-      {/* <ParticleSystem /> */}
-      {/* <pointLight
-                  position={[0, 0, 0]}
-                  decay={0}
-                  intensity={8}
-                  color='yellow'
-                /> */}
-      {/* <ambientLight intensity={1} /> */}
-      {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-      {/* </Float> */}
+        {/* <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ zIndex: "0" ,opacity:""}} >
+      <group>
+          <ParticleSystem />
+          <pointLight
+            position={[0, 0, 0]}
+            decay={0}
+            intensity={8}
+            color='yellow'
+          />
+          <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
 
-      {/* </group> */}
+            {/* <ambientLight intensity={1} /> */}
+            {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
+          {/* </Float> */}
+      {/* // </group> */}
+        {/* // </Canvas> */}
+
 
       {/* {isTransitioning && (
               <TransitionEffect
@@ -435,9 +436,8 @@ function Scene() {
                 onTransitionComplete={handleTransitionComplete}
               />
             )} */}
-      {/* </Canvas>
 
-      </div> */}
+      {/* </div> */}
 
       <div className="fixed h-full w-full" onClick={handleStartApplication}>
         <div className="h-full w-full z-10" style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}></div>
@@ -490,9 +490,22 @@ function Scene() {
               // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)"}}
               camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
               id="tomb-canvas"
-              className={`absolute h-full w-full top-0 left-0 transition-opacity ${!isTransitioning ? "opacity-0" : "opacity-100"} duration-[1500]`}
+              className={`absolute h-full w-full top-0 left-0 transition-opacity z-50 ${!isTransitioning ? "opacity-0" : "opacity-100"} duration-[1500]`}
             >
+ <group>
+          <ParticleSystem />
+          <pointLight
+            position={[0, 0, 0]}
+            decay={0}
+            intensity={8}
+            color='yellow'
+          />
+          <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
 
+            {/* <ambientLight intensity={1} /> */}
+            {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
+          </Float>
+      </group>
               <group>
                 <Pointer />
                 <Entrance />
