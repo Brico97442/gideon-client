@@ -68,7 +68,7 @@ body {
   height: 100%;
 }
 
- #tomb-canvas {
+#tomb-canvas {
   position: absolute !important;
 }
 
@@ -103,11 +103,6 @@ ul::-webkit-scrollbar-thumb:hover {
   /* Largeur de la barre de défilement */
 }
 
-/* #scroll::-webkit-scrollbar-track {
-  background: #f1f1f1; 
-  }/* Couleur de l'arrière-plan de la piste */
-
-
 #scroll::-webkit-scrollbar-thumb {
   /* background: #888; */
   height: 100%;
@@ -120,15 +115,18 @@ ul::-webkit-scrollbar-thumb:hover {
   background-size: cover;
 }
 
+
 input[type="date"]::-webkit-datetime-edit {
   color: transparent;
   /* Masque le texte du placeholder natif */
 }
 
+
 input[type="date"]:focus::-webkit-datetime-edit {
   color: inherit;
   /* Affiche le texte normal après sélection */
 }
+
 
 input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0;
@@ -136,17 +134,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   /* S'assurer que l'élément reste cliquable */
 }
 
+
 .fade-out {
   opacity: 0;
   transform: scale(0.95);
   transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
+
 .fade-in {
   opacity: 1;
   transform: scale(1);
   transition: opacity 1s ease-out, transform 1s ease-out;
 }
+
 
 @keyframes breath {
 

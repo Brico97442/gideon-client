@@ -19,8 +19,8 @@ export default function Button({ btnValue }) {
             <div 
                 className="w-full h-[82px] lg:h-[9vh] lg:px-0 text-white transition-all duration-1000 cursor-pointer relative flex justify-center"
             >
-                <button className='relative w-full h-full' onClick={handleClick}>
-                    <p className='font-avenir tracking-widest absolute top-3 lg:top-[1vh] z-60 text-[1.15em] w-full'>{btnValue}</p>
+                <button className='relative w-full h-full flex justify-center' onClick={handleClick}>
+                    <p className='font-avenir tracking-widest absolute top-3 lg:top-[1.25vh] z-60 text-[1.15em] w-full'>{btnValue}</p>
                     <img 
                         src={isActive ? btnHoveredImg : btnImg} 
                         alt="background" 
