@@ -9,7 +9,7 @@ import calendarIcon from '../assets/ui_element/calendar_icon.svg';
 import { formatDate } from '../utils/DateUtils';
 import Button from "./Button";
 
-function UserInterface({ handleTombFocus }) {
+function UserInterface({ handleTombFocus,applicationStart }) {
     const [lastname, setLastname] = useState("");
     const [firstname, setFirstname] = useState("");
     const [birthdate, setBirthdate] = useState("");
@@ -21,6 +21,7 @@ function UserInterface({ handleTombFocus }) {
     const { selectTomb, focusOnTomb } = useTomb();
     const [isBirthdateFocused, setIsBirthdateFocused] = useState(false);
     const [isDeathdateFocused, setIsDeathdateFocused] = useState(false);
+    const [isVisible, setIsVisible] = useState(false);
 
 
     // Index des données pour une recherche plus rapide
@@ -153,7 +154,7 @@ function UserInterface({ handleTombFocus }) {
                     );
                 }
 
-                console.log('Résultats filtrés:', Array.from(matches));
+                // console.log('Résultats filtrés:', Array.from(matches));
                 setResults(Array.from(matches));
             } else {
                 // Si pas de cache ou d'index, ou pas de critères, utiliser l'API
@@ -170,9 +171,9 @@ function UserInterface({ handleTombFocus }) {
                 }
 
                 const url = `${SEARCH_DECEASED()}?${searchParams.toString()}`;
-                console.log('URL de l\'API:', url);
+                // console.log('URL de l\'API:', url);
                 const response = await axios.get(url);
-                console.log('Résultats de l\'API:', response.data);
+                // console.log('Résultats de l\'API:', response.data);
                 setResults(response.data);
             }
         } catch (error) {
@@ -186,8 +187,8 @@ function UserInterface({ handleTombFocus }) {
 
     const handleLocate = (person) => {
         if (person && person.tombId) {
-            console.log('Données de la personne:', person);
-            console.log('ID de la tombe:', person.tombId);
+            // console.log('Données de la personne:', person);
+            // console.log('ID de la tombe:', person.tombId);
 
             // Sélectionner la tombe dans le contexte avec uniquement la personne sélectionnée
             selectTomb(person.tombId, [person]);
@@ -211,11 +212,25 @@ function UserInterface({ handleTombFocus }) {
             console.error('Données de la personne invalides:', person);
         }
     };
+    useEffect(() => {
+        if (!applicationStart) {
+          // Un petit délai pour permettre au composant de se rendre avant d'animer
+          const timer = setTimeout(() => {
+            setIsVisible(true);
+          }, 50);
+          return () => clearTimeout(timer);
+        } else {
+          setIsVisible(false);
+        }
+      }, [applicationStart]);
+
+    const modalPositionClass = isVisible ? "left-0" : "left-full";
+
 
     return (
-        <div id="ui" className="hidden lg:w-[26%] lg:block absolute left-0 pl-3 py-6 h-full z-50">
+        <div id="ui" className={`hidden lg:w-full lg:block absolute pl-3 py-6 h-full z-50`}>
             <div className="w-full pl-[26px] pr-[2.1vw] h-full relative">
-                <img src={modalBackground} alt="modal gauche background" className="h-full  w-full object-fill absolute top-0 left-0" />
+                <img src={modalBackground} alt="modal gauche background" className="h-full w-full object-fill absolute top-0 left-0" />
 
                 <h1 className="absolute font-orbitron -left-[44px] top-[11vh] font-black text-[1.6em] -rotate-90 leading-none">GIDEON</h1>
 

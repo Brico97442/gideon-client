@@ -6,7 +6,6 @@ const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath('/draco/');
 dracoLoader.setDecoderConfig({ type: 'js' });
 
-// Preload all tomb models with proper Draco configuration
 export const preloadTombModels = () => {
   // Type 1 models
   useGLTF.preload("/3d-models/gltf/tomb/01/01low.glb", dracoLoader);
