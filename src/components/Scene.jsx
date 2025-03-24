@@ -365,7 +365,7 @@ function Scene() {
       setIsTransitioning(true);
       setIsSceneLoaded(true);
       setIsLoading(false);
-    }, 1000);
+    }, 3000);
   };
 
   useEffect(() => {
@@ -402,9 +402,11 @@ function Scene() {
 
   const Loading = () => {
     return (
-      <div className={`z-60 h-full w-full text-white flex justify-center items-center bg-amber-700`}>
-        <div className="flex items-center gap-2 justify-center p-6">
-          <p>Chargement de la carte en cours veuillez patientez</p>
+      <div className={`z-50 relative h-full w-full text-white flex justify-center  flex-col items-center bg-dark-green`}>
+        
+        <h1 className="font-orbitron  text-apple-green tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
+        <div className="absolute bottom-[20vh] flex items-center gap-2 justify-center p-6">
+          <p>Initialisation de l'application</p>
           <div className="relative w-16 h-16 flex items-center justify-center">
             <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-[spin_1.5s_cubic-bezier(0.25,1,0.5,1)_infinite]"></div>
             <div className="absolute top-0 left-0 w-6 h-6 rounded-full"
@@ -418,7 +420,7 @@ function Scene() {
 
   return (
     <div className="main">
-      {/* {/* <div className="fixed h-full w-full" onClick={handleStartApplication}> */}
+      {/* <div className="fixed h-full w-full" onClick={handleStartApplication}> */}
       {/* <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full z-50`}>
             <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
               <h1 className="text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border">Gideon </h1>
@@ -430,32 +432,36 @@ function Scene() {
               </div>
             </div>
           </div> */}
-      {/* </div> */}
+      {/* </div>
 
-      {/* <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ zIndex: "0" ,opacity:""}} >
-      {/* // </Canvas> */}
+      {/* <Canvas camera={{ near: 0.2, position: [-20, 20, -50] }} style={{ zIndex: "-10", opacity: "100" }} 
+              style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+>
+        
+        <group>
+          <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+            <ParticleSystem />
+            <pointLight
+              position={[0, 0, 0]}
+              decay={0}
+              intensity={8}
+              color='yellow'
+            />
+            <ambientLight intensity={1} />
+            <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" />
+          </Float>
+        </group>
+      </Canvas> */}
+
       <Suspense fallback={<Loading />}>
         <Canvas
           // frameloop="demand"
           camera={{ near: 0.2, position: isMobile ? [0, 120, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
           id="tomb-canvas"
-          className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart ? "opacity-0 z-0" : "opacity-100 z-10"} duration-2000`}
-        // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
+          className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart ? "opacity-0 z-0" : "opacity-100 z-30"} duration-2000`}
+        style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
-          {/* <group> */}
-          {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}> */}
-          {/* <ParticleSystem /> */}
-          {/* <pointLight
-        position={[0, 0, 0]}
-        decay={0}
-        intensity={8}
-        color='yellow'
-      /> */}
 
-          {/* <ambientLight intensity={1} /> */}
-          {/* <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" /> */}
-          {/* </Float> */}
-          {/* </group> */}
           <group>
             <Pointer />
             <Entrance />
@@ -472,7 +478,6 @@ function Scene() {
             <ambientLight intensity={2.5} />
 
             <Tombs2
-
               onTombClick={
                 isMobile ?
                   handleTombFocus :
@@ -489,11 +494,11 @@ function Scene() {
 
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-          <StatsGl />
+          {/* <StatsGl /> */}
           <Stats />
-          <PerformanceMonitor />
+          {/* <PerformanceMonitor /> */}
         </Canvas>
-
+        {/* <Loading /> */}
 
       </Suspense>
 
@@ -534,7 +539,6 @@ function Scene() {
       </div>
       {applicationStart && !isLoading && (
         <div className="w-full h-full relative">
-          {/* {isLoading && <Loading />} */}
           <>
 
             {isMobile && !isModalOpen && (
@@ -550,10 +554,6 @@ function Scene() {
               Cliquez sur la tombe en surbrillance pour obtenir des détails
             </h1>
           </>
-
-
-
-
 
           <TombModal
             isOpen={isModalOpen}
