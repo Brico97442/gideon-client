@@ -8,6 +8,7 @@ const Road = () => {
         <mesh 
             position={[0,0.07,-0.4]} 
             rotation={[0,0,0]}
+        
         >
             <primitive object={RoadGLB.scene}/>
         </mesh>
