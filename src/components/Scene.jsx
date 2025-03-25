@@ -50,10 +50,10 @@ import { Bloom, EffectComposer } from "@react-three/postprocessing";
 
 // Définition des couleurs des sections
 const sectionColors = {
-  13: '#EF507E',
-  14: '#FFE771',
-  15: '#B89AD7',
-  16: '#E0C2B6',
+  89: '#f7d0db',
+  90: '#fff5c2',
+  91: '#cbb8de',
+  92: '#E0C2B6',
 };
 
 function Scene() {
@@ -161,7 +161,7 @@ function Scene() {
       // Vérifier si window.tombsSystem est correctement initialisé
       if (!window.tombsSystem || !window.tombsSystem.tombPositions || !window.tombsSystem.tombPositions[id]) {
         console.warn("Données de tombe non disponibles pour l'ID:", id);
-        
+
         // Récupérer quand même les détails de la tombe
         fetchTombDetails(id);
         return;
@@ -196,7 +196,7 @@ function Scene() {
 
 
   const handleTombFocus = (id) => {
-    
+
     setIsModalOpen(true);
     setSelectedTomb(id);
 
@@ -405,20 +405,20 @@ function Scene() {
           </div>
         </div>
         <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
-          <img src={logo} alt="Saint paul logo" width={140} height={80}/>
+          <img src={logo} alt="Saint paul logo" width={140} height={80} />
           <img src={willyImg} alt="Play" width={80} height={80} className="object-cover" />
           <img src={vinceImg} alt="Play" width={80} height={80} className="object-cover" />
           <img src={damienImg} alt="Play" width={100} height={80} className="object-contain" />
           <img src={patoumaImg} alt="Play" width={80} height={80} className="object-contain" />
 
-          </div>
+        </div>
       </div>
     )
   }
 
   return (
     <div className="main relative">
-          {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+      {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
           </Float> */}
       <Suspense fallback={<Loading />}>
         <Canvas
@@ -483,20 +483,20 @@ function Scene() {
                 </button>
               </div>
               <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
-                <img src={logo} alt="Saint paul logo" width={140} height={80}/>
+                <img src={logo} alt="Saint paul logo" width={140} height={80} />
                 <img src={willyImg} alt="Play" width={80} height={80} className="object-cover" />
                 <img src={vinceImg} alt="Play" width={80} height={80} className="object-contain" />
                 <img src={damienImg} alt="Play" width={100} height={80} className="object-contain" />
                 <img src={patoumaImg} alt="Play" width={80} height={80} className="object-contain" />
-                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-        <div className={`transition ${!applicationStart ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"} absolute h-full w-[26%] ease-in-out duration-1000 z-50`}>
-          <UserInterface handleTombFocus={handleTombFocus} handleStartApplication={applicationStart} />
-        </div>
+      <div className={`transition ${!applicationStart ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"} absolute h-full w-[26%] ease-in-out duration-1000 z-50`}>
+        <UserInterface handleTombFocus={handleTombFocus} handleStartApplication={applicationStart} />
+      </div>
 
       <div className={`w-full lg:flex hidden justify-center ${!applicationStart ? "opacity-0" : "opacity-100"} duration-1000 absolute top-2 lg:top-[30px] z-50`} id='top-view-btn'>
         <div className={`w-[20%] h-[76px] `}>
@@ -536,7 +536,7 @@ function Scene() {
           />
         </div>
       )}
-      
+
     </div>
   );
 }
