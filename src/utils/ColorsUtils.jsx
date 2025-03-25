@@ -179,82 +179,82 @@ glowLayer.set(2);
 
 
 export const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
-  // if (!window.tombsSystem.highlightGroup) return;
+  if (!window.tombsSystem.highlightGroup) return;
   
-  // // Effacer les surbrillances existantes
-  // while (window.tombsSystem.highlightGroup.children.length > 0) {
-  //   window.tombsSystem.highlightGroup.remove(window.tombsSystem.highlightGroup.children[0]);
-  // }
+  // Effacer les surbrillances existantes
+  while (window.tombsSystem.highlightGroup.children.length > 0) {
+    window.tombsSystem.highlightGroup.remove(window.tombsSystem.highlightGroup.children[0]);
+  }
   
-  // // Récupérer le type de tombe
-  // const tombType = tombData.type;
+  // Récupérer le type de tombe
+  const tombType = tombData.type;
   
-  // // Récupérer la géométrie du modèle correspondant au type de tombe
-  // let geometry;
-  // if (window.tombsSystem.instancedMeshesRef && window.tombsSystem.instancedMeshesRef[tombType]) {
-  //   geometry = window.tombsSystem.instancedMeshesRef[tombType].geometry.clone();
-  // } else {
-  //   // Fallback si la géométrie n'est pas disponible
-  //   geometry = new THREE.BoxGeometry(1, 1, 1);
-  // }
+  // Récupérer la géométrie du modèle correspondant au type de tombe
+  let geometry;
+  if (window.tombsSystem.instancedMeshesRef && window.tombsSystem.instancedMeshesRef[tombType]) {
+    geometry = window.tombsSystem.instancedMeshesRef[tombType].geometry.clone();
+  } else {
+    // Fallback si la géométrie n'est pas disponible
+    geometry = new THREE.BoxGeometry(1, 1, 1);
+  }
   
-  // // Si c'est la tombe sélectionnée, créer uniquement l'effet de glow avec shader
-  // if (isSelected) {
-  //   // Créer le matériau de shader pour le glow
-  //   const glowMaterial = new THREE.ShaderMaterial({
-  //     uniforms: {
-  //       glowColor: { value: new THREE.Color(COLORS.GLOW) },
-  //       intensity: { value: 2.0 }
-  //     },
-  //     vertexShader: glowVertexShader,
-  //     fragmentShader: glowFragmentShader,
-  //     side: THREE.FrontSide,
-  //     blending: THREE.AdditiveBlending,
-  //     transparent: true,
-  //     depthWrite: false,
-  //     opacity:1,
-  //   });
+  // Si c'est la tombe sélectionnée, créer uniquement l'effet de glow avec shader
+  if (isSelected) {
+    // Créer le matériau de shader pour le glow
+    const glowMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        glowColor: { value: new THREE.Color(COLORS.GLOW) },
+        intensity: { value: 2.0 }
+      },
+      vertexShader: glowVertexShader,
+      fragmentShader: glowFragmentShader,
+      side: THREE.FrontSide,
+      blending: THREE.AdditiveBlending,
+      transparent: true,
+      depthWrite: false,
+      opacity:2,
+    });
     
-  //   // Créer un mesh de glow avec le shader
-  //   const glowMesh = new THREE.Mesh(geometry, glowMaterial);
-  //   glowMesh.position.set(tombData.x, tombData.y, tombData.z);
+    // Créer un mesh de glow avec le shader
+    const glowMesh = new THREE.Mesh(geometry, glowMaterial);
+    glowMesh.position.set(tombData.x, tombData.y, tombData.z);
     
-  //   // Copier la rotation de la tombe originale
-  //   if (window.tombsSystem.tombPositions[tombId] && window.tombsSystem.tombPositions[tombId].quaternion) {
-  //     glowMesh.quaternion.copy(window.tombsSystem.tombPositions[tombId].quaternion);
-  //   }
+    // Copier la rotation de la tombe originale
+    if (window.tombsSystem.tombPositions[tombId] && window.tombsSystem.tombPositions[tombId].quaternion) {
+      glowMesh.quaternion.copy(window.tombsSystem.tombPositions[tombId].quaternion);
+    }
     
-  //   // Légèrement plus grand que la tombe originale
-  //   glowMesh.scale.set(1.01, 1.01, 1.01);
-  //   glowMesh.userData = { 
-  //     id: tombId,
-  //     isGlow: true
-  //   };
+    // Légèrement plus grand que la tombe originale
+    glowMesh.scale.set(1.01, 1.01, 1.01);
+    glowMesh.userData = { 
+      id: tombId,
+      isGlow: true
+    };
     
-  //   // Ajouter la layer pour le Bloom sélectif
-  //   glowMesh.layers.enable(1);
+    // Ajouter la layer pour le Bloom sélectif
+    glowMesh.layers.enable(1);
     
-  //   // Ajouter au groupe de surbrillance
-  //   window.tombsSystem.highlightGroup.add(glowMesh);
+    // Ajouter au groupe de surbrillance
+    window.tombsSystem.highlightGroup.add(glowMesh);
     
-  //   // Ajouter une animation subtile de pulsation pour le glow
-  //   const pulsate = () => {
-  //     const glowMeshes = window.tombsSystem.highlightGroup.children.filter(child => child.userData.isGlow);
+    // Ajouter une animation subtile de pulsation pour le glow
+    const pulsate = () => {
+      const glowMeshes = window.tombsSystem.highlightGroup.children.filter(child => child.userData.isGlow);
       
-  //     glowMeshes.forEach(mesh => {
-  //       if (mesh.material.uniforms) {
-  //         // Animer l'intensité du shader pour un effet subtil
-  //         mesh.material.uniforms.intensity.value = 0.8 + Math.sin(Date.now() * 0.0025) * 0.3;
-  //       }
-  //     });
+      glowMeshes.forEach(mesh => {
+        if (mesh.material.uniforms) {
+          // Animer l'intensité du shader pour un effet subtil
+          mesh.material.uniforms.intensity.value = 0.8 + Math.sin(Date.now() * 0.0025) * 0.3;
+        }
+      });
       
-  //     if (glowMeshes.length > 0) {
-  //       requestAnimationFrame(pulsate);
-  //     }
-  //   };
+      if (glowMeshes.length > 0) {
+        requestAnimationFrame(pulsate);
+      }
+    };
     
-  //   pulsate();
-  // }
+    pulsate();
+  }
 };
 
 export const initColorSystem = (tombsData) => {
