@@ -435,7 +435,7 @@ function Scene() {
             <Billboard position={isMobile? [0, 12, 34] : [0, 12, 41]} follow={true} lockX={false} lockY={false} lockZ={false}>
             <group>
             <Pointer />
-              <Text fontSize={isMobile? 3.5: 2} color="#174c53" outlineColor='#ffffff' outlineBlur={0.5}>
+              <Text fontSize={isMobile? 3.5: 2} color="#8d222a" outlineColor='#ffffff' outlineBlur={0.5}>
                 Vous êtes ici
               </Text>
             </group>
