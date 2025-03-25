@@ -425,6 +425,7 @@ function Scene() {
           frameloop="demand"
           camera={{ near: 0.2, position: isMobile ? [0, 100, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
           id="tomb-canvas"
+          shadows
           className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart ? "opacity-0 z-0" : "opacity-90 z-30"} duration-2000`}
         // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
