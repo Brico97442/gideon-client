@@ -5,7 +5,7 @@ import * as THREE from "three";
 
 const ParticleSystem = ({ spacingBetweenClusters = 50, clusterSpread = 90 }) => {
   const pointsRef = useRef();
-  const particleCount = 500; // Nombre total de particules
+  const particleCount = 1500; // Nombre total de particules
   const maxSpeed = 0.002; // Vitesse max des particules
 
   // Création de la texture pour les particules
