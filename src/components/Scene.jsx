@@ -422,7 +422,7 @@ function Scene() {
           </Float> */}
       <Suspense fallback={<Loading />}>
         <Canvas
-          // frameloop="demand"
+          frameloop="demand"
           camera={{ near: 0.2, position: isMobile ? [0, 100, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
           id="tomb-canvas"
           className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart ? "opacity-0 z-0" : "opacity-90 z-30"} duration-2000`}
@@ -443,9 +443,7 @@ function Scene() {
             </Billboard>
 
             <Road />
-            {/* {isMobile ? <Grass position={[-2, -0.5, 15]} /> : <Grass3 position={[-2, -0.5, 15]} tombs={tombClones} />} */}
             <ambientLight intensity={2.5} />
-
             <Tombs2
               onTombClick={
                 isMobile ?
