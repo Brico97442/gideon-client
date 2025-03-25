@@ -250,7 +250,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
     if (!selectedTombId || !tombsData.length) return;
 
     highlightSelectedTomb(selectedTombId);
-    
+
   }, [selectedTombId, tombsData]);
   
   // Mise à jour des InstancedMesh en fonction du LOD
@@ -397,6 +397,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       {Object.entries(countByType).map(([type, count]) => {
         return (
           <instancedMesh
+          transparent 
           frustumCulled={true}
             key={type}
             ref={(ref) => {

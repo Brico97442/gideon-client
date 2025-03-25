@@ -156,14 +156,12 @@ function Scene() {
     setIsModalOpen(true);
     setSelectedTomb(id);
     if (camera && orbitControlRef.current) {
-      console.log("Focus sur la tombe:", id);
 
       // Vérifier si window.tombsSystem est correctement initialisé
       if (!window.tombsSystem || !window.tombsSystem.tombPositions || !window.tombsSystem.tombPositions[id]) {
         console.warn("Données de tombe non disponibles pour l'ID:", id);
-
-        // Récupérer quand même les détails de la tombe
         fetchTombDetails(id);
+
         return;
       }
 
@@ -395,22 +393,21 @@ function Scene() {
       <div className={`z-30 relative h-full w-full backdrop-blur-[6px] transition-colors text-white flex justify-center flex-col items-center`}>
 
         <h1 className="font-orbitron text-apple-green tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
-        <div className="absolute bottom-[20vh] flex items-center gap-2 justify-center p-6">
+        <div className="absolute bottom-[22.5vh] text-xl flex flex-col items-center gap-2 justify-center p-6 ">
           <p>Initialisation de l'application</p>
-          <div className="relative w-16 h-16 flex items-center justify-center">
+          <div className="relative w-16 h-16 flex items-center justify-center breath">
             <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-[spin_1.5s_cubic-bezier(0.25,1,0.5,1)_infinite]"></div>
             <div className="absolute top-0 left-0 w-6 h-6 rounded-full"
               style={{ clipPath: "polygon(50% 50%, 100% 0, 100% 100%)" }}>
             </div>
           </div>
         </div>
-        <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
-          <img src={logo} alt="Saint paul logo" width={140} height={80} />
-          <img src={willyImg} alt="Play" width={80} height={80} className="object-cover" />
-          <img src={vinceImg} alt="Play" width={80} height={80} className="object-cover" />
-          <img src={damienImg} alt="Play" width={100} height={80} className="object-contain" />
-          <img src={patoumaImg} alt="Play" width={80} height={80} className="object-contain" />
-
+        <div id="teams_logo" className="absolute bottom-10 lg:right-10 right-0 gap-3 flex backdrop-blur-sm justify-center lg:justify-end rounded-lg w-full lg:w-auto">
+          <img src={logo} alt="Saint paul logo" width={isMobile ? 100 : 140} height={isMobile ? 50 : 80} className="object-contain"/>
+          <img src={willyImg} alt="Play" width={isMobile ? 50 : 80} height={isMobile ? 50 : 80} className="object-contain" />
+          <img src={vinceImg} alt="Play" width={isMobile ? 50 : 80} height={isMobile ? 50 : 80} className="object-contain" />
+          <img src={damienImg} alt="Play" width={isMobile ? 50 : 100} height={isMobile ? 50 : 80} className="object-contain" />
+          <img src={patoumaImg} alt="Play" width={isMobile ? 50 : 80} height={isMobile ? 50 : 80} className="object-contain" />
         </div>
       </div>
     )
@@ -430,16 +427,18 @@ function Scene() {
         >
 
           <group>
-            <Pointer />
             <Entrance />
             <Wall />
             <Ground />
             <Cross />
 
-            <Billboard position={[0, 2, 52]} follow={true} lockX={false} lockY={false} lockZ={false}>
-              <Text fontSize={2} color="white" >
+            <Billboard position={isMobile? [0, 12, 34] : [0, 12, 41]} follow={true} lockX={false} lockY={false} lockZ={false}>
+            <group>
+            <Pointer />
+              <Text fontSize={isMobile? 3.5: 2} color="#174c53" outlineColor='#ffffff' outlineBlur={0.5}>
                 Vous êtes ici
               </Text>
+            </group>
             </Billboard>
 
             <Road />
@@ -461,13 +460,13 @@ function Scene() {
 
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-          <StatsGl />
+          {/* <StatsGl />
           <Stats />
-          <PerformanceMonitor />
+          <PerformanceMonitor /> */}
         </Canvas>
 
       </Suspense>
-
+      {/* <Loading /> */}
 
       <div className={`fixed h-full w-full`} onClick={handleStartApplication}>
         <div className={`h-full w-full`}
@@ -483,8 +482,8 @@ function Scene() {
                 </button>
               </div>
               <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
-                <img src={logo} alt="Saint paul logo" width={140} height={80} />
-                <img src={willyImg} alt="Play" width={80} height={80} className="object-cover" />
+                <img src={logo} alt="Saint paul logo" width={140} height={80} className="object-contain" />
+                <img src={willyImg} alt="Play" width={80} height={80} className="object-contain" />
                 <img src={vinceImg} alt="Play" width={80} height={80} className="object-contain" />
                 <img src={damienImg} alt="Play" width={100} height={80} className="object-contain" />
                 <img src={patoumaImg} alt="Play" width={80} height={80} className="object-contain" />
@@ -499,24 +498,24 @@ function Scene() {
       </div>
 
       <div className={`w-full lg:flex hidden justify-center ${!applicationStart ? "opacity-0" : "opacity-100"} duration-1000 absolute top-2 lg:top-[30px] z-50`} id='top-view-btn'>
-        <div className={`w-[20%] h-[76px] `}>
-          <Button btnValue="Passer en vue aérienne" />
+        <div className={`w-[20%] h-[76px]`}>
+          <Button btnValue="Vue aérienne" />
         </div>
       </div>
       {applicationStart && !isLoading && (
         <div className="w-full h-full relative">
           <>
 
-            {isMobile && !isModalOpen && (
+            {/* {isMobile && !isModalOpen && (
               <div className="w-full flex justify-center absolute top-[6vh] px-[7px] z-50" id='mobile-top-view-btn'>
                 <div className={`w-[416px] h-[104px] opacity-100 transition-opacity duration-3000`}>
-                  <Button btnValue="Passer en vue aérienne" />
+                  <Button btnValue="Vue aérienne" />
                 </div>
               </div>
-            )}
+            )} */}
 
 
-            <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute bottom-[32px] text-white p-4 w-full text-center bg-dark-green`}>
+            <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute top-[6vh] text-white p-4 w-full text-center bg-dark-green`}>
               Cliquez sur la tombe en surbrillance pour obtenir des détails
             </h1>
           </>
