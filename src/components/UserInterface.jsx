@@ -195,7 +195,7 @@ function UserInterface({ handleTombFocus,applicationStart }) {
 
             // Définir les couleurs de la section
             const sectionColors = {
-                13: '#EF507E',
+                13: '#f7d0db',
                 14: '#FFE771',
                 15: '#B89AD7',
                 16: '#E0C2B6',
@@ -230,13 +230,13 @@ function UserInterface({ handleTombFocus,applicationStart }) {
     return (
         <div id="ui" className={`hidden lg:w-full lg:block absolute pl-3 py-6 h-full z-50`}>
             <div className="w-full pl-[26px] pr-[2.1vw] h-full relative">
-                <img src={modalBackground} alt="modal gauche background" className="h-full w-full object-fill absolute top-0 left-0" />
+                <img src={modalBackground} alt="modal gauche background" className="h-full w-full object-fill absolute top-0 left-0 opacity-95" />
 
                 <h1 className="absolute font-orbitron -left-[44px] top-[11vh] font-black text-[1.6em] -rotate-90 leading-none">GIDEON</h1>
 
                 <div className="h-full w-full font-avenir relative flex flex-col text-dark-green">
 
-                    <div id="logo_container" className="w-full flex justify-end mt-0.5">
+                    <div id="logo_container" className="w-full flex justify-end mt-0.5 background-opac">
                         <img src={logo} alt="Saint paul logo" width={150} height={120} />
                     </div>
 

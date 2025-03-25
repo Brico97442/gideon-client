@@ -23,7 +23,7 @@ import {
   createHighlightForTomb,
   COLORS
 } from "../utils/ColorsUtils";
-import logo from '../assets/ui_element/logo_st_paul.svg';
+import logo from '../assets/teams_logo/saintpaul.png'
 // import { Perf } from 'r3f-perf'
 import { GET_DECEASED } from "../config/api";
 import Cross from "../models/Cross";
@@ -415,7 +415,7 @@ function Scene() {
           </div>
         </div>
         <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
-          <img src={logo} alt="Saint paul logo" width={100} height={80}/>
+          <img src={logo} alt="Saint paul logo" width={140} height={80}/>
           <img src={willyImg} alt="Play" width={80} height={80} className="object-cover" />
           <img src={vinceImg} alt="Play" width={80} height={80} className="object-cover" />
           <img src={damienImg} alt="Play" width={100} height={80} className="object-contain" />
@@ -485,9 +485,9 @@ function Scene() {
 
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-          {/* <StatsGl /> */}
-          {/* <Stats /> */}
-          {/* <PerformanceMonitor /> */}
+          <StatsGl />
+          <Stats />
+          <PerformanceMonitor />
         </Canvas>
 
       </Suspense>
@@ -507,7 +507,7 @@ function Scene() {
                 </button>
               </div>
               <div id="teams_logo" className="absolute bottom-10 right-10 gap-3 flex">
-                <img src={logo} alt="Saint paul logo" width={100} height={80}/>
+                <img src={logo} alt="Saint paul logo" width={140} height={80}/>
                 <img src={willyImg} alt="Play" width={80} height={80} className="object-cover" />
                 <img src={vinceImg} alt="Play" width={80} height={80} className="object-contain" />
                 <img src={damienImg} alt="Play" width={100} height={80} className="object-contain" />

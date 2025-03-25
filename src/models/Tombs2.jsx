@@ -297,7 +297,8 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
         if (child.isMesh) {
           geometry = child.geometry;
           material = child.material.clone();
-        }
+        
+         }
       });
 
       if (!geometry || !material) return;
@@ -415,6 +416,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
               requestAnimationFrame(() => orbitControlRef.current?.update());
             }}
             userData={{ type }}
+          
           />
         );
       })}
