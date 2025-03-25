@@ -24,20 +24,7 @@ const TombModal = ({ isOpen, onClose }) => {
   let touchStartY = 0;
   let touchEndY = 0;
 
-  // Gestion de l'animation à l'ouverture
-  useEffect(() => {
-
-    if (isOpen) {
-      // Un petit délai pour permettre au composant de se rendre avant d'animer
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 50);
-      return () => clearTimeout(timer);
-    } else {
-      setIsVisible(false);
-    }
-  }, [isOpen]);
-
+  
   useEffect(() => {
     if (selectedTomb && tombClones.length > 0) {
       highlightTombSection(tombClones, selectedTomb, sectionColors);
@@ -48,11 +35,11 @@ const TombModal = ({ isOpen, onClose }) => {
     const handleTouchStart = (e) => {
       touchStartY = e.changedTouches[0].screenY;
     };
-
+    
     const handleTouchMove = (e) => {
       touchEndY = e.changedTouches[0].screenY;
     };
-
+    
     const handleTouchEnd = () => {
       if (touchStartY - touchEndY > 50) {
         // Swipe up
@@ -62,14 +49,14 @@ const TombModal = ({ isOpen, onClose }) => {
         handleClose(); // Utiliser handleClose au lieu de onClose directement
       }
     };
-
+    
     const modalElement = document.getElementById('ui');
     if (modalElement && isOpen) {
       modalElement.addEventListener('touchstart', handleTouchStart);
       modalElement.addEventListener('touchmove', handleTouchMove);
       modalElement.addEventListener('touchend', handleTouchEnd);
     }
-
+    
     return () => {
       if (modalElement) {
         modalElement.removeEventListener('touchstart', handleTouchStart);
@@ -79,6 +66,17 @@ const TombModal = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 20);
+      return () => clearTimeout(timer);
+    } else {
+      setIsVisible(false);
+    }
+  }, [isOpen]);
+  
   const handleClose = () => {
     setIsVisible(false);
     setTimeout(() => {
@@ -115,14 +113,16 @@ const TombModal = ({ isOpen, onClose }) => {
 
   const modalPositionClass = isVisible ? "right-3" : "-right-full";
 
+  const modalPositionClassMobile = isVisible ? "right-0" : "-right-full";
+
   return (
-    <div id="ui" className={`lg:block lg:w-[26%] w-full  absolute ${modalPositionClass} transition-all duration-500 ease-in-out px-4 py-4 lg:py-6 h-full z-50`}>
+    <div id="ui" className={`lg:block lg:w-[26%] w-full  absolute ${isMobile?modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 py-4 lg:py-6 h-full z-50`}>
       <div className={`w-full lg:pl-[3vw] lg:pr-[2vw] lg:pb-[5vh] lg:pt-[2.8vh] h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"}`}>
-        {(!isMobile && <img src={modalRightBackground} alt="modal droite background " width={400} className="h-full w-full object-fill absolute top-0 left-0 opacity-95"/>)}
+        {(!isMobile && <img src={modalRightBackground} alt="modal droite background " width={400} className="h-full w-full object-fill absolute top-0 left-0 opacity-95" />)}
         <div className="modal-shape-container relative flex flex-col items-center h-full text-dark-green">
           <div className="flex flex-col items-center w-full h-full overflow-hidden ">
             <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center border border-lite-blue items-center p-2 rounded-xl`}>
-              <QRCodeCanvas value={qrValue} size={116} bgColor="#C7D64F" fgColor="#174C53"/>
+              <QRCodeCanvas value={qrValue} size={116} bgColor="#C7D64F" fgColor="#174C53" />
             </div>
             <div className="flex h-full w-full lg:w-full flex-col mt-8 overflow-hidden">
               <div
@@ -192,10 +192,10 @@ const TombModal = ({ isOpen, onClose }) => {
               </div>
 
             </div>
-            { isCommentOpen && 
-            <div className="w-full absolute bottom-3 px-5 ">
-              <Button type="submit" className="lg:h-[76px] w-full rounded-lg bg-[#0E1C36] hover:bg-[#0E1C36]/70 text-white hover:text-green-300 transition-all duration-150" btnValue="Envoyer" />
-            </div>}
+            {isCommentOpen &&
+              <div className="w-full absolute bottom-3 px-5 ">
+                <Button type="submit" className="lg:h-[76px] w-full rounded-lg bg-[#0E1C36] hover:bg-[#0E1C36]/70 text-white hover:text-green-300 transition-all duration-150" btnValue="Envoyer" />
+              </div>}
             {isMobile && !isCommentOpen &&
               <div className='w-full z-40 px-5 mb-3' onClick={() => setIsCommentOpen(!isCommentOpen)}>
                 <Button btnValue="Laisser un commentaire" className='cursor-pointer h-[82px]' />

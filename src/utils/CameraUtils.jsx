@@ -37,7 +37,7 @@ export const moveCameraToPosition = (camera, targetPosition, orbitControlRef, ta
 };
 
 export const focusOnObject = (tombId) => {
-  console.log(`Focus sur la tombe ID: ${tombId}`);
+  // console.log(`Focus sur la tombe ID: ${tombId}`);
 
   if (!window.tombsSystem || !window.tombsSystem.tombPositions) {
     console.warn("Système de tombes non disponible");
@@ -54,7 +54,7 @@ export const focusOnObject = (tombId) => {
     return;
   }
 
-  console.log("Recherche de la tombe:", tombId);
+  // console.log("Recherche de la tombe:", tombId);
   
   // Récupérer les informations de la tombe depuis le système global
   const tombData = window.tombsSystem.tombPositions[tombId];
@@ -70,7 +70,7 @@ export const focusOnObject = (tombId) => {
     tombData.z
   );
   
-  console.log("Position de la tombe trouvée:", tombPosition);
+  // console.log("Position de la tombe trouvée:", tombPosition);
 
   // Optimisation: Forcer un niveau de détail élevé pour la tombe ciblée
   // Cette partie est cruciale pour afficher la tombe en haute résolution

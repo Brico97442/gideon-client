@@ -9,7 +9,7 @@ import calendarIcon from '../assets/ui_element/calendar_icon.svg';
 import { formatDate } from '../utils/DateUtils';
 import Button from "./Button";
 
-function UserInterface({ handleTombFocus,applicationStart }) {
+function UserInterface({ handleTombFocus, applicationStart }) {
     const [lastname, setLastname] = useState("");
     const [firstname, setFirstname] = useState("");
     const [birthdate, setBirthdate] = useState("");
@@ -21,7 +21,7 @@ function UserInterface({ handleTombFocus,applicationStart }) {
     const { selectTomb, focusOnTomb } = useTomb();
     const [isBirthdateFocused, setIsBirthdateFocused] = useState(false);
     const [isDeathdateFocused, setIsDeathdateFocused] = useState(false);
-    const [isVisible, setIsVisible] = useState(false);
+    const [hasSearched, setHasSearched] = useState(false);
 
 
     // Index des données pour une recherche plus rapide
@@ -104,10 +104,23 @@ function UserInterface({ handleTombFocus,applicationStart }) {
 
     const handleSearch = async () => {
         try {
+
+            if (!lastname && !firstname && !birthdate && !deathdate) {
+                setError("Veuillez remplir au moins un champ");
+                setResults([]);
+                setHasSearched(false);
+
+                return;
+            }
+
             setIsLoading(true);
             setError("");
             setResults([]);
+            setHasSearched(true);
 
+            // if (results.length <= 0) {
+            //     setError("Aucun résultat pour ce défunt");
+            // }
             // Si nous avons des critères de recherche
             const hasSearchCriteria = lastname || firstname || birthdate || deathdate;
 
@@ -187,13 +200,8 @@ function UserInterface({ handleTombFocus,applicationStart }) {
 
     const handleLocate = (person) => {
         if (person && person.tombId) {
-            // console.log('Données de la personne:', person);
-            // console.log('ID de la tombe:', person.tombId);
-
-            // Sélectionner la tombe dans le contexte avec uniquement la personne sélectionnée
             selectTomb(person.tombId, [person]);
 
-            // Définir les couleurs de la section
             const sectionColors = {
                 89: '#f7d0db',
                 90: '#fff5c2',
@@ -201,31 +209,22 @@ function UserInterface({ handleTombFocus,applicationStart }) {
                 92: '#E0C2B6',
             };
 
-            // Déclencher l'animation de focus
             focusOnTomb(person.tombId, sectionColors);
 
-            // Appeler la fonction handleTombFocus du parent
             if (handleTombFocus && typeof handleTombFocus === 'function') {
                 handleTombFocus(person.tombId);
             }
+
+            // Réinitialiser les champs et les résultats
+            setLastname("");
+            setFirstname("");
+            setBirthdate("");
+            setDeathdate("");
+            setResults([]);
         } else {
             console.error('Données de la personne invalides:', person);
         }
     };
-    useEffect(() => {
-        if (!applicationStart) {
-          // Un petit délai pour permettre au composant de se rendre avant d'animer
-          const timer = setTimeout(() => {
-            setIsVisible(true);
-          }, 50);
-          return () => clearTimeout(timer);
-        } else {
-          setIsVisible(false);
-        }
-      }, [applicationStart]);
-
-    const modalPositionClass = isVisible ? "left-0" : "left-full";
-
 
     return (
         <div id="ui" className={`hidden lg:w-full lg:block absolute pl-3 py-6 h-full z-50`}>
@@ -307,11 +306,12 @@ function UserInterface({ handleTombFocus,applicationStart }) {
                                     />
                                     <img src={calendarIcon} alt="calendrier icône" className="pointer-events-none h-[30px] w-[30px] mb-[0.5vh] mr-3 object-fill absolute right-0" />
                                 </div>
-                                {error && <p className="text-red-500 text-center mt-2">{error}</p>}
-                                {isLoading && <p className="text-center mt-2">Chargement...</p>}
+                                {error && <p className="text-red-500 mt-4">{error}</p>}
+                                {hasSearched && results.length <= 0 && (
+                                    <p className="text-red-500 mt-4">Aucun résultat pour ce défunt</p>
+                                )}
+                                {isLoading && <p className=" mt-2">Chargement...</p>}
                             </form>
-
-
                             {results.length > 0 && (
                                 <div className="w-full mt-2 overflow-hidden z-20 text-dark-green">
                                     <h3 className="text-center mb-2">
@@ -342,7 +342,7 @@ function UserInterface({ handleTombFocus,applicationStart }) {
                     </div>
 
                     <div className='w-full mb-[4.5vh]' onClick={handleSearch}>
-                        <Button btnValue="Rechercher" className='font-extralight'/>
+                        <Button btnValue="Rechercher" className='font-extralight' />
                     </div>
                 </div>
             </div>
