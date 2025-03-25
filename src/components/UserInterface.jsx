@@ -195,10 +195,12 @@ function UserInterface({ handleTombFocus,applicationStart }) {
 
             // Définir les couleurs de la section
             const sectionColors = {
-                13: '#f7d0db',
-                14: '#FFE771',
-                15: '#B89AD7',
-                16: '#E0C2B6',
+
+                89: '#f7d0db',
+                90: '#fff5c2',
+                91: '#cbb8de',
+                92: '#E0C2B6',
+
             };
 
             // Déclencher l'animation de focus
