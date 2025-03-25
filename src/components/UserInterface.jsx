@@ -203,10 +203,12 @@ function UserInterface({ handleTombFocus, applicationStart }) {
             selectTomb(person.tombId, [person]);
 
             const sectionColors = {
+
                 89: '#f7d0db',
                 90: '#fff5c2',
                 91: '#cbb8de',
                 92: '#E0C2B6',
+
             };
 
             focusOnTomb(person.tombId, sectionColors);
