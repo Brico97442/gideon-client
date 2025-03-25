@@ -30,7 +30,7 @@ export const COLORS = {
   SELECTED_TOMB: '#FFA500', // Orange
   GLOW: '#FFFF00',          // Jaune
   SECTIONS: {
-    89: '#EF507E',
+    89: '#f7d0db',
     90: '#FFE771',
     91: '#B89AD7',
     92: '#E0C2B6',

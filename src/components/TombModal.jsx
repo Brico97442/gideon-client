@@ -40,7 +40,7 @@ const TombModal = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (selectedTomb && tombClones.length > 0) {
       const sectionColors = {
-        13: '#EF507E',
+        13: '#f7d0db',
         14: '#FFE771',
         15: '#B89AD7',
         16: '#E0C2B6',
