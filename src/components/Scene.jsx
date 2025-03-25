@@ -422,7 +422,7 @@ function Scene() {
           </Float> */}
       <Suspense fallback={<Loading />}>
         <Canvas
-          frameloop="demand"
+          // frameloop="demand"
           camera={{ near: 0.2, position: isMobile ? [0, 100, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
           id="tomb-canvas"
           shadows
