@@ -211,7 +211,6 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
         if (newLODs[type] !== bestLOD) {
           newLODs[type] = bestLOD;
-          console.log(`Type ${type} LOD updated to ${bestLOD}`);
         }
       });
 
@@ -249,9 +248,9 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
 
   useEffect(() => {
     if (!selectedTombId || !tombsData.length) return;
-    
-    console.log(`Applying highlight to tomb: ${selectedTombId}`);
+
     highlightSelectedTomb(selectedTombId);
+    
   }, [selectedTombId, tombsData]);
   
   // Mise à jour des InstancedMesh en fonction du LOD
