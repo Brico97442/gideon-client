@@ -133,7 +133,7 @@ const TombModal = ({ isOpen, onClose }) => {
                     <h2 className="text-[1em] ">Emplacement n°{selectedTomb}</h2>
                     <h3 className="mt-[1.2vh] text-[1em]">Ici repose</h3>
                     <div className="h-full flex flex-col">
-                      <div id='scroll' className="space-y-[5vh] flex-col lg:max-h-[40vh] max-h-[45vh] overflow-y-auto mt-[2vh] lg:mt-[0vh]">
+                      <div id='scroll' className="space-y-[5vh] flex-col lg:max-h-[40vh] min-h-[45vh] max-h-[45vh] overflow-y-auto mt-[2vh] lg:mt-[0vh]">
                         {tombDetails.map((person, index) => (
                           <div key={index} className="flex-col flex pr-[1vw]">
                             <span className="text-[1.5em] font-semibold capitalize">
