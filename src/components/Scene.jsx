@@ -211,10 +211,10 @@ function Scene() {
       }
 
       // Récupérer les détails de la tombe
-      fetchTombDetail(id);
+      fetchTombDetails(id);
       setIsShowUi(false);
     } else {
-      fetchTombDetail(id);
+      fetchTombDetails(id);
     }
 
   };;
