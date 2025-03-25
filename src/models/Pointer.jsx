@@ -8,11 +8,11 @@ const Pointer = () => {
 
     // Utiliser useFrame pour faire tourner l'élément en continu sur l'axe Z
     
-        // useFrame(() => {
-        //     if (pointerRef.current) {
-        //         pointerRef.current.rotation.y += 0.01; // Augmenter la valeur pour ajuster la vitesse de rotation
-        //     }
-        // });
+        useFrame(() => {
+            if (pointerRef.current) {
+                pointerRef.current.rotation.y += 0.01; // Augmenter la valeur pour ajuster la vitesse de rotation
+            }
+        });
         useEffect(() => {
             PointerGLB.scene.traverse((child) => {
                 if (child.isMesh) {
@@ -21,7 +21,7 @@ const Pointer = () => {
             });
         }, [PointerGLB]);
     return (
-        <mesh ref={pointerRef} castShadow receiveShadow position={[0, -4, -1]} rotation={[0, 0, 0]}>
+        <mesh ref={pointerRef} position={[0, -4, -1]} rotation={[0, 0, 0]}>
             <primitive object={PointerGLB.scene}/>
         </mesh>
     );
