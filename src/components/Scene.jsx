@@ -460,9 +460,9 @@ function Scene() {
 
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-          {/* <StatsGl />
+          <StatsGl />
           <Stats />
-          <PerformanceMonitor /> */}
+          <PerformanceMonitor />
         </Canvas>
 
       </Suspense>
