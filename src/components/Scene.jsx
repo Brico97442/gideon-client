@@ -485,9 +485,9 @@ function Scene() {
 
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-          {/* <StatsGl /> */}
-          {/* <Stats /> */}
-          {/* <PerformanceMonitor /> */}
+          <StatsGl />
+          <Stats />
+          <PerformanceMonitor />
         </Canvas>
 
       </Suspense>
