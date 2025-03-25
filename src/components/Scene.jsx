@@ -32,7 +32,7 @@ import Pointer from "../models/Pointer";
 import { useTomb, findTombMeshById } from '../context/TombContext';
 import gsap from "gsap";
 import Button from "./Button";
-
+import { useControls } from 'leva'
 
 import playIcon from '../assets/play_arrow.svg';
 import willyImg from '../assets/teams_logo/willprod_white.png';
@@ -392,7 +392,7 @@ function Scene() {
     return (
       <div className={`z-30 relative h-full w-full backdrop-blur-[6px] transition-colors text-white flex justify-center flex-col items-center`}>
 
-        <h1 className="font-orbitron text-apple-green tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
+        <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
         <div className="absolute bottom-[22.5vh] text-xl flex flex-col items-center gap-2 justify-center p-6 ">
           <p>Initialisation de l'application</p>
           <div className="relative w-16 h-16 flex items-center justify-center breath">
@@ -403,7 +403,7 @@ function Scene() {
           </div>
         </div>
         <div id="teams_logo" className="absolute bottom-10 lg:right-10 right-0 gap-3 flex backdrop-blur-sm justify-center lg:justify-end rounded-lg w-full lg:w-auto">
-          <img src={logo} alt="Saint paul logo" width={isMobile ? 100 : 140} height={isMobile ? 50 : 80} className="object-contain"/>
+          <img src={logo} alt="Saint paul logo" width={isMobile ? 100 : 140} height={isMobile ? 50 : 80} className="object-contain" />
           <img src={willyImg} alt="Play" width={isMobile ? 50 : 80} height={isMobile ? 50 : 80} className="object-contain" />
           <img src={vinceImg} alt="Play" width={isMobile ? 50 : 80} height={isMobile ? 50 : 80} className="object-contain" />
           <img src={damienImg} alt="Play" width={isMobile ? 50 : 100} height={isMobile ? 50 : 80} className="object-contain" />
@@ -412,14 +412,14 @@ function Scene() {
       </div>
     )
   }
-
+  // const { intensity } = useControls({ intensity: { value: 1, min: 0, max: 5 } })
   return (
     <div className="main relative">
       {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
           </Float> */}
       <Suspense fallback={<Loading />}>
         <Canvas
-          frameloop="demand"
+          // frameloop="demand"
           camera={{ near: 0.2, position: isMobile ? [0, 100, 5] : [30, 50, 75], rotation: [0, Math.PI, 0] }}
           id="tomb-canvas"
           className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart ? "opacity-0 z-0" : "opacity-100 z-30"} duration-2000`}
@@ -432,17 +432,18 @@ function Scene() {
             <Ground />
             <Cross />
 
-            <Billboard position={isMobile? [0, 12, 34] : [0, 12, 41]} follow={true} lockX={false} lockY={false} lockZ={false}>
-            <group>
-            <Pointer />
-              <Text fontSize={isMobile? 3.5: 2} color="#8d222a" outlineColor='#ffffff' outlineBlur={0.5}>
-                Vous êtes ici
-              </Text>
-            </group>
+            <Billboard position={isMobile ? [0, 12, 34] : [0, 12, 38]} follow={true} lockX={false} lockY={false} lockZ={false}>
+              <group>
+                <Pointer />
+                <Text fontSize={isMobile ? 3.5 : 2} color="#9a2252" outlineColor='#ffffff' outlineBlur={0.6}>
+                  Vous êtes ici
+                </Text>
+              </group>
             </Billboard>
 
             <Road />
-            <ambientLight intensity={2.5} />
+            <ambientLight intensity={2} position={[0, 0, 0]} />
+
             <Tombs2
               onTombClick={
                 isMobile ?
@@ -453,9 +454,11 @@ function Scene() {
               orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
               glowLayer={[glowLayer]}
             />
-            {/* <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} decay={1} intensity={Math.PI} color='orange' /> */}
-            {/* <pointLight position={[-10, -10, -10]} decay={1} intensity={Math.PI} color='yellow' /> */}
-
+            {/* <spotLight position={[-6, 3, -3]} angle={0.3} penumbra={1} decay={1} intensity={8} color='orange' /> */}
+            <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/>
+            <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/>
+            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='pink'/> */}
+            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/> */}
           </group>
 
           <SceneCamera />
@@ -497,7 +500,7 @@ function Scene() {
         <UserInterface handleTombFocus={handleTombFocus} handleStartApplication={applicationStart} />
       </div>
 
-      <div className={`w-full lg:flex hidden justify-center ${!applicationStart ? "opacity-0" : "opacity-100"} duration-1000 absolute top-2 lg:top-[30px] z-50`} id='top-view-btn'>
+      <div className={`w-full lg:flex hidden justify-center ${!applicationStart ? "opacity-0" : "opacity-100"} duration-1000 absolute top-2 lg:top-[28px] z-50`} id='top-view-btn'>
         <div className={`w-[20%] h-[76px]`}>
           <Button btnValue="Vue aérienne" />
         </div>
