@@ -108,13 +108,13 @@ function Scene() {
   const SceneCamera = () => {
     const { camera, scene, gl, invalidate } = useThree();
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        console.log(gl.info.render);
-      }, 1000);
+    // useEffect(() => {
+    //   const interval = setInterval(() => {
+    //     console.log(gl.info.render);
+    //   }, 1000);
 
-      return () => clearInterval(interval);
-    }, [gl]);
+    //   return () => clearInterval(interval);
+    // }, [gl]);
 
     useEffect(() => {
       if (!initialCameraPosition) {
@@ -126,14 +126,11 @@ function Scene() {
 
       // Initialiser les éléments de scène dans le système global
       if (!window.tombsSystem) {
-        console.log("Initialisation du système global");
         window.tombsSystem = {};
-
       }
       window.tombsSystem.invalidate = invalidate;
 
       if (!window.tombsSystem.highlightGroup) {
-        // console.log("Création du groupe de surbrillance");
         window.tombsSystem.highlightGroup = new THREE.Group();
         scene.add(window.tombsSystem.highlightGroup);
       }
@@ -145,7 +142,6 @@ function Scene() {
       setSceneElements(camera, orbitControlRef, tombClones);
 
 
-      console.log("Configuration de la scène terminée");
       setIsTransitioning(true);
 
     }, [camera, invalidate, scene]);
@@ -156,7 +152,6 @@ function Scene() {
 
 
   const handleTombClick = (id) => {
-    console.log("✅ handleTombClick triggered:", id);
 
     setIsModalOpen(true);
     setSelectedTomb(id);
@@ -166,9 +161,8 @@ function Scene() {
       // Vérifier si window.tombsSystem est correctement initialisé
       if (!window.tombsSystem || !window.tombsSystem.tombPositions || !window.tombsSystem.tombPositions[id]) {
         console.warn("Données de tombe non disponibles pour l'ID:", id);
+        
         // Récupérer quand même les détails de la tombe
-        console.log("Tombes reçues :", tombData);
-
         fetchTombDetails(id);
         return;
       }
@@ -202,6 +196,7 @@ function Scene() {
 
 
   const handleTombFocus = (id) => {
+    
     setIsModalOpen(true);
     setSelectedTomb(id);
 
@@ -285,12 +280,10 @@ function Scene() {
   useEffect(() => {
     const savedTomb = searchParams.get("name");
     if (savedTomb) {
-      console.log("URL Parameter found:", savedTomb);
 
       // Fonction pour appliquer la surbrillance
       const applyHighlight = () => {
         if (window.tombsSystem && window.tombsSystem.tombPositions && window.tombsSystem.instanceColors) {
-          console.log("Applying highlight to tomb:", savedTomb);
 
           highlightSelectedTomb(savedTomb);
           setSelectedTomb(savedTomb);
@@ -307,10 +300,8 @@ function Scene() {
 
       const checkSystem = () => {
         attempts++;
-        console.log(`Attempt ${attempts} to highlight tomb ${savedTomb}`);
 
         if (applyHighlight()) {
-          console.log("Successfully highlighted tomb");
           return true;
         } else if (attempts >= maxAttempts) {
           console.warn("Failed to highlight tomb after maximum attempts");
@@ -355,7 +346,6 @@ function Scene() {
 
   const handleSceneLoaded = useCallback(() => {
     setIsLoading(false);
-    console.log("Scène 3D entièrement chargée");
   }, []);
 
 
@@ -428,20 +418,8 @@ function Scene() {
 
   return (
     <div className="main relative">
-
-      {/* <group>
-          <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
-            <pointLight
-              position={[0, 0, 0]}
-              decay={0}
-              intensity={8}
-              color='yellow'
-            />
-            <ambientLight intensity={1} />
-            <directionalLight position={[0, 0, 0]} intensity={10} color="yellow" />
-          </Float>
-        </group> */}
-
+          {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
+          </Float> */}
       <Suspense fallback={<Loading />}>
         <Canvas
           // frameloop="demand"
