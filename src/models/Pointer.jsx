@@ -13,9 +13,15 @@ const Pointer = () => {
         //         pointerRef.current.rotation.y += 0.01; // Augmenter la valeur pour ajuster la vitesse de rotation
         //     }
         // });
-
+        useEffect(() => {
+            PointerGLB.scene.traverse((child) => {
+                if (child.isMesh) {
+                    child.material.color.set('#9a2252');
+                }
+            });
+        }, [PointerGLB]);
     return (
-        <mesh ref={pointerRef} position={[0, 0, 0]} rotation={[0, 0, 0]}>
+        <mesh ref={pointerRef} castShadow receiveShadow position={[0, 0, 0]} rotation={[0, 0, 0]}>
             <primitive object={PointerGLB.scene} />
         </mesh>
     );
