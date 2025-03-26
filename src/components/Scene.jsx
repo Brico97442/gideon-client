@@ -431,6 +431,7 @@ function Scene() {
             <Wall />
             <Ground />
             <Cross />
+            <Road />
 
             <Billboard position={isMobile ? [0, 12, 34] : [0, 12, 38]} follow={true} lockX={false} lockY={false} lockZ={false}>
               <group>
@@ -441,8 +442,10 @@ function Scene() {
               </group>
             </Billboard>
 
-            <Road />
-            <ambientLight intensity={2} position={[0, 0, 0]} />
+            <ambientLight intensity={2.2} position={[0, 0, 0]} />
+            {/* <EffectComposer>
+              <Bloom intensity={1.5} width={300} height={300} kernelSize={3} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
+            </EffectComposer> */}
 
             <Tombs2
               onTombClick={
@@ -455,8 +458,8 @@ function Scene() {
               glowLayer={[glowLayer]}
             />
             {/* <spotLight position={[-6, 3, -3]} angle={0.3} penumbra={1} decay={1} intensity={8} color='orange' /> */}
-            <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/>
-            <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/>
+            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/>
+            <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/> */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='pink'/> */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/> */}
           </group>
