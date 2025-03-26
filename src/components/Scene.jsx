@@ -454,9 +454,9 @@ function Scene() {
               glowLayer={[glowLayer]}
             />
             {/* <EffectComposer>
-              <Bloom intensity={1.5} width={300} height={300} kernelSize={3} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
+              <Bloom intensity={0.2} width={200} height={200} kernelSize={1} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
             </EffectComposer> */}
-            <hemisphereLight position={[-6, 3, -3]} decay={3} intensity={2} args={['#9a2252','#fff5c2']}/>
+            {/* <hemisphereLight position={[-6, 3, -3]} decay={3} intensity={1} args={['#9a2252','#fff5c2']}/> */}
             {/* <spotLight position={[-6, 3, -3]} angle={0.3} penumbra={1} decay={1} intensity={8} color='orange' /> */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/>
             <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/> */}
