@@ -108,13 +108,13 @@ function Scene() {
   const SceneCamera = () => {
     const { camera, scene, gl, invalidate } = useThree();
 
-    // useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     console.log(gl.info.render);
-    //   }, 1000);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        console.log(gl.info.render);
+      }, 1000);
 
-    //   return () => clearInterval(interval);
-    // }, [gl]);
+      return () => clearInterval(interval);
+    }, [gl]);
 
     useEffect(() => {
       if (!initialCameraPosition) {
@@ -425,7 +425,6 @@ function Scene() {
           className={`absolute h-full w-full top-0 left-0 transition-opacity ${!applicationStart ? "opacity-0 z-0" : "opacity-100 z-30"} duration-2000`}
         // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
-
           <group>
             <Entrance />
             <Wall />
@@ -433,7 +432,7 @@ function Scene() {
             <Cross />
             <Road />
 
-            <Billboard position={isMobile ? [0, 12, 34] : [0, 12, 38]} follow={true} lockX={false} lockY={false} lockZ={false}>
+            <Billboard position={isMobile ? [0, 12, 34] : [-1, 12, 38]} follow={true} lockX={false} lockY={false} lockZ={false}>
               <group>
                 <Pointer />
                 <Text fontSize={isMobile ? 3.5 : 2} color="#9a2252" outlineColor='#ffffff' outlineBlur={0.6}>
@@ -442,10 +441,7 @@ function Scene() {
               </group>
             </Billboard>
 
-            <ambientLight intensity={2.2} position={[0, 0, 0]} />
-            {/* <EffectComposer>
-              <Bloom intensity={1.5} width={300} height={300} kernelSize={3} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
-            </EffectComposer> */}
+            <ambientLight intensity={2.5} position={[0, 0, 0]} />
 
             <Tombs2
               onTombClick={
@@ -454,9 +450,13 @@ function Scene() {
                   handleTombClick
               }
               selectedTombId={selectedTomb}
-              orbitControlRef={orbitControlRef}  // Ajoutez cette ligne
+              orbitControlRef={orbitControlRef}  
               glowLayer={[glowLayer]}
             />
+            {/* <EffectComposer>
+              <Bloom intensity={1.5} width={300} height={300} kernelSize={3} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
+            </EffectComposer> */}
+            <hemisphereLight position={[-6, 3, -3]} decay={3} intensity={2} args={['#9a2252','#fff5c2']}/>
             {/* <spotLight position={[-6, 3, -3]} angle={0.3} penumbra={1} decay={1} intensity={8} color='orange' /> */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/>
             <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/> */}
