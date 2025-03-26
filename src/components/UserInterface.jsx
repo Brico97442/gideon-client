@@ -308,9 +308,9 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                                     />
                                     <img src={calendarIcon} alt="calendrier icône" className="pointer-events-none h-[30px] w-[30px] mb-[0.5vh] mr-3 object-fill absolute right-0" />
                                 </div>
-                                {error && <p className="text-red-500 mt-4">{error}</p>}
+                                {error && <p className="text-red-500  text-[1em] mt-6">{error}</p>}
                                 {hasSearched && results.length <= 0 && (
-                                    <p className="text-red-500 mt-4">Aucun résultat pour ce défunt</p>
+                                    <p className="text-red-500 text-[1em] mt-6">Aucun résultat pour ce défunt</p>
                                 )}
                                 {isLoading && <p className=" mt-2">Chargement...</p>}
                             </form>
