@@ -108,13 +108,13 @@ function Scene() {
   const SceneCamera = () => {
     const { camera, scene, gl, invalidate } = useThree();
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        console.log(gl.info.render);
-      }, 1000);
+    // useEffect(() => {
+    //   const interval = setInterval(() => {
+    //     console.log(gl.info.render);
+    //   }, 1000);
 
-      return () => clearInterval(interval);
-    }, [gl]);
+    //   return () => clearInterval(interval);
+    // }, [gl]);
 
     useEffect(() => {
       if (!initialCameraPosition) {
@@ -458,8 +458,8 @@ function Scene() {
             </EffectComposer> */}
             {/* <hemisphereLight position={[-6, 3, -3]} decay={3} intensity={1} args={['#9a2252','#fff5c2']}/> */}
             {/* <spotLight position={[-6, 3, -3]} angle={0.3} penumbra={1} decay={1} intensity={8} color='orange' /> */}
-            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/>
-            <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/> */}
+           {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={intensity} color='purple'/>*/}
+            {/* <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/> */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='pink'/> */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/> */}
           </group>
