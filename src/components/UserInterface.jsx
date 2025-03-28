@@ -167,14 +167,13 @@ function UserInterface({ handleTombFocus, applicationStart }) {
             if (handleTombFocus && typeof handleTombFocus === "function") {
                 handleTombFocus(person.tombId, person);
             }
-
-            // Réinitialiser les champs et les résultats
             setLastname("");
             setFirstname("");
             setBirthdate("");
             setDeathdate("");
             setResults([]);
             setTerms("");
+            setHasSearched(false);
         } else {
             console.error("Données de la personne invalides:", person);
         }
@@ -211,12 +210,12 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                                 />
 
                                 {error && (
-                                    <p className="text-red-500  text-[1em] mt-6">{error}</p>
+                                    <p className="text-red-500  text-[1.6em] mt-6">{error}</p>
                                 )}
 
-                                {hasSearched && results.length <= 1 && (
-                                    <p className="text-red-500 text-[1em] mt-6">
-                                        Aucun résultat pour ce défunt
+                                {hasSearched && results.length === 0 && (
+                                    <p className="text-red-500 text-[1.5em] mt-6">
+                                        Informations inexistantes veuillez réessayer
                                     </p>
                                 )}
 
