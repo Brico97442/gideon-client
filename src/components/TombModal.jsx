@@ -4,7 +4,7 @@ import { isMobile } from 'react-device-detect';
 import { useTomb } from '../context/TombContext';
 import { highlightTombSection } from '../utils/ColorsUtils';
 import { formatDate } from '../utils/DateUtils';
-import modalRightBackground from '../assets/ui_element/right-modal.webp';
+import modalRightBackground from '../assets/ui_element/right-modal.png';
 import closeBtn from '../assets/ui_element/close_btn.svg';
 import PropTypes from 'prop-types';
 import axios from 'axios';
@@ -109,7 +109,7 @@ const TombModal = ({ isOpen, onClose }) => {
   const modalPositionClassMobile = isVisible ? "right-0" : "-right-full";
 
   return (
-    <div id="ui" className={`lg:block lg:w-[26%] w-full  absolute ${isMobile ? modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 py-4 lg:py-36 h-full z-50`}>
+    <div id="ui" className={`lg:block lg:w-[26%] w-full absolute ${isMobile ? modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 pt-4 pb-4  lg:pb-[15vh] lg:pt-[25vh] h-full z-50`}>
       <div className={`w-full lg:pl-[3vw] lg:pr-[2vw] lg:pb-[5vh] lg:pt-[2.8vh] h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"}`}>
         {(!isMobile && <img src={modalRightBackground} alt="modal droite background " width={400} className="h-full w-full object-fill absolute top-0 left-0 opacity-95" />)}
         <div className="modal-shape-container relative flex flex-col items-center h-full text-dark-green">
@@ -122,19 +122,19 @@ const TombModal = ({ isOpen, onClose }) => {
                 className={`z-50 left-0 h-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
               >
                 {tombDetails && !isCommentOpen && (
-                  <div className="my-[22px] mx-5 lg:mx-0 overflow-hidden">
+                  <div className="my-[10px] mx-5 lg:mx-0 overflow-hidden flex flex-col items-center justify-center">
                     <h2 className="text-[1em] ">Emplacement n°{selectedTomb}</h2>
-                    <h3 className="mt-[1.2vh] text-[1em]">Ici repose</h3>
-                    <div className="h-full flex flex-col">
-                      <div id='scroll' className="space-y-[5vh] flex-col lg:max-h-[40vh] max-h-[45vh] overflow-y-auto mt-[2vh] lg:mt-[0vh]">
+                    <h3 className="mt-[1vh] lg:mb-[1vh] text-[1em]">Ici repose</h3>
+                    <div className="h-full flex items-center flex-col ">
+                      <div id='scroll' className="space-y-[3vh] flex-col items-center lg:max-h-[30vh] max-h-[58vh] overflow-y-auto lg:mt-[0vh]">
                         {tombDetails.map((person, index) => (
                           <div key={index} className="flex-col flex pr-[1vw]">
-                            <span className="text-[1.5em] font-semibold capitalize">
+                            <span className="flex justify-center text-[1.5em] font-semibold capitalize w-full">
                               {person.firstname} {person.lastname}
                             </span>
-                            <span className="flex flex-col lg:gap-4 lg:flex-row lg:space-x-1 space-y-2 lg:space-y-0 normal-case text-left text-[1em]">
-                              <li className='list-disc leading-none'>Née le {formatDate(person.birthdate)}</li>
-                              <li className='list-disc leading-none text-left'>Décédé le {formatDate(person.deathDate)}</li>
+                            <span className="flex lg:gap-4 flex-col lg:flex-row lg:space-x-2 space-y-2 lg:space-y-0 normal-case text-left text-[1em]">
+                              <li className='list-disc leading-none lg:flex'>Née le {formatDate(person.birthdate)}</li>
+                              <li className='list-disc leading-none lg:flex text-left'>Décédé le {formatDate(person.deathDate)}</li>
                             </span>
                           </div>
                         ))}
