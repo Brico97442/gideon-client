@@ -198,7 +198,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                     </h1>
 
 
-                    <div className="w-[71%] h-[131px] ">
+                    <div className="w-[71%] h-[131px]">
                         <div className="flex flex-col relative justify-center">
                             <form className="pt-5">
                                 <input
@@ -213,7 +213,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                                     <p className="text-red-500  text-[1em] mt-6">{error}</p>
                                 )}
 
-                                {hasSearched && results.length <= 0 && (
+                                {hasSearched && results.length <= 1 && (
                                     <p className="text-red-500 text-[1em] mt-6">
                                         Aucun résultat pour ce défunt
                                     </p>
