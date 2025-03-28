@@ -398,7 +398,7 @@ function Scene() {
   const Loading = () => {
     return (
       <div className={`z-30 relative h-full w-full transition-colors text-white flex justify-center flex-col items-center bg-linear-to-r from-gray-300 to-lite-blue`}>
-        <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
+        <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> GIDEON</h1>
         <div className="absolute bottom-[22.5vh] text-xl flex flex-col items-center gap-2 justify-center p-6 ">
           <p>Initialisation de l'application</p>
           <div className="relative w-16 h-16 flex items-center justify-center breath">
@@ -460,7 +460,7 @@ function Scene() {
               glowLayer={[glowLayer]}
             />
             <EffectComposer>
-              <Bloom intensity={0.4} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
+              <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
             </EffectComposer>
             {/* <hemisphereLight position={[-6, 3, -3]} decay={3} intensity={1} args={['#9a2252','#fff5c2']}/> */}
             {/* <spotLight position={[-6, 3, -3]} angle={0.3} penumbra={1} decay={1} intensity={8} color='orange' /> */}
@@ -488,7 +488,7 @@ function Scene() {
 
           <div className={`absolute top-0 flex justify-center items-center w-full h-full`}>
             <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full h-full justify-center relative`}>
-              <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
+              <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> GIDEON </h1>
               <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
                 <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
                 <button className="z-50 cursor-pointer rounded-full h-[72px] w-[72px] border-5 border-white flex items-center justify-center mt-[26px] breath">
