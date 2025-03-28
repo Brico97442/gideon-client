@@ -27,8 +27,8 @@ import * as THREE from "three";
 // Définir les couleurs constantes
 export const COLORS = {
   DEFAULT: 0xFFFFFF,
-  SELECTED_TOMB: '#ffcc00', // Orange
-  GLOW: '#ffcc00',          // Jaune
+  SELECTED_TOMB: '#28B8CE',
+  GLOW: '#ffffff',        
   SECTIONS: {
     89: '#f7d0db',
     90: '#fff5c2',
@@ -175,7 +175,7 @@ export const highlightTombSection = (selectedTombId) => {
 
 
 export const glowLayer = new THREE.Layers();
-glowLayer.set(2);
+glowLayer.set(1);
 
 
 export const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
