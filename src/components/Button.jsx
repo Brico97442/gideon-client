@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import btnImg from '../assets/ui_element/btn.webp';
+import btnImg from '../assets/ui_element/btn2.png';
 import btnHoveredImg from '../assets/ui_element/btn_hover.webp';
 
 export default function Button({ btnValue }) {
@@ -17,15 +17,15 @@ export default function Button({ btnValue }) {
     return (
         <div>
             <div 
-                className="w-full h-[82px] lg:h-[9vh] lg:px-0 text-white transition-all duration-1000 cursor-pointer relative flex justify-center"
+                className="w-full h-[82px] lg:h-[104px] lg:px-0 text-white transition-all duration-1000 cursor-pointer relative flex justify-center"
             >
                 <button className='relative w-full h-full flex justify-center' onClick={handleClick} >
-                    <p className='font-avenir tracking-widest absolute top-3 lg:top-[1vh] z-60 text-[1.1em] w-full'>{btnValue}</p>
+                    <p className='font-orbitron tracking-widest absolute h-[66%] z-60 text-[1.1rem] flex items-center justify-center w-full'>{btnValue}</p>
                     <img 
                         src={isActive ? btnHoveredImg : btnImg} 
                         alt="background" 
                         height={104} 
-                        className="absolute w-full top-0 left-0 h-[82px] lg:h-[9vh] object-fill z-0 transition-all duration-1000" 
+                        className="absolute w-full top-0 left-0 h-[82px] lg:h-[104px] object-fill z-0 transition-all duration-1000" 
                     /> 
                 </button>
             </div>

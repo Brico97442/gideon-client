@@ -390,8 +390,7 @@ function Scene() {
 
   const Loading = () => {
     return (
-      <div className={`z-30 relative h-full w-full backdrop-blur-[6px] transition-colors text-white flex justify-center flex-col items-center`}>
-
+      <div className={`z-30 relative h-full w-full transition-colors text-white flex justify-center flex-col items-center bg-linear-to-r from-gray-300 to-lite-blue`}>
         <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
         <div className="absolute bottom-[22.5vh] text-xl flex flex-col items-center gap-2 justify-center p-6 ">
           <p>Initialisation de l'application</p>
@@ -402,7 +401,7 @@ function Scene() {
             </div>
           </div>
         </div>
-        <div id="teams_logo" className="absolute bottom-10 lg:right-10 right-0 gap-3 flex backdrop-blur-sm justify-center lg:justify-end rounded-lg w-full lg:w-auto">
+        <div id="teams_logo" className="absolute bottom-10 lg:right-10 right-0 gap-3 flex justify-center lg:justify-end rounded-lg w-full lg:w-auto">
           <img src={logo} alt="Saint paul logo" width={isMobile ? 100 : 140} height={isMobile ? 50 : 80} className="object-contain" />
           <img src={willyImg} alt="Play" width={isMobile ? 50 : 80} height={isMobile ? 50 : 80} className="object-contain" />
           <img src={vinceImg} alt="Play" width={isMobile ? 50 : 80} height={isMobile ? 50 : 80} className="object-contain" />
@@ -414,7 +413,7 @@ function Scene() {
   }
   // const { intensity } = useControls({ intensity: { value: 1, min: 0, max: 5 } })
   return (
-    <div className="main relative">
+    <div className="main relative h-full w-full">
       {/* <Float rotationIntensity={0.5} floatIntensity={8} speed={1}>
           </Float> */}
       <Suspense fallback={<Loading />}>
@@ -450,15 +449,15 @@ function Scene() {
                   handleTombClick
               }
               selectedTombId={selectedTomb}
-              orbitControlRef={orbitControlRef}  
+              orbitControlRef={orbitControlRef}
               glowLayer={[glowLayer]}
             />
-            {/* <EffectComposer>
-              <Bloom intensity={0.2} width={200} height={200} kernelSize={1} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
-            </EffectComposer> */}
+            <EffectComposer>
+              <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
+            </EffectComposer>
             {/* <hemisphereLight position={[-6, 3, -3]} decay={3} intensity={1} args={['#9a2252','#fff5c2']}/> */}
             {/* <spotLight position={[-6, 3, -3]} angle={0.3} penumbra={1} decay={1} intensity={8} color='orange' /> */}
-           {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={intensity} color='purple'/>*/}
+            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={intensity} color='purple'/>*/}
             {/* <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/> */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='pink'/> */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/> */}
@@ -466,20 +465,22 @@ function Scene() {
 
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-          <StatsGl />
-          <Stats />
-          <PerformanceMonitor />
+          {/* <StatsGl /> */}
+          {/* <Stats /> */}
+          {/* <PerformanceMonitor /> */}
         </Canvas>
 
       </Suspense>
       {/* <Loading /> */}
 
       <div className={`fixed h-full w-full`} onClick={handleStartApplication}>
-        <div className={`h-full w-full`}
+        <div className={`h-full w-full transition-colors ease-in-out duration-1000] ${!applicationStart ? "bg-linear-to-r from-gray-300 to-lite-blue " : "bg-linear-to-r from-lite-blue to-white"}`}
         // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
-          <div className={`absolute top-0 backdrop-blur-[6px] flex justify-center items-center w-full h-full`}>
-            <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full backdrop-blur-[6px] h-full justify-center relative`}>
+          <img src={logo} alt="Saint paul logo" width={140} height={80} className={`object-contain z-50 h-full w-full ${!applicationStart?  "opacity-0": "opacity-20" }`} />
+
+          <div className={`absolute top-0 flex justify-center items-center w-full h-full`}>
+            <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full h-full justify-center relative`}>
               <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> Gideon </h1>
               <div className="flex flex-col items-center h-full justify-end absolute bottom-[60px] lg:bottom-[161px]">
                 <h2 className="text-xl text-white whitespace-nowrap breath">Toucher l'écran pour commencer</h2>
@@ -499,28 +500,19 @@ function Scene() {
         </div>
       </div>
 
-      <div className={`transition ${!applicationStart ? "-translate-x-full opacity-0" : "translate-x-0 opacity-100"} absolute h-full w-[26%] ease-in-out duration-1000 z-50`}>
+      <div className={`transition ${!applicationStart ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"} absolute h-[131px] w-full ease-in-out duration-1000 z-50`}>
         <UserInterface handleTombFocus={handleTombFocus} handleStartApplication={applicationStart} />
       </div>
 
-      <div className={`w-full lg:flex hidden justify-center ${!applicationStart ? "opacity-0" : "opacity-100"} duration-1000 absolute top-2 lg:top-[28px] z-50`} id='top-view-btn'>
-        <div className={`w-[20%] h-[76px]`}>
+      <div className="w-full h-[104px] flex justify-center absolute bottom-[8px]">
+        <div className={`w-[416px] h-[104px] ${!applicationStart ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"} duration-1000 z-50`} id='top-view-btn'>
           <Button btnValue="Vue aérienne" />
         </div>
       </div>
+
       {applicationStart && !isLoading && (
         <div className="w-full h-full relative">
           <>
-
-            {/* {isMobile && !isModalOpen && (
-              <div className="w-full flex justify-center absolute top-[6vh] px-[7px] z-50" id='mobile-top-view-btn'>
-                <div className={`w-[416px] h-[104px] opacity-100 transition-opacity duration-3000`}>
-                  <Button btnValue="Vue aérienne" />
-                </div>
-              </div>
-            )} */}
-
-
             <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute top-[6vh] text-white p-4 w-full text-center bg-dark-green`}>
               Cliquez sur la tombe en surbrillance pour obtenir des détails
             </h1>
