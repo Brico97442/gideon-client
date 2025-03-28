@@ -89,13 +89,6 @@ const TombModal = ({ isOpen, onClose }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log('Données envoyées:', {
-        firstname,
-        lastname,
-        phoneNumber,
-        comment,
-        tomb: parseInt(selectedTomb, 10)
-      });
       const response = await axios.post('https://gideon-api.willsprod.fr/comments', {
         firstname,
         lastname,

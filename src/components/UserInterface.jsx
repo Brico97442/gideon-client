@@ -5,7 +5,8 @@ import { useTomb } from "../context/TombContext";
 import { SEARCH_DECEASED } from "../config/api";
 import modalBackground from "../assets/ui_element/search_bar.png";
 import logo from "../assets/teams_logo/saintpaul.png";
-import calendarIcon from "../assets/ui_element/calendar_icon.svg";
+// import calendarIcon from "../assets/ui_element/calendar_icon.svg";
+import profilImg from "../assets/ui_element/profilicon.png";
 import { formatDate } from "../utils/DateUtils";
 import Button from "./Button";
 import moment from "moment/moment";
@@ -82,6 +83,10 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                 }
                 index.byDeathDate.get(deathDate).push(indexedPerson);
             }
+            // if(person){
+
+            //     console.log(person)
+            // }
         });
 
         return index;
@@ -123,7 +128,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                 .split(/\s+/); // Sépare les termes par des espaces
 
             filteredCachedData = filteredCachedData.filter((data) => {
-                
+
                 // Normalisation des champs de recherche
                 const normalizeField = (field) =>
                     field ?
@@ -157,24 +162,10 @@ function UserInterface({ handleTombFocus, applicationStart }) {
     };
 
     const handleLocate = (person) => {
-        if (person && person.tombId) {
-            selectTomb(person.tombId, [person]);
-
-            const sectionColors = {
-
-
-                89: '#f7d0db',
-                90: '#fff5c2',
-                91: '#cbb8de',
-                92: '#E0C2B6',
-
-
-            };
-
-            focusOnTomb(person.tombId, sectionColors);
+        if (person && person.id) {
 
             if (handleTombFocus && typeof handleTombFocus === "function") {
-                handleTombFocus(person.tombId);
+                handleTombFocus(person.tombId, person);
             }
 
             // Réinitialiser les champs et les résultats
@@ -236,45 +227,48 @@ function UserInterface({ handleTombFocus, applicationStart }) {
 
                             </form>
                         </div>
-                    {
-                        results.length > 0 &&
-                        (
-                            <div className="w-full px-36 py-15 overflow-hidden z-20 text-dark-green bg-[#D9D9D9] rounded-4xl">
-                                <h3 className="text-center mb-2">
+                        {
+                            results.length > 0 &&
+                            (
+                                <div className="w-full px-36 py-15 overflow-hidden z-20 text-dark-green bg-[#D9D9D9] rounded-4xl">
+                                    {/* <h3 className="text-center mb-2">
                                     {results.length} résultat{results.length > 1 ? "s" : ""}{" "}
                                     trouvé{results.length > 1 ? "s" : ""}
-                                </h3>
-                                <ul className="max-h-[50vh] overflow-y-auto space-y-1">
-                                    {results.map((person, index) => (
-                                        <li
-                                            key={`${person.id}-${index}`}
-                                            className="border-b border-white/20  hover:bg-[#0E1C36]/30 transition-all duration-150 cursor-pointer rounded-3xl bg-amber-500"
-                                            onClick={() => handleLocate(person)}
-                                        >
-                                            <div className="flex flex-col">
-                                                <span className="font-semibold">
-                                                    {person.firstname} {person.lastname}
-                                                </span>
-                                                <div className="text-sm opacity-80">
-                                                    <span className="flex flex-col">
-                                                        <span>
-                                                            {person.birthdate &&
-                                                                `Né(e) le ${formatDate(person.birthdate)}`}
-                                                        </span>
-                                                        <span>
-                                                            {person.deathDate &&
-                                                                `Décédé(e) le ${formatDate(
-                                                                    person.deathDate
-                                                                )}`}
-                                                        </span>
+                                </h3> */}
+                                    <ul className="max-h-[50vh] overflow-y-auto space-y-8">
+                                        {results.map((person, index) => (
+                                            <li
+                                                key={`${person.id}-${index}`}
+                                                className="border-b border-white/20 hover:bg-[#0E1C36]/30 transition-all duration-150 cursor-pointer rounded-3xl bg-white py-[14.6px] px-[26px] shadow"
+                                                onClick={() => handleLocate(person)}
+                                            >
+                                                <div className="flex items-center gap-5 relative">
+                                                    <img src={profilImg} alt="profil décès" width={58} height={58} className={`object-contain z-50 h-[58px] w-[58px] rounded-full`} />
+
+                                                    <span className="text-[32px]">
+                                                        {person.firstname} {person.lastname}
                                                     </span>
+                                                    <div className="text-sm opacity-80">
+                                                        <span className="flex gap-4 text-[18px] font-bold ">
+                                                            <span className=" border-l pl-3">
+                                                                {person.birthdate &&
+                                                                    `Né(e) le ${formatDate(person.birthdate)}`}
+                                                            </span>
+                                                            <span className=" border-l pl-3">
+                                                                {person.deathDate &&
+                                                                    `Décédé(e) le ${formatDate(
+                                                                        person.deathDate
+                                                                    )}`}
+                                                            </span>
+                                                        </span>
+                                                    </div>
+                                                    <span className="bg-apple-green rounded-4xl px-2 text-[12px] absolute right-0">DAH-{person.tombId}</span>
                                                 </div>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
                     </div>
 
                     <img src={logo} alt="Saint paul logo" className="absolute right-0 w-[200px]" width={200} height={120} />

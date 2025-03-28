@@ -13,9 +13,10 @@ export const TombProvider = ({ children }) => {
   const [tombClones, setTombClones] = useState([]);
   const [previouslySelectedTomb, setPreviouslySelectedTomb] = useState(null);
 
-  const selectTomb = (tombId, details = null) => {
+  const selectTomb = (tombId, details) => {
     // console.log('Sélection de la tombe:', tombId, 'avec les détails:', details);
 
+    console.log(selectTomb)
     setPreviouslySelectedTomb(selectedTomb);
     setSelectedTomb(tombId);
     if (details) {
