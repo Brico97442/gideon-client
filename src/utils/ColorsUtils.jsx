@@ -204,7 +204,7 @@ export const createHighlightForTomb = (tombId, tombData, color, isSelected) => {
     const glowMaterial = new THREE.ShaderMaterial({
       uniforms: {
         glowColor: { value: new THREE.Color(COLORS.GLOW) },
-        intensity: { value: 2.0 }
+        intensity: { value: 13.0 }
       },
       vertexShader: glowVertexShader,
       fragmentShader: glowFragmentShader,
