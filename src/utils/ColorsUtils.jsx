@@ -27,7 +27,7 @@ import * as THREE from "three";
 // Définir les couleurs constantes
 export const COLORS = {
   DEFAULT: 0xFFFFFF,
-  SELECTED_TOMB: '#28B8CE',
+  SELECTED_TOMB: '#00b4d5',
   GLOW: '#ffffff',        
   SECTIONS: {
     89: '#f7d0db',

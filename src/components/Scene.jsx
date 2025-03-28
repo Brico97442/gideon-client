@@ -107,13 +107,13 @@ function Scene() {
   const SceneCamera = () => {
     const { camera, scene, gl, invalidate } = useThree();
 
-    // useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     console.log(gl.info.render);
-    //   }, 1000);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        console.log(gl.info.render);
+      }, 1000);
 
-    //   return () => clearInterval(interval);
-    // }, [gl]);
+      return () => clearInterval(interval);
+    }, [gl]);
 
     useEffect(() => {
       if (!initialCameraPosition) {
@@ -398,7 +398,7 @@ function Scene() {
     return (
       <div className={`z-30 relative h-full w-full transition-colors text-white flex justify-center flex-col items-center bg-linear-to-r from-gray-300 to-lite-blue`}>
         <h1 className="font-orbitron text-white tracking-[0.5em] font-bold text-center uppercase text-2xl lg:text-[72px] w-full box-border"> GIDEON</h1>
-        <div className="absolute bottom-[22.5vh] text-xl flex flex-col items-center gap-2 justify-center p-6 ">
+        <div className="absolute bottom-[22.5vh]  lg:bottom-[161px] text-xl flex flex-col items-center gap-2 justify-center p-6 ">
           <p>Initialisation de l'application</p>
           <div className="relative w-16 h-16 flex items-center justify-center breath">
             <div className="w-10 h-10 border-4 border-white border-t-transparent rounded-full animate-[spin_1.5s_cubic-bezier(0.25,1,0.5,1)_infinite]"></div>
@@ -461,18 +461,18 @@ function Scene() {
             <EffectComposer>
               <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
             </EffectComposer>
-            <hemisphereLight position={[-1, 3, -1]} decay={2} intensity={2} args={['#9a2252','#fff5c2']}/>
-            {/* <spotLight position={[-6, 3, -3]} angle={0.3} penumbra={1} decay={1} intensity={8} color='orange' /> */}
-            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={intensity} color='purple'/>*/}
-            {/* <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/> */}
-            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='pink'/> */}
-            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/> */}
+            <hemisphereLight position={[-2, 3, -2]} decay={2} intensity={3} args={['#9a2252','#fff5c2']}/>
+            {/* <spotLight position={[5, 0, -0]} angle={80} penumbra={1} decay={1} intensity={40} color='orange' />  */}
+            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={2} color='purple'/>
+            <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/>
+            <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='pink'/>
+            <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/> */}
           </group>
 
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-          {/* <StatsGl /> */}
-          {/* <Stats /> */}
+          <StatsGl />
+          <Stats />
           {/* <PerformanceMonitor /> */}
         </Canvas>
 
