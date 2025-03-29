@@ -10,8 +10,16 @@ import PropTypes from 'prop-types';
 import axios from 'axios';
 import Button from './Button';
 
+// Définition des couleurs des sections
+const sectionColors = {
+  89: '#f7d0db',
+  90: '#fff5c2',
+  91: '#cbb8de',
+  92: '#E0C2B6',
+};
+
 const TombModal = ({ isOpen, onClose }) => {
-  const { selectedTomb, tombDetails, tombClones } = useTomb();
+  const { selectedTomb, tombDetails = [], tombClones } = useTomb(); // Ajout d'une valeur par défaut pour tombDetails
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [lastname, setLastname] = useState('');
   const [firstname, setFirstname] = useState('');
@@ -19,11 +27,8 @@ const TombModal = ({ isOpen, onClose }) => {
   const [comment, setComment] = useState('');
   const [formStatus, setFormStatus] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
-
-  // Variables pour stocker les positions de départ et de fin du toucher
   let touchStartY = 0;
   let touchEndY = 0;
-
 
   useEffect(() => {
     if (selectedTomb && tombClones.length > 0) {
@@ -105,23 +110,24 @@ const TombModal = ({ isOpen, onClose }) => {
   };
 
   const modalPositionClass = isVisible ? "right-3" : "-right-full";
-
   const modalPositionClassMobile = isVisible ? "right-0" : "-right-full";
 
+  const modalHeight = tombDetails && tombDetails.length > 1 ? 'h-[100%]' : 'h-[70%]';
+
   return (
-    <div id="ui" className={`lg:block lg:w-[26%] w-full absolute ${isMobile ? modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 pt-4 pb-4  lg:pb-[15vh] lg:pt-[25vh] h-full z-50`}>
+    <div id="ui" className={`lg:block lg:w-[26%] w-full absolute ${isMobile ? modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 pt-4 lg:pt-[147px] pb-4 ${modalHeight} z-50 ` }>
       <div className={`w-full lg:pl-[3vw] lg:pr-[2vw] lg:pb-[5vh] lg:pt-[2.8vh] h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"}`}>
         {(!isMobile && <img src={modalRightBackground} alt="modal droite background " width={400} className="h-full w-full object-fill absolute top-0 left-0 opacity-95" />)}
         <div className="modal-shape-container relative flex flex-col items-center h-full text-dark-green">
           <div className="flex flex-col items-center w-full h-full overflow-hidden ">
-            <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center border border-lite-blue items-center p-2 rounded-xl`}>
-              <QRCodeCanvas value={qrValue} size={116} bgColor="#C7D64F" fgColor="#174C53" />
+            <div id="qr-code" className={` ${isMobile ? "hidden" : "flex"} bg-apple-green justify-center border  border-lite-blue items-center p-2 rounded-xl`}>
+              <QRCodeCanvas value={qrValue} size={90} bgColor="#C7D64F" fgColor="#174C53" />
             </div>
-            <div className="flex h-full w-full lg:w-full flex-col mt-8 overflow-hidden">
+            <div className="flex h-full w-full lg:w-full flex-col mt-4 overflow-hidden">
               <div
                 className={`z-50 left-0 h-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
               >
-                {tombDetails && !isCommentOpen && (
+                {tombDetails && tombDetails.length > 0 && !isCommentOpen && (
                   <div className="my-[10px] mx-5 lg:mx-0 overflow-hidden flex flex-col items-center justify-center">
                     <h2 className="text-[1em] ">Emplacement n°{selectedTomb}</h2>
                     <h3 className="mt-[1vh] lg:mb-[1vh] text-[1em]">Ici repose</h3>
@@ -178,7 +184,7 @@ const TombModal = ({ isOpen, onClose }) => {
                         onChange={(e) => setComment(e.target.value)}
                       />
                       {formStatus === 'success' && <p className="text-green-800 mt-1">Commentaire envoyé avec succès!</p>}
-                      {formStatus === 'error' && <p className="text-red-800 mt-1">Erreur lors de l'envoi du commentaire.</p>}
+                      {formStatus === 'error' && <p className="text-red-800 mt-1">Erreur l&apos;envoi du commentaire.</p>}
                       {isCommentOpen &&
                         <div className="w-full absolute bottom-3 ">
                           <Button type="submit" className="lg:h-[76px] w-full rounded-lg bg-[#0E1C36] hover:bg-[#0E1C36]/70 text-white hover:text-green-300 transition-all duration-150" btnValue="Envoyer" />
@@ -211,6 +217,9 @@ const TombModal = ({ isOpen, onClose }) => {
 TombModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
+  tombName: PropTypes.string,
+  tombId: PropTypes.object,
+  onTombClick: PropTypes.func
 };
 
 export default TombModal;
