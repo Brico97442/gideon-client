@@ -107,13 +107,13 @@ function Scene() {
   const SceneCamera = () => {
     const { camera, scene, gl, invalidate } = useThree();
 
-    useEffect(() => {
-      const interval = setInterval(() => {
-        console.log(gl.info.render);
-      }, 1000);
+    // useEffect(() => {
+    //   const interval = setInterval(() => {
+    //     console.log(gl.info.render);
+    //   }, 1000);
 
-      return () => clearInterval(interval);
-    }, [gl]);
+    //   return () => clearInterval(interval);
+    // }, [gl]);
 
     useEffect(() => {
       if (!initialCameraPosition) {
@@ -519,7 +519,7 @@ function Scene() {
       {applicationStart && !isLoading && (
         <div className="w-full h-full relative flex items-center">
           <>
-            <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute top-[6vh] text-white p-4 w-full text-center bg-dark-green`}>
+            <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute top-[6vh] text-white p-4 lg:p-0 w-full text-center bg-dark-green`}>
               Cliquez sur la tombe en surbrillance pour obtenir des détails
             </h1>
           </>
