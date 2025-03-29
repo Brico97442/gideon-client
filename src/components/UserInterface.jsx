@@ -181,7 +181,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
     return (
         <div
             id="ui"
-            className={`hidden lg:w-full lg:block absolute h-[131px] z-50`}
+            className={`hidden lg:w-full lg:block h-[131px] z-50`}
         >
             <div className="w-full h-full relative">
                 <img

@@ -480,7 +480,7 @@ function Scene() {
       {/* <Loading /> */}
 
       <div className={`fixed h-full w-full`} onClick={handleStartApplication}>
-        <div className={`h-full w-full transition-colors ease-in-out duration-1000] ${!applicationStart ? "bg-linear-to-r from-gray-300 to-lite-blue " : "bg-linear-to-r from-lite-blue to-gray-300"}`}
+        <div className={`h-full w-full transition-all ease-in-out duration-1000] ${!applicationStart ? "bg-linear-to-r from-gray-300 to-lite-blue ":"bg-linear-to-r from-lite-blue to-gray-300 "}`}
         // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
           <img src={logo} alt="Saint paul logo" width={140} height={80} className={`object-contain z-50 h-full w-full ${!applicationStart?  "opacity-0": "opacity-20" }`} />
@@ -517,7 +517,7 @@ function Scene() {
       </div>
 
       {applicationStart && !isLoading && (
-        <div className="w-full h-full relative">
+        <div className="w-full h-full relative flex items-center">
           <>
             <h1 className={`${isMobile ? 'flex' : 'hidden'} ${isShowUi ? 'flex' : 'hidden'} z-50 absolute top-[6vh] text-white p-4 w-full text-center bg-dark-green`}>
               Cliquez sur la tombe en surbrillance pour obtenir des détails
