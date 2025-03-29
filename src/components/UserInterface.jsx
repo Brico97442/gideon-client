@@ -128,7 +128,6 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                 .split(/\s+/); // Sépare les termes par des espaces
 
             filteredCachedData = filteredCachedData.filter((data) => {
-
                 // Normalisation des champs de recherche
                 const normalizeField = (field) =>
                     field ?
@@ -161,6 +160,17 @@ function UserInterface({ handleTombFocus, applicationStart }) {
         setHasSearched(true);
     };
 
+    // Effet pour déclencher la recherche à chaque changement de terms
+    useEffect(() => {
+        if (terms.trim() !== "") {
+            handleSearch({ preventDefault: () => {} });
+        } else {
+            setResults([]);
+            setHasSearched(false);
+            setCachedData(allCachedData);
+        }
+    }, [terms]);
+
     const handleLocate = (person) => {
         if (person && person.id) {
             if (handleTombFocus && typeof handleTombFocus === "function") {
@@ -173,6 +183,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
             setResults([]);
             setTerms("");
             setHasSearched(false);
+            setCachedData(allCachedData); // Réinitialiser les données en cache
         } else {
             console.error("Données de la personne invalides:", person);
         }
@@ -199,17 +210,22 @@ function UserInterface({ handleTombFocus, applicationStart }) {
 
                     <div className="w-[71%] h-[131px]">
                         <div className="flex flex-col relative justify-center">
-                            <form className="pt-5">
+                            <form className="pt-5" onSubmit={(e) => e.preventDefault()}>
                                 <input
                                     type="text"
                                     onChange={(e) => setTerms(e.target.value)}
                                     value={terms}
                                     placeholder="Recherchez un défunt..."
-                                    className="bg-linear-to-r from-white to-lite-blue  w-full h-14 focus:outline-none pl-[70px]  rounded-2xl placeholder:leading-none placeholder:text-black text-[1.6em]"
+                                    className="bg-linear-to-r from-white to-lite-blue w-full h-14 focus:outline-none pl-[70px] rounded-2xl placeholder:leading-none placeholder:text-black text-[1.6em]"
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                        }
+                                    }}
                                 />
 
                                 {error && (
-                                    <p className="text-red-500  text-[1.6em] mt-6">{error}</p>
+                                    <p className="text-red-500 text-[1.6em] mt-6">{error}</p>
                                 )}
 
                                 {hasSearched && results.length === 0 && (
@@ -217,16 +233,10 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                                         Informations inexistantes veuillez réessayer
                                     </p>
                                 )}
-
-                                {/* {isLoading && <p className=" mt-2">Chargement...</p>} */}
-                                <div className=" h-10 w-40 absolute hidden right-0 top-0" onClick={handleSearch}>
-                                    <Button btnValue="Rechercher" className="font-extralight" />
-                                </div>
-
                             </form>
                         </div>
                         {
-                            results.length > 0 &&
+                            results.length > 0 && 
                             (
                                 <div className="w-full px-36 py-15 overflow-hidden z-20 text-dark-green bg-[#D9D9D9] rounded-4xl">
                                     {/* <h3 className="text-center mb-2">
