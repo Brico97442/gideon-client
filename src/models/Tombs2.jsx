@@ -293,10 +293,12 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       // Extraire la géométrie et le matériau
       let geometry, material;
       model.scene.traverse(child => {
-        if (child.isMesh) {
+        if (child.isMesh && child.material) {
           geometry = child.geometry;
           material = child.material.clone();
-        
+          child.material.transparent = true;
+          child.material.opacity = 1; // Définir l'opacité
+
          }
       });
 

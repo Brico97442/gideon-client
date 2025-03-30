@@ -5,6 +5,7 @@ import { useTomb } from "../context/TombContext";
 import { SEARCH_DECEASED } from "../config/api";
 import modalBackground from "../assets/ui_element/search_bar.png";
 import logo from "../assets/teams_logo/saintpaul.png";
+import logoLoupe from "../assets/ui_element/search_icon.png";
 // import calendarIcon from "../assets/ui_element/calendar_icon.svg";
 import profilImg from "../assets/ui_element/profilicon.png";
 import { formatDate } from "../utils/DateUtils";
@@ -163,7 +164,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
     // Effet pour déclencher la recherche à chaque changement de terms
     useEffect(() => {
         if (terms.trim() !== "") {
-            handleSearch({ preventDefault: () => {} });
+            handleSearch({ preventDefault: () => { } });
         } else {
             setResults([]);
             setHasSearched(false);
@@ -208,15 +209,19 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                     </h1>
 
 
-                    <div className="w-[71%] h-[131px]">
+                    <div className="w-[71%] h-[115px]">
                         <div className="flex flex-col relative justify-center">
-                            <form className="pt-5" onSubmit={(e) => e.preventDefault()}>
+                            <div className="h-[50px] flex items-center absolute mt-5 ml-1">
+                                <img src={logoLoupe} alt="Logo loupe" className="object-contain h-[50px] w-[50px]" />
+                            </div>
+
+                            <form className="pt-5 flex items-center" onSubmit={(e) => e.preventDefault()}>
                                 <input
                                     type="text"
                                     onChange={(e) => setTerms(e.target.value)}
                                     value={terms}
                                     placeholder="Recherchez un défunt..."
-                                    className="bg-linear-to-r from-white to-lite-blue w-full h-14 focus:outline-none pl-[70px] rounded-2xl placeholder:leading-none placeholder:text-black text-[1.6em]"
+                                    className="bg-linear-to-r from-white to-lite-blue w-full h-14 focus:outline-none pl-[70px] rounded-2xl placeholder:leading-none placeholder:text-black text-[1.55em]"
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             e.preventDefault();
@@ -236,7 +241,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                             </form>
                         </div>
                         {
-                            results.length > 0 && 
+                            results.length > 0 &&
                             (
                                 <div className="w-full px-36 py-15 overflow-hidden z-20 text-dark-green bg-[#D9D9D9] rounded-4xl">
                                     {/* <h3 className="text-center mb-2">
@@ -279,7 +284,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                             )}
                     </div>
 
-                    <img src={logo} alt="Saint paul logo" className="absolute right-0 w-[200px]" width={200} height={120} />
+                    <img src={logo} alt="Saint paul logo" className="absolute right-0 w-[150px]" width={150} height={100} />
                 </div>
             </div>
         </div>
