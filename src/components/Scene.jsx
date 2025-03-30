@@ -442,18 +442,30 @@ function Scene() {
             <ambientLight intensity={2.2} position={[0, 0, 0]} />
 
             {selectedTombPosition && (
-              <spotLight
-                position={[
-                  selectedTombPosition.x+ 0.01,
-                  selectedTombPosition.y+ 1.4,
-                  selectedTombPosition.z+ 0.2
-                ]}
-                angle={180}
-                penumbra={0.3}
-                intensity={30}
-                color="F2FF8B"
-                castShadow
-              />
+              <>
+                <pointLight
+                  position={[
+                    selectedTombPosition.x + 0.01,
+                    selectedTombPosition.y + 1.8,
+                    selectedTombPosition.z + 0.2
+                  ]}
+                  angle={180}
+                  penumbra={0.3}
+                  intensity={30}
+                  color="F2FF8B"
+                  castShadow
+                />
+                <PointLightHelper 
+                  position={[
+                    selectedTombPosition.x + 0.01,
+                    selectedTombPosition.y + 1.8,
+                    selectedTombPosition.z + 0.2
+                  ]}
+                  color="yellow"
+                  intensity={30}
+                  distance={5}
+                />
+              </>
             )}
 
             <Tombs2
@@ -466,9 +478,9 @@ function Scene() {
               orbitControlRef={orbitControlRef}
               glowLayer={[glowLayer]}
             />
-            <EffectComposer>
+            {/* <EffectComposer>
               <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={1} />
-            </EffectComposer>
+            </EffectComposer> */}
             <hemisphereLight position={[-2, 3, -2]} decay={2} intensity={3} args={['#9a2252','#fff5c2']}/>
             {/* <spotLight position={[5, 0, -0]} angle={80} penumbra={1} decay={1} intensity={40} color='orange' />  */}
             {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={2} color='purple'/>

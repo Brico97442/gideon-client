@@ -230,6 +230,8 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                                     }}
                                 />
 
+                            </form>
+                        </div>
                                 {error && (
                                     <p className="text-red-500 text-[1.6em] mt-6">{error}</p>
                                 )}
@@ -239,8 +241,6 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                                         Informations inexistantes veuillez réessayer
                                     </p>
                                 )}
-                            </form>
-                        </div>
                         {
                             results.length > 0 &&
                             (
