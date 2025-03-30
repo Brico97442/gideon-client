@@ -5,6 +5,7 @@ import { useTomb } from '../context/TombContext';
 import { highlightTombSection } from '../utils/ColorsUtils';
 import { formatDate } from '../utils/DateUtils';
 import modalRightBackground from '../assets/ui_element/right-modal.png';
+import modalRightBackgroundLong from '../assets/ui_element/right-modal-long.png';
 import modalRightTopBackground from '../assets/ui_element/right-modal-top.png';
 import modalRightBottomBackground from '../assets/ui_element/right-modal-bottom.png';
 import modalRightMidBackground from '../assets/ui_element/right-modal-mid.png';
@@ -116,7 +117,8 @@ const TombModal = ({ isOpen, onClose }) => {
   const modalPositionClassMobile = isVisible ? "right-0" : "-right-full";
 
   const modalHeight = tombDetails && tombDetails.length > 1 ? 'h-[100%]' : 'h-[70%]';
-  const customWidth = tombDetails && tombDetails.length > 1 ? '120' : '90';
+  const customWidth = tombDetails && tombDetails.length > 1 ? '120' : '80';
+  const customBackground = tombDetails && tombDetails.length > 1 ? modalRightBackgroundLong : modalRightBackground;
   return (
     <div id="ui" className={`lg:block lg:w-[26%] w-full absolute ${isMobile ? modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 lg:px-0 pt-4 lg:pt-[139px] lg:pb-0 pb-4 ${modalHeight} z-50 `}>
       <div className={`w-full lg:pl-[3vw] lg:pr-2 lg:pb-2 lg:pt-[1vh] h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"} bg-amber-400`}>
@@ -124,7 +126,7 @@ const TombModal = ({ isOpen, onClose }) => {
         <div className="modal-shape-container relative flex flex-col items-center h-full text-dark-green ">
           <div className='h-full w-full absolute top-0 left-0'>
             {/* {(!isMobile && <img src={modalRightTopBackground} alt="modal droite background " width={400} className="h-auto w-full object-fill opacity-95" />)} */}
-            {(!isMobile && <img src={modalRightBackground} alt="modal droite background " width={450} className="h-full w-full  object-fill  opacity-95" />)}
+            {(!isMobile && <img src={customBackground} alt="modal droite background " width={450} className="h-full w-full  object-fill  opacity-95" />)}
             {/* {(!isMobile && <img src={modalRightBottomBackground} alt="modal droite background " width={400} className="h-auto w-full  absolute bottom-0 object-fill  left-0 opacity-95" />)} */}
 
           </div>
