@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls, PerformanceMonitor, PointLightHelper } from "@react-three/drei";
+import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls, PerformanceMonitor } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import axios from 'axios';
@@ -455,7 +455,16 @@ function Scene() {
                   color="F2FF8B"
                   castShadow
                 />
-                {/* Removed PointLightHelper as it is not exported */}
+                <PointLightHelper 
+                  position={[
+                    selectedTombPosition.x + 0.01,
+                    selectedTombPosition.y + 1.8,
+                    selectedTombPosition.z + 0.2
+                  ]}
+                  color="yellow"
+                  intensity={30}
+                  distance={5}
+                />
               </>
             )}
 
