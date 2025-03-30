@@ -174,6 +174,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
 
     const handleLocate = (person) => {
         if (person && person.id) {
+
             if (handleTombFocus && typeof handleTombFocus === "function") {
                 handleTombFocus(person.tombId, person);
             }
