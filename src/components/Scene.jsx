@@ -455,7 +455,7 @@ function Scene() {
                   color="F2FF8B"
                   castShadow
                 />
-                <PointLightHelper 
+                {/* <PointLightHelper 
                   position={[
                     selectedTombPosition.x + 0.01,
                     selectedTombPosition.y + 1.8,
@@ -464,7 +464,7 @@ function Scene() {
                   color="yellow"
                   intensity={30}
                   distance={5}
-                />
+                /> */}
               </>
             )}
 
