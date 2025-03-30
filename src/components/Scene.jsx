@@ -72,6 +72,7 @@ function Scene() {
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
   const [isShowUi, setIsShowUi] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
+  const [selectedTombPosition, setSelectedTombPosition] = useState(null);
 
 
   const fetchTombDetails = async (tombId) => {
@@ -107,13 +108,13 @@ function Scene() {
   const SceneCamera = () => {
     const { camera, scene, gl, invalidate } = useThree();
 
-    // useEffect(() => {
-    //   const interval = setInterval(() => {
-    //     console.log(gl.info.render);
-    //   }, 1000);
+    useEffect(() => {
+      const interval = setInterval(() => {
+        console.log(gl.info.render);
+      }, 1000);
 
-    //   return () => clearInterval(interval);
-    // }, [gl]);
+      return () => clearInterval(interval);
+    }, [gl]);
 
     useEffect(() => {
       if (!initialCameraPosition) {
@@ -150,20 +151,18 @@ function Scene() {
 
 
   const handleTombClick = (id) => {
-
     setIsModalOpen(true);
     setSelectedTomb(id);
     if (camera && orbitControlRef.current) {
-
-      // Vérifier si window.tombsSystem est correctement initialisé
       if (!window.tombsSystem || !window.tombsSystem.tombPositions || !window.tombsSystem.tombPositions[id]) {
         console.warn("Données de tombe non disponibles pour l'ID:", id);
         fetchTombDetails(id);
-
         return;
       }
 
-      // Centrer la caméra sur la tombe
+      const tombData = window.tombsSystem.tombPositions[id];
+      setSelectedTombPosition(tombData);
+
       focusOnObject(id, camera, orbitControlRef, sectionColors);
 
       if (window.tombsSystem.highlightGroup) {
@@ -172,17 +171,12 @@ function Scene() {
         }
       }
 
-      // Appliquer la surbrillance de section
       highlightTombSection(id);
 
-      // Récupérer les données de la tombe sélectionnée
-      const tombData = window.tombsSystem.tombPositions[id];
       if (tombData) {
-        // Puis créer la mise en évidence spécifique pour cette tombe
         createHighlightForTomb(id, tombData, COLORS.SELECTED_TOMB, true);
       }
 
-      // Récupérer les détails de la tombe
       fetchTombDetails(id);
       setIsShowUi(false);
     } else {
@@ -196,23 +190,20 @@ function Scene() {
     setSelectedTomb(id);
 
     if (camera && orbitControlRef.current) {
+      const tombData = window.tombsSystem.tombPositions[id];
+      setSelectedTombPosition(tombData);
+
       focusOnObject(id, camera, orbitControlRef, sectionColors);
 
-      // Appliquer la surbrillance de section ici aussi
       highlightTombSection(id);
-      // Récupérer les données de la tombe sélectionnée
-      const tombData = window.tombsSystem.tombPositions[id];
       if (tombData) {
-        // Puis créer la mise en évidence spécifique pour cette tombe
         createHighlightForTomb(id, tombData, COLORS.SELECTED_TOMB, true);
       }
 
-      // Utiliser directement les détails de la personne passés en paramètre
       if (personDetails) {
         setTombDetails([personDetails]);
         selectTomb(id, [personDetails]);
       } else {
-        // Fallback si les détails ne sont pas fournis
         fetchTombDetail(id);
       }
       setIsShowUi(false);
@@ -289,12 +280,14 @@ function Scene() {
       // Fonction pour appliquer la surbrillance
       const applyHighlight = () => {
         if (window.tombsSystem && window.tombsSystem.tombPositions && window.tombsSystem.instanceColors) {
-
-          highlightSelectedTomb(savedTomb);
-          setSelectedTomb(savedTomb);
-          fetchTombDetails(savedTomb);
-
-          return true;
+          const tombData = window.tombsSystem.tombPositions[savedTomb];
+          if (tombData) {
+            highlightSelectedTomb(savedTomb);
+            setSelectedTomb(savedTomb);
+            setSelectedTombPosition(tombData);
+            fetchTombDetails(savedTomb);
+            return true;
+          }
         }
         return false;
       };
@@ -446,12 +439,27 @@ function Scene() {
               </group>
             </Billboard>
 
-            <ambientLight intensity={2.5} position={[0, 0, 0]} />
+            <ambientLight intensity={2.2} position={[0, 0, 0]} />
+
+            {selectedTombPosition && (
+              <spotLight
+                position={[
+                  selectedTombPosition.x+ 0.01,
+                  selectedTombPosition.y+ 1.4,
+                  selectedTombPosition.z+ 0.2
+                ]}
+                angle={180}
+                penumbra={0.3}
+                intensity={30}
+                color="F2FF8B"
+                castShadow
+              />
+            )}
 
             <Tombs2
               onTombClick={
-                isMobile ?
-                  handleTombFocus :
+                // isMobile ?
+                  // handleTombFocus :
                   handleTombClick
               }
               selectedTombId={selectedTomb}
@@ -459,7 +467,7 @@ function Scene() {
               glowLayer={[glowLayer]}
             />
             <EffectComposer>
-              <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={0.9} />
+              <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={1} />
             </EffectComposer>
             <hemisphereLight position={[-2, 3, -2]} decay={2} intensity={3} args={['#9a2252','#fff5c2']}/>
             {/* <spotLight position={[5, 0, -0]} angle={80} penumbra={1} decay={1} intensity={40} color='orange' />  */}
@@ -480,10 +488,10 @@ function Scene() {
       {/* <Loading /> */}
 
       <div className={`fixed h-full w-full`} onClick={handleStartApplication}>
-        <div className={`h-full w-full transition-all ease-in-out duration-1000] ${!applicationStart ? "bg-linear-to-r from-gray-300 to-lite-blue ":"bg-linear-to-r from-lite-blue to-gray-300 "}`}
+        <div className={`h-full w-full transition-all ease-in-out duration-1000] ${!applicationStart ? "bg-linear-to-r from-gray-300 to-lite-blue " : "bg-linear-to-r from-lite-blue to-gray-300 "}`}
         // style={{ background: "linear-gradient(to top, #155477, #7AC8D0)" }}
         >
-          <img src={logo} alt="Saint paul logo" width={140} height={80} className={`object-contain z-50 h-full w-full ${!applicationStart?  "opacity-0": "opacity-20" }`} />
+          <img src={logo} alt="Saint paul logo" width={140} height={80} className={`object-contain z-50 h-full w-full ${!applicationStart ? "opacity-0" : "opacity-20"}`} />
 
           <div className={`absolute top-0 flex justify-center items-center w-full h-full`}>
             <div className={`${applicationStart ? 'fade-out' : 'fade-in'} ${isMobile ? 'hidden' : 'flex'} flex-col  items-center w-full h-full justify-center relative`}>
@@ -510,8 +518,8 @@ function Scene() {
         <UserInterface handleTombFocus={handleTombFocus} handleStartApplication={applicationStart} />
       </div>
 
-      <div className={`w-full h-[104px] ${!isMobile ? 'flex' : 'hidden'} justify-center absolute bottom-[8px]`}>
-        <div className={`w-[416px] h-[104px] ${!applicationStart ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"} duration-1000 z-50`} id='top-view-btn'>
+      <div className={`w-full ${!isMobile ? 'flex' : 'hidden'} justify-center absolute bottom-[8px]`}>
+        <div className={`w-[21vw] ${!applicationStart ? "translate-y-full opacity-0" : "translate-y-0 opacity-100"} duration-1000 z-50`} id='top-view-btn'>
           <Button btnValue="Vue aérienne" />
         </div>
       </div>

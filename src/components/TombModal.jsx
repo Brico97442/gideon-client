@@ -113,15 +113,15 @@ const TombModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const modalPositionClass = isVisible ? "right-2" : "-right-full";
+  const modalPositionClass = isVisible ? "right-1" : "-right-full";
   const modalPositionClassMobile = isVisible ? "right-0" : "-right-full";
 
   const modalHeight = tombDetails && tombDetails.length > 1 ? 'h-[100%]' : 'h-[70%]';
-  const customWidth = tombDetails && tombDetails.length > 1 ? '120' : '80';
+  const customWidth = tombDetails && tombDetails.length > 1 ? '100' : '80';
   const customBackground = tombDetails && tombDetails.length > 1 ? modalRightBackgroundLong : modalRightBackground;
   return (
     <div id="ui" className={`lg:block lg:w-[26%] w-full absolute ${isMobile ? modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 lg:px-0 pt-4 lg:pt-[139px] lg:pb-0 pb-4 ${modalHeight} z-50 `}>
-      <div className={`w-full lg:pl-[3vw] lg:pr-2 lg:pb-2 lg:pt-[1vh] h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"} bg-amber-400`}>
+      <div className={`w-full lg:pr-2 lg:pb-2 h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"} bg-amber-400`}>
         {/* {(!isMobile && <img src={modalRightBackground} alt="modal droite background " width={400} className="h-full w-full object-fill absolute top-0 left-0 opacity-95" />)} */}
         <div className="modal-shape-container relative flex flex-col items-center h-full text-dark-green ">
           <div className='h-full w-full absolute top-0 left-0'>
@@ -147,11 +147,11 @@ const TombModal = ({ isOpen, onClose }) => {
                     <h2 className="text-[1em] ">Emplacement n°{selectedTomb}</h2>
                     <h3 className="mt-[1vh] lg:mb-[1vh] text-[1em]">Ici repose</h3>
 
-                    <div className="h-full flex items-center flex-col ">
-                      <div id='scroll' className="space-y-[3vh] mx-5 flex-col items-center lg:max-h-[46vh] max-h-[58vh] overflow-y-auto lg:mt-[0vh]">
+                    <div className="h-full flex items-center flex-col overflow-hidden lg:max-h-[32vh] max-h-[58vh]">
+                      <div id='scroll' className="space-y-[2.1vh] lg:mx-5 flex-col items-center overflow-y-auto lg:mt-[0vh]">
                         {tombDetails.map((person, index) => (
-                          <div key={index} className="flex-col flex pr-[1vw]">
-                            <span className="flex justify-center text-[1.5em] font-semibold capitalize w-full">
+                          <div key={index} className="flex-col flex">
+                            <span className="flex justify-center text-[1.5em] font-semibold capitalize w-full text-ellipsis">
                               {person.firstname} {person.lastname}
                             </span>
                             <span className="flex lg:gap-4 flex-col lg:flex-row lg:space-x-2 space-y-2 lg:space-y-0 normal-case text-left text-[1em] lg:mx-5">
@@ -217,7 +217,7 @@ const TombModal = ({ isOpen, onClose }) => {
               </div>
             }
             {(!isMobile &&
-              <div className='w-full px-5 pb-5' onClick={handleClose} id='btn_close_modal-desktop'>
+              <div className='w-full pl-8 pr-6 pb-5' onClick={handleClose} id='btn_close_modal-desktop'>
                 <Button btnValue="Retour" />
               </div>
             )}
