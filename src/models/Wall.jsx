@@ -5,7 +5,7 @@ import { useGLTF } from "@react-three/drei";
 const Wall = () => {
     const entranceGLB = useGLTF("/3d-models/gltf/cimetarylayout/wall.glb", true, "/draco/");
     return (
-        <mesh position={[0,0.4,0]} rotation={[0,0,0]}>
+        <mesh position={[0,0.4,0]} rotation={[0,0,0]} >
             <primitive object={entranceGLB.scene}/>
         </mesh>
     );

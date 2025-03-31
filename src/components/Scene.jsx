@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
-import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls, PerformanceMonitor } from "@react-three/drei";
+import { Float, SoftShadows, Text, Billboard, StatsGl, Stats, OrbitControls, PerformanceMonitor, SpotLight } from "@react-three/drei";
 import { isMobile } from "react-device-detect";
 import * as THREE from "three";
 import axios from 'axios';
@@ -449,12 +449,26 @@ function Scene() {
                     selectedTombPosition.y + 1.8,
                     selectedTombPosition.z + 0.2
                   ]}
+                  rotation={[0, Math.PI / 2, 0]}
                   angle={180}
                   penumbra={0.3}
                   intensity={30}
-                  color="F2FF8B"
+                  color="#8fcecc"
                   castShadow
                 />
+                {/* <group rotation={[0, Math.PI / 2, 0]}>
+                  <SpotLight
+                    position={[
+                      selectedTombPosition.x ,
+                      selectedTombPosition.y + 1.8,
+                      selectedTombPosition.z
+                    ]}
+                     color="red"
+                    intensity={30}
+                    angle={0.5}
+                    penumbra={0.5}
+                  />
+                </group> */}
                 {/* <PointLightHelper 
                   position={[
                     selectedTombPosition.x + 0.01,
@@ -471,8 +485,8 @@ function Scene() {
             <Tombs2
               onTombClick={
                 // isMobile ?
-                  // handleTombFocus :
-                  handleTombClick
+                // handleTombFocus :
+                handleTombClick
               }
               selectedTombId={selectedTomb}
               orbitControlRef={orbitControlRef}
@@ -481,12 +495,8 @@ function Scene() {
             {/* <EffectComposer>
               <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={1} />
             </EffectComposer> */}
-            <hemisphereLight position={[-2, 3, -2]} decay={2} intensity={3} args={['#9a2252','#fff5c2']}/>
-            {/* <spotLight position={[5, 0, -0]} angle={80} penumbra={1} decay={1} intensity={40} color='orange' />  */}
-            {/* <directionalLight position={[-3, 1, -3]} decay={2} intensity={2} color='purple'/>
-            <directionalLight position={[-3, 1, 3]} decay={2} intensity={0.5} color='yellow'/>
-            <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='pink'/>
-            <directionalLight position={[-3, 1, -3]} decay={2} intensity={0.5} color='purple'/> */}
+            {/* <hemisphereLight position={[-2, 3, -2]} decay={2} intensity={5} args={['#9a2252', '#fff5c2']} /> */}
+
           </group>
 
           <SceneCamera />

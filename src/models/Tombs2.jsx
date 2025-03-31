@@ -296,8 +296,8 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
         if (child.isMesh && child.material) {
           geometry = child.geometry;
           material = child.material.clone();
-          child.material.transparent = true;
-          child.material.opacity = 1; // Définir l'opacité
+          // child.material.transparent = true;
+          // child.material.opacity = 0.9; // Définir l'opacité
 
          }
       });
@@ -325,6 +325,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
             tomb.tombTransform.rotation[1]
           )
         );
+        
         window.tombsSystem.tombPositions[tomb.id] = {
           x: tomb.tombTransform.position[0],
           y: tomb.tombTransform.position[2],

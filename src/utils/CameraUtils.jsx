@@ -70,10 +70,7 @@ export const focusOnObject = (tombId) => {
     tombData.z
   );
   
-  // console.log("Position de la tombe trouvée:", tombPosition);
-
   // Optimisation: Forcer un niveau de détail élevé pour la tombe ciblée
-  // Cette partie est cruciale pour afficher la tombe en haute résolution
   if (window.tombsSystem.currentLODs) {
     window.tombsSystem.currentLODs[tombId] = 'high';
   }
@@ -88,11 +85,62 @@ export const focusOnObject = (tombId) => {
     window.tombsSystem.needsLODUpdate = true;
   }
 
-  // Position cible de la caméra
+  // Récupérer la rotation de la tombe depuis les données
+  const tombRotation = tombData.quaternion || new THREE.Quaternion();
+  
+  // Créer un vecteur de direction pour la caméra (direction avant de la tombe)
+  const forward = new THREE.Vector3(0, 0, 1);
+  forward.applyQuaternion(tombRotation);
+  
+  // Créer un vecteur de direction pour la caméra (direction droite de la tombe)
+  const right = new THREE.Vector3(1, 0, 0);
+  right.applyQuaternion(tombRotation);
+  
+  // Créer un vecteur de direction pour la caméra (direction haut de la tombe)
+  const up = new THREE.Vector3(0, 1, 0);
+  up.applyQuaternion(tombRotation);
+  
+  // Calculer la position de la caméra en utilisant les directions
+  const cameraOffset = new THREE.Vector3();
+  
+  // Adapter la position en fonction du type de tombe
+  switch(tombData.type) {
+    case 1: // Tombe avec rotation à 90°
+      cameraOffset.addScaledVector(forward, -0.1);
+      cameraOffset.addScaledVector(up, 0.1);
+      cameraOffset.addScaledVector(right, 0);
+      break;
+    case 2: // Tombe avec rotation à 90°
+      cameraOffset.addScaledVector(forward, -0.1);
+      cameraOffset.addScaledVector(up,3);
+      cameraOffset.addScaledVector(right, 2);
+      break;
+    case 3: // Tombe sans rotation à 90°
+      cameraOffset.addScaledVector(forward, -4);
+      cameraOffset.addScaledVector(up, 4);
+      cameraOffset.addScaledVector(right, 10);
+      break;
+    case 4: // Tombe sans rotation à 90°
+      cameraOffset.addScaledVector(forward, 0);
+      cameraOffset.addScaledVector(up, 1);
+      cameraOffset.addScaledVector(right, 1.1);
+      break;
+    case 5: // Tombe sans rotation à 90°
+      cameraOffset.addScaledVector(forward, 2);
+      cameraOffset.addScaledVector(up, 4);
+      cameraOffset.addScaledVector(right, 6);
+      break;
+    default: // Cas par défaut
+      cameraOffset.addScaledVector(forward, -2);
+      cameraOffset.addScaledVector(up, 1);
+      cameraOffset.addScaledVector(right, 1.1);
+  }
+  
+  // Calculer la position finale de la caméra
   const targetPosition = {
-    x: tombPosition.x + 4,
-    y: tombPosition.y + 1,
-    z: tombPosition.z + 1.1,
+    x: tombPosition.x + cameraOffset.x,
+    y: tombPosition.y + cameraOffset.y,
+    z: tombPosition.z + cameraOffset.z,
   };
 
   // Créer la cible de la caméra (le point vers lequel elle regarde)
