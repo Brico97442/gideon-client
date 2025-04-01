@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { QRCodeCanvas } from "qrcode.react";
 import { isMobile } from 'react-device-detect';
 import { useTomb } from '../context/TombContext';
-import { highlightTombSection } from '../utils/ColorsUtils';
+import { highlightTombSection, resetAllTombColors } from '../utils/ColorsUtils';
 import { formatDate } from '../utils/DateUtils';
 import modalRightBackground from '../assets/ui_element/right-modal.png';
 import modalRightBackgroundLong from '../assets/ui_element/right-modal-long.png';
@@ -104,6 +104,8 @@ const TombModal = ({ isOpen, onClose }) => {
     setIsVisible(false);
     setTimeout(() => {
       onClose();
+      resetAllTombColors();
+
     }, 300);
   };
 

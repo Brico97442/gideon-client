@@ -151,36 +151,41 @@ function Scene() {
 
 
   const handleTombClick = (id) => {
+    // Si la tombe cliquée est déjà sélectionnée, on ne fait rien
+    if (id === selectedTomb) {
+        return;
+    }
+
     setIsModalOpen(true);
     setSelectedTomb(id);
     if (camera && orbitControlRef.current) {
-      if (!window.tombsSystem || !window.tombsSystem.tombPositions || !window.tombsSystem.tombPositions[id]) {
-        console.warn("Données de tombe non disponibles pour l'ID:", id);
-        fetchTombDetails(id);
-        return;
-      }
-
-      const tombData = window.tombsSystem.tombPositions[id];
-      setSelectedTombPosition(tombData);
-
-      focusOnObject(id, camera, orbitControlRef, sectionColors);
-
-      if (window.tombsSystem.highlightGroup) {
-        while (window.tombsSystem.highlightGroup.children.length > 0) {
-          window.tombsSystem.highlightGroup.remove(window.tombsSystem.highlightGroup.children[0]);
+        if (!window.tombsSystem || !window.tombsSystem.tombPositions || !window.tombsSystem.tombPositions[id]) {
+            console.warn("Données de tombe non disponibles pour l'ID:", id);
+            fetchTombDetails(id);
+            return;
         }
-      }
 
-      highlightTombSection(id);
+        const tombData = window.tombsSystem.tombPositions[id];
+        setSelectedTombPosition(tombData);
 
-      if (tombData) {
-        createHighlightForTomb(id, tombData, COLORS.SELECTED_TOMB, true);
-      }
+        focusOnObject(id, camera, orbitControlRef, sectionColors);
 
-      fetchTombDetails(id);
-      setIsShowUi(false);
+        if (window.tombsSystem.highlightGroup) {
+            while (window.tombsSystem.highlightGroup.children.length > 0) {
+                window.tombsSystem.highlightGroup.remove(window.tombsSystem.highlightGroup.children[0]);
+            }
+        }
+
+        highlightTombSection(id);
+
+        if (tombData) {
+            createHighlightForTomb(id, tombData, COLORS.SELECTED_TOMB, true);
+        }
+
+        fetchTombDetails(id);
+        setIsShowUi(false);
     } else {
-      fetchTombDetails(id);
+        fetchTombDetails(id);
     }
   };
 
@@ -441,7 +446,7 @@ function Scene() {
 
             <ambientLight intensity={2.5} position={[0, 0, 0]} />
 
-            {selectedTombPosition && (
+            { selectedTombPosition && isModalOpen && (
               <>
                 <pointLight
                   position={[
