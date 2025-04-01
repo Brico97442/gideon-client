@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useTomb } from "../context/TombContext";
@@ -12,6 +12,7 @@ import { formatDate } from "../utils/DateUtils";
 import Button from "./Button";
 import moment from "moment/moment";
 import { Suspense } from "react";
+import debounce from 'lodash/debounce';
 
 function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
     const [lastname, setLastname] = useState("");
@@ -29,149 +30,68 @@ function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
     const [hasSearched, setHasSearched] = useState(false);
     const [terms, setTerms] = useState("");
 
-    // Index des données pour une recherche plus rapide
-    const searchIndex = useMemo(() => {
-        if (!cachedData) return null;
+    // Fonction de recherche optimisée avec useMemo
+    const filteredResults = useMemo(() => {
+        if (!terms.trim() || !allCachedData) return [];
+        
+        const searchTerms = terms
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .split(/\s+/);
 
-        const index = {
-            byLastName: new Map(),
-            byFirstName: new Map(),
-            byBirthDate: new Map(),
-            byDeathDate: new Map(),
-            allDeceased: [],
-            searchableText: new Map(),
-        };
+        return allCachedData.filter((data) => {
+            const normalizeField = (field) =>
+                field ?
+                    field.toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                    : '';
 
-        cachedData.forEach((person) => {
-            const indexedPerson = {
-                ...person,
-                tombId: person.tombId,
-            };
-            index.allDeceased.push(indexedPerson);
+            const fullname = normalizeField(`${data.lastname || ''} ${data.firstname || ''}`);
+            const birthnameTerm = normalizeField(data.birthname);
+            const deathDateTerm = data.deathDate
+                ? moment(data.deathDate).format('DD/MM/YYYY').toLowerCase()
+                : '';
+            const birthDateTerm = data.birthdate
+                ? moment(data.birthdate).format('DD/MM/YYYY').toLowerCase()
+                : '';
 
-            // Index de recherche textuelle
-            const searchText = `${person.firstname || ""} ${person.lastname || ""
-                }`.toLowerCase();
-            index.searchableText.set(searchText, indexedPerson);
-
-            if (person.lastname) {
-                const lastName = person.lastname.toLowerCase();
-                if (!index.byLastName.has(lastName)) {
-                    index.byLastName.set(lastName, []);
-                }
-                index.byLastName.get(lastName).push(indexedPerson);
-            }
-
-            if (person.firstname) {
-                const firstName = person.firstname.toLowerCase();
-                if (!index.byFirstName.has(firstName)) {
-                    index.byFirstName.set(firstName, []);
-                }
-                index.byFirstName.get(firstName).push(indexedPerson);
-            }
-
-            if (person.birthdate) {
-                const birthDate = person.birthdate.split("T")[0];
-                if (!index.byBirthDate.has(birthDate)) {
-                    index.byBirthDate.set(birthDate, []);
-                }
-                index.byBirthDate.get(birthDate).push(indexedPerson);
-            }
-
-            if (person.deathDate) {
-                const deathDate = person.deathDate.split("T")[0];
-                if (!index.byDeathDate.has(deathDate)) {
-                    index.byDeathDate.set(deathDate, []);
-                }
-                index.byDeathDate.get(deathDate).push(indexedPerson);
-            }
-            // if(person){
-
-            //     console.log(person)
-            // }
+            return searchTerms.every(term =>
+                fullname.includes(term) ||
+                birthnameTerm.includes(term) ||
+                deathDateTerm.includes(term) ||
+                birthDateTerm.includes(term)
+            );
         });
-
-        return index;
-    }, [cachedData]);
-
-
-    const fetchInitialData = async () => {
-        setIsLoading(true);
-        await axios.get(SEARCH_DECEASED())
-            .then((response) => {
-                setCachedData(response.data);
-                setAllCachedData(response.data);
-                // console.log(results);
-                setIsLoading(false);
-            })
-            .catch((error) => {
-                // console.log("ERREUR")
-            })
-
-    };
-
-
+    }, [terms, allCachedData]);
 
     // Chargement initial des données
     useEffect(() => {
-        fetchInitialData();
+        const fetchData = async () => {
+            setIsLoading(true);
+            try {
+                const response = await axios.get(SEARCH_DECEASED());
+                setAllCachedData(response.data);
+            } catch (error) {
+                console.error("Erreur lors du chargement des données:", error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchData();
     }, []);
 
-    const handleSearch = async (e) => {
-        e.preventDefault();
-        let filteredCachedData = [...allCachedData]; // Copie du tableau original
-
-        if (terms.trim() !== "") {
-            // Normalisation de la recherche
-            const searchTerms = terms
-                .toLowerCase()
-                .normalize("NFD")
-                .replace(/[\u0300-\u036f]/g, "")
-                .split(/\s+/); // Sépare les termes par des espaces
-
-            filteredCachedData = filteredCachedData.filter((data) => {
-                // Normalisation des champs de recherche
-                const normalizeField = (field) =>
-                    field ?
-                        field.toLowerCase()
-                            .normalize("NFD")
-                            .replace(/[\u0300-\u036f]/g, "")
-                        : '';
-
-                const fullname = normalizeField(`${data.lastname || ''} ${data.firstname || ''}`);
-                const birthnameTerm = normalizeField(data.birthname);
-                const deathDateTerm = data.deathDate
-                    ? moment(data.deathDate).format('DD/MM/YYYY').toLowerCase()
-                    : '';
-                const birthDateTerm = data.birthdate
-                    ? moment(data.birthdate).format('DD/MM/YYYY').toLowerCase()
-                    : '';
-
-                // Vérifie si tous les termes de recherche correspondent à au moins un champ
-                return searchTerms.every(term =>
-                    fullname.includes(term) ||
-                    birthnameTerm.includes(term) ||
-                    deathDateTerm.includes(term) ||
-                    birthDateTerm.includes(term)
-                );
-            });
-        }
-
-        setCachedData(filteredCachedData);
-        setResults(filteredCachedData);
-        setHasSearched(true);
-    };
-
-    // Effet pour déclencher la recherche à chaque changement de terms
+    // Mise à jour des résultats avec debounce
     useEffect(() => {
-        if (terms.trim() !== "") {
-            handleSearch({ preventDefault: () => { } });
-        } else {
-            setResults([]);
-            setHasSearched(false);
-            setCachedData(allCachedData);
-        }
-    }, [terms]);
+        const updateResults = debounce(() => {
+            setResults(filteredResults);
+            setHasSearched(terms.trim() !== "");
+        }, 300);
+
+        updateResults();
+        return () => updateResults.cancel();
+    }, [filteredResults, terms]);
 
     const handleLocate = (person) => {
         if (person && person.id) {
@@ -185,18 +105,10 @@ function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
             setResults([]);
             setTerms("");
             setHasSearched(false);
-            setCachedData(allCachedData); // Réinitialiser les données en cache
         } else {
             console.error("Données de la personne invalides:", person);
         }
     };
-    // const Loading = () => {
-    //     return (
-    //         <div className="bg-red-500 w-full h-full">
-    //             <p>Hello</p>
-    //         </div>
-    //     )
-    // }
 
     return (
         <div
@@ -252,12 +164,7 @@ function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
                         {
                             results.length > 0 &&
                             (
-                                // <Suspense fallback={<Loading/>}>
                                 <div className="w-full px-[8vw] py-[6vh] overflow-hidden z-20 text-black bg-[#D9D9D9] rounded-4xl mt-2 pointer-events-auto">
-                                    {/* <h3 className="text-center mb-2">
-                                    {results.length} résultat{results.length > 1 ? "s" : ""}{" "}
-                                    trouvé{results.length > 1 ? "s" : ""}
-                                </h3> */}
                                     <ul className="max-h-[59vh] overflow-y-auto space-y-4">
                                         {results.map((person, index) => (
                                             <li
@@ -291,7 +198,6 @@ function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
                                         ))}
                                     </ul>
                                 </div>
-                                // {/* </Suspense> */}
                             )}
                     </div>
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { QRCodeCanvas } from "qrcode.react";
 import { isMobile } from 'react-device-detect';
 import { useTomb } from '../context/TombContext';
@@ -23,7 +23,7 @@ const sectionColors = {
 };
 
 const TombModal = ({ isOpen, onClose }) => {
-  const { selectedTomb, tombDetails = [], tombClones } = useTomb(); // Ajout d'une valeur par défaut pour tombDetails
+  const { selectedTomb, tombDetails = [], tombClones } = useTomb();
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [lastname, setLastname] = useState('');
   const [firstname, setFirstname] = useState('');
@@ -31,8 +31,20 @@ const TombModal = ({ isOpen, onClose }) => {
   const [comment, setComment] = useState('');
   const [formStatus, setFormStatus] = useState(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   let touchStartY = 0;
   let touchEndY = 0;
+
+  // Formatage des données avec useMemo pour éviter les calculs inutiles
+  const formattedTombDetails = useMemo(() => {
+    if (!tombDetails || tombDetails.length === 0) return [];
+    
+    return tombDetails.map(person => ({
+      ...person,
+      formattedBirthDate: person.birthdate ? formatDate(person.birthdate) : '',
+      formattedDeathDate: person.deathDate ? formatDate(person.deathDate) : ''
+    }));
+  }, [tombDetails]);
 
   useEffect(() => {
     if (selectedTomb && tombClones.length > 0) {
@@ -77,8 +89,10 @@ const TombModal = ({ isOpen, onClose }) => {
 
   useEffect(() => {
     if (isOpen) {
+      setIsLoading(true);
       const timer = setTimeout(() => {
         setIsVisible(true);
+        setIsLoading(false);
       }, 20);
       return () => clearTimeout(timer);
     } else {
@@ -142,21 +156,21 @@ const TombModal = ({ isOpen, onClose }) => {
               <div
                 className={`z-50 left-0 h-full rounded-lg transform transition-all duration-700 ease-out ${isCommentOpen ? 'translate-x-full opacity-0' : 'translate-x-0 opacity-100'}`}
               >
-                {tombDetails && tombDetails.length > 0 && !isCommentOpen && (
+                {formattedTombDetails.length > 0 && !isCommentOpen && (
                   <div className="my-[10px] mx-5 lg:mx-0 overflow-hidden flex flex-col items-center justify-center">
                     <h2 className="text-[1em] ">Emplacement n°{selectedTomb}</h2>
                     <h3 className="mt-[1vh] lg:mb-[1vh] text-[1em]">Ici repose</h3>
 
                     <div className="h-full flex items-center flex-col overflow-hidden lg:max-h-[32vh] max-h-[58vh]">
                       <div id='scroll' className="space-y-[2.1vh] lg:mx-5 flex-col items-center overflow-y-auto lg:mt-[0vh]">
-                        {tombDetails.map((person, index) => (
+                        {formattedTombDetails.map((person, index) => (
                           <div key={index} className="flex-col flex">
                             <span className="flex justify-center text-[1.5em] font-semibold capitalize w-full text-ellipsis">
                               {person.firstname} {person.lastname}
                             </span>
                             <span className="flex lg:gap-4 flex-col lg:flex-row lg:space-x-2 space-y-2 lg:space-y-0 normal-case text-left text-[1em] lg:mx-5">
-                              <li className='list-disc leading-none lg:flex'>Née le {formatDate(person.birthdate)}</li>
-                              <li className='list-disc leading-none lg:flex text-left'>Décédé le {formatDate(person.deathDate)}</li>
+                              <li className='list-disc leading-none lg:flex'>Née le {person.formattedBirthDate}</li>
+                              <li className='list-disc leading-none lg:flex text-left'>Décédé le {person.formattedDeathDate}</li>
                             </span>
                           </div>
                         ))}
