@@ -23,7 +23,7 @@ const sectionColors = {
 };
 
 const TombModal = ({ isOpen, onClose }) => {
-  const { selectedTomb, tombDetails = [], tombClones } = useTomb();
+  const { selectedTomb, tombDetails = [], tombClones, setSelectedTombPosition } = useTomb();
   const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [lastname, setLastname] = useState('');
   const [firstname, setFirstname] = useState('');
@@ -104,8 +104,10 @@ const TombModal = ({ isOpen, onClose }) => {
     setIsVisible(false);
     setTimeout(() => {
       onClose();
-      resetAllTombColors();
-
+      if (!isMobile) {
+        resetAllTombColors();
+        setSelectedTombPosition(null);
+      }
     }, 300);
   };
 

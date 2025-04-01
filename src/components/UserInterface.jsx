@@ -33,7 +33,7 @@ function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
     // Fonction de recherche optimisée avec useMemo
     const filteredResults = useMemo(() => {
         if (!terms.trim() || !allCachedData) return [];
-        
+
         const searchTerms = terms
             .toLowerCase()
             .normalize("NFD")
@@ -153,13 +153,17 @@ function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
                             </form>
                         </div>
                         {error && (
-                            <div className="bg-red-300"><p className="text-red-500 text-[1.6em] mt-6">{error}</p></div>
+                            <div className="mt-6 p-3 bg-[#D9D9D9] rounded-lg">
+                                <p className="text-red-500 text-[1.6em] pt-6">{error}</p>
+                            </div>
                         )}
 
                         {hasSearched && results.length === 0 && (
-                            <p className="text-red-500 text-[1.5em] mt-6">
-                                Informations inexistantes veuillez réessayer
-                            </p>
+                            <div className="mt-6 p-3 bg-[#D9D9D9] rounded-lg">
+                                <p className="text-red-500 text-[1.5em]">
+                                    Informations inexistantes veuillez réessayer
+                                </p>
+                            </div>
                         )}
                         {
                             results.length > 0 &&

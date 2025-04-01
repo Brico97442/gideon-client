@@ -12,6 +12,7 @@ export const TombProvider = ({ children }) => {
   const [orbitControls, setOrbitControls] = useState(null);
   const [tombClones, setTombClones] = useState([]);
   const [previouslySelectedTomb, setPreviouslySelectedTomb] = useState(null);
+  const [selectedTombPosition, setSelectedTombPosition] = useState(null);
 
   const selectTomb = (tombId, details) => {
     // console.log('Sélection de la tombe:', tombId, 'avec les détails:', details);
@@ -52,6 +53,8 @@ export const TombProvider = ({ children }) => {
         camera,
         orbitControls,
         tombClones,
+        selectedTombPosition,
+        setSelectedTombPosition,
         selectTomb,
         clearSelectedTomb,
         setSceneElements,
