@@ -262,11 +262,11 @@ function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
                                         {results.map((person, index) => (
                                             <li
                                                 key={`${person.id}-${index}`}
-                                                className="border-b border-white/20 hover:bg-[#0E1C36]/30 transition-all duration-150 cursor-pointer rounded-3xl flex items-center bg-white h-[8vh] py-[1vh] px-[1.8vw] shadow"
+                                                className="border-b border-white/20 hover:bg-[#0E1C36]/30 transition-all duration-150 cursor-pointer rounded-3xl flex items-center bg-white h-[8vh] py-[1vh] px-[1.5vw] shadow"
                                                 onClick={() => handleLocate(person)}
                                             >
                                                 <div className="flex items-center gap-5 relative w-full">
-                                                    <img src={profilImg} alt="profil décès" width={58} height={58} className={`object-contain z-50 h-[58px] w-[58px] rounded-full`} />
+                                                    <img src={profilImg} alt="profil décès" width={50} height={50} className={`object-contain z-50 h-[50px] w-[50px] rounded-full`} />
 
                                                     <span className="text-[1.6em] whitespace-nowrap">
                                                         {person.firstname} {person.lastname}
