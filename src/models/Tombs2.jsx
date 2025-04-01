@@ -307,6 +307,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       // Mettre à jour la géométrie et le matériau
       mesh.geometry = geometry;
       mesh.material = material;
+      mesh.material.side = THREE.FrontSide;
 
       // Positionner chaque instance
       tombs.forEach((tomb, index) => {
@@ -400,6 +401,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       {Object.entries(countByType).map(([type, count]) => {
         return (
           <instancedMesh
+          
           transparent 
           frustumCulled={true}
             key={type}
@@ -420,7 +422,9 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
             }}
             userData={{ type }}
           
-          />
+          >
+            <meshStandardMaterial side={THREE.FrontSide} />
+          </instancedMesh>
         );
       })}
     </group>
