@@ -65,14 +65,13 @@ function Scene() {
   const glowLayer = useRef();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTomb, setSelectedTomb] = useState("");
-  const { selectTomb, clearSelectedTomb, setSceneElements } = useTomb();
+  const { selectTomb, clearSelectedTomb, setSceneElements, selectedTombPosition, setSelectedTombPosition } = useTomb();
   const [tombDetails, setTombDetails] = useState(null);
   const [applicationStart, setApplicationStart] = useState(false)
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [isSceneLoaded, setIsSceneLoaded] = useState(false);
   const [isShowUi, setIsShowUi] = useState(true)
   const [isLoading, setIsLoading] = useState(true)
-  const [selectedTombPosition, setSelectedTombPosition] = useState(null);
 
 
   const fetchTombDetails = async (tombId) => {
@@ -151,11 +150,6 @@ function Scene() {
 
 
   const handleTombClick = (id) => {
-    // Si la tombe cliquée est déjà sélectionnée, on ne fait rien
-    if (id === selectedTomb) {
-        return;
-    }
-
     setIsModalOpen(true);
     setSelectedTomb(id);
     if (camera && orbitControlRef.current) {
@@ -170,13 +164,18 @@ function Scene() {
 
         focusOnObject(id, camera, orbitControlRef, sectionColors);
 
-        if (window.tombsSystem.highlightGroup) {
-            while (window.tombsSystem.highlightGroup.children.length > 0) {
-                window.tombsSystem.highlightGroup.remove(window.tombsSystem.highlightGroup.children[0]);
+        // Ne réinitialiser le highlight group que si on clique sur une tombe différente
+        if (window.tombsSystem.highlightGroup && window.tombsSystem.highlightGroup.children.length > 0) {
+            const currentHighlightedTomb = window.tombsSystem.highlightGroup.children[0].userData.id;
+            if (currentHighlightedTomb !== id) {
+                while (window.tombsSystem.highlightGroup.children.length > 0) {
+                    window.tombsSystem.highlightGroup.remove(window.tombsSystem.highlightGroup.children[0]);
+                }
+                highlightTombSection(id);
             }
+        } else {
+            highlightTombSection(id);
         }
-
-        highlightTombSection(id);
 
         if (tombData) {
             createHighlightForTomb(id, tombData, COLORS.SELECTED_TOMB, true);
@@ -225,7 +224,9 @@ function Scene() {
 
   const handleTopView = () => {
     if (!camera) return;
-    setIsShowUi(true)
+    setIsShowUi(true);
+    setIsModalOpen(false);
+    clearSelectedTomb();
     const topViewPosition = isMobile ? { x: 0, y: 120, z: 0.001 } : { x: 0, y: 90, z: 0.001 };
 
     moveCameraToPosition(camera, topViewPosition, orbitControlRef, new THREE.Vector3(0, 0, 0));
@@ -446,7 +447,7 @@ function Scene() {
 
             <ambientLight intensity={2.5} position={[0, 0, 0]} />
 
-            { selectedTombPosition && isModalOpen && (
+            { selectedTombPosition && (
               <>
                 <pointLight
                   position={[
