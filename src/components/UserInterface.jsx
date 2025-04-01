@@ -11,8 +11,9 @@ import profilImg from "../assets/ui_element/profilicon.png";
 import { formatDate } from "../utils/DateUtils";
 import Button from "./Button";
 import moment from "moment/moment";
+import { Suspense } from "react";
 
-function UserInterface({ handleTombFocus, applicationStart }) {
+function UserInterface({ handleTombFocus, applicationStart, onInputFocus }) {
     const [lastname, setLastname] = useState("");
     const [firstname, setFirstname] = useState("");
     const [birthdate, setBirthdate] = useState("");
@@ -189,80 +190,89 @@ function UserInterface({ handleTombFocus, applicationStart }) {
             console.error("Données de la personne invalides:", person);
         }
     };
+    // const Loading = () => {
+    //     return (
+    //         <div className="bg-red-500 w-full h-full">
+    //             <p>Hello</p>
+    //         </div>
+    //     )
+    // }
 
     return (
         <div
             id="ui"
-            className={`hidden lg:w-full lg:block h-[131px] z-50`}
+            className={`hidden lg:w-full lg:block h-[12vh] z-50  pointer-events-none`}
         >
-            <div className="w-full h-full relative">
+            <div className="w-full h-full relative pointer-events-none">
                 <img
                     src={modalBackground}
                     alt="modal gauche background"
-                    className="h-full w-full object-fill absolute top-0 left-0 opacity-95"
+                    className="h-full w-full object-fill absolute top-0 left-0 opacity-95 pointer-events-none"
                 />
 
-                <div className=" w-full font-avenir relative flex items-center justify-center text-dark-green">
+                <div className=" w-full font-avenir relative flex items-center justify-center text-dark-green pointer-events-none">
 
-                    <h1 className="font-orbitron h-full font-black absolute left-0 pl-[26px] pb-[36px] flex items-end text-[2em] leading-none text-white">
+                    <h1 className="font-orbitron h-full font-black absolute left-0 pl-[26px] items-end pb-[3vh] flex text-[1.7em] leading-none text-white">
                         GIDEON
                     </h1>
 
 
-                    <div className="w-[71%] h-[115px]">
-                        <div className="flex flex-col relative justify-center">
-                            <div className="h-[50px] flex items-center absolute mt-5 ml-1">
-                                <img src={logoLoupe} alt="Logo loupe" className="object-contain h-[50px] w-[50px]" />
+                    <div className="w-[71%] h-[11vh] pointer-events-none">
+                        <div className="flex flex-col relative justify-center pointer-events-none">
+                            <div className="h-full flex items-center absolute  ml-1 z-50">
+                                <img src={logoLoupe} alt="Logo loupe" className="object-contain h-[40px] w-[40px]" />
                             </div>
 
-                            <form className="pt-5 flex items-center" onSubmit={(e) => e.preventDefault()}>
+                            <form className="pt-0 flex h-[8vh] items-center" onSubmit={(e) => e.preventDefault()}>
                                 <input
                                     type="text"
                                     onChange={(e) => setTerms(e.target.value)}
                                     value={terms}
                                     placeholder="Recherchez un défunt..."
-                                    className="bg-linear-to-r from-white to-lite-blue w-full h-14 focus:outline-none pl-[70px] rounded-2xl placeholder:leading-none placeholder:text-black text-[1.55em]"
+                                    className="pointer-events-auto bg-linear-to-r from-white to-lite-blue w-full h-[6vh] focus:outline-none pl-[70px] rounded-lg placeholder:leading-none placeholder:text-black text-[1.55em]"
                                     onKeyDown={(e) => {
                                         if (e.key === 'Enter') {
                                             e.preventDefault();
                                         }
                                     }}
+                                    onFocus={() => onInputFocus && onInputFocus()}
                                 />
 
                             </form>
                         </div>
-                                {error && (
-                                    <p className="text-red-500 text-[1.6em] mt-6">{error}</p>
-                                )}
+                        {error && (
+                            <div className="bg-red-300"><p className="text-red-500 text-[1.6em] mt-6">{error}</p></div>
+                        )}
 
-                                {hasSearched && results.length === 0 && (
-                                    <p className="text-red-500 text-[1.5em] mt-6">
-                                        Informations inexistantes veuillez réessayer
-                                    </p>
-                                )}
+                        {hasSearched && results.length === 0 && (
+                            <p className="text-red-500 text-[1.5em] mt-6">
+                                Informations inexistantes veuillez réessayer
+                            </p>
+                        )}
                         {
                             results.length > 0 &&
                             (
-                                <div className="w-full px-36 py-15 overflow-hidden z-20 text-dark-green bg-[#D9D9D9] rounded-4xl">
+                                // <Suspense fallback={<Loading/>}>
+                                <div className="w-full px-[8vw] py-[6vh] overflow-hidden z-20 text-black bg-[#D9D9D9] rounded-4xl mt-2 pointer-events-auto">
                                     {/* <h3 className="text-center mb-2">
                                     {results.length} résultat{results.length > 1 ? "s" : ""}{" "}
                                     trouvé{results.length > 1 ? "s" : ""}
                                 </h3> */}
-                                    <ul className="max-h-[50vh] overflow-y-auto space-y-8">
+                                    <ul className="max-h-[59vh] overflow-y-auto space-y-4">
                                         {results.map((person, index) => (
                                             <li
                                                 key={`${person.id}-${index}`}
-                                                className="border-b border-white/20 hover:bg-[#0E1C36]/30 transition-all duration-150 cursor-pointer rounded-3xl bg-white py-[14.6px] px-[26px] shadow"
+                                                className="border-b border-white/20 hover:bg-[#0E1C36]/30 transition-all duration-150 cursor-pointer rounded-3xl flex items-center bg-white h-[8vh] py-[1vh] px-[1.8vw] shadow"
                                                 onClick={() => handleLocate(person)}
                                             >
-                                                <div className="flex items-center gap-5 relative">
+                                                <div className="flex items-center gap-5 relative w-full">
                                                     <img src={profilImg} alt="profil décès" width={58} height={58} className={`object-contain z-50 h-[58px] w-[58px] rounded-full`} />
 
-                                                    <span className="text-[32px]">
+                                                    <span className="text-[1.6em] whitespace-nowrap">
                                                         {person.firstname} {person.lastname}
                                                     </span>
                                                     <div className="text-sm opacity-80">
-                                                        <span className="flex gap-4 text-[18px] font-bold ">
+                                                        <span className="flex gap-4 text-[1em] font-bold ">
                                                             <span className=" border-l pl-3">
                                                                 {person.birthdate &&
                                                                     `Né(e) le ${formatDate(person.birthdate)}`}
@@ -281,6 +291,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
                                         ))}
                                     </ul>
                                 </div>
+                                // {/* </Suspense> */}
                             )}
                     </div>
 
@@ -293,6 +304,7 @@ function UserInterface({ handleTombFocus, applicationStart }) {
 
 UserInterface.propTypes = {
     handleTombFocus: PropTypes.func.isRequired,
+    onInputFocus: PropTypes.func
 };
 
 export default UserInterface;

@@ -439,7 +439,7 @@ function Scene() {
               </group>
             </Billboard>
 
-            <ambientLight intensity={2.2} position={[0, 0, 0]} />
+            <ambientLight intensity={2.5} position={[0, 0, 0]} />
 
             {selectedTombPosition && (
               <>
@@ -452,10 +452,13 @@ function Scene() {
                   rotation={[0, Math.PI / 2, 0]}
                   angle={180}
                   penumbra={0.3}
-                  intensity={30}
+                  intensity={40}
                   color="#8fcecc"
                   castShadow
                 />
+                   {/* <EffectComposer>
+              <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={1} />
+            </EffectComposer> */}
                 {/* <group rotation={[0, Math.PI / 2, 0]}>
                   <SpotLight
                     position={[
@@ -492,18 +495,16 @@ function Scene() {
               orbitControlRef={orbitControlRef}
               glowLayer={[glowLayer]}
             />
-            {/* <EffectComposer>
-              <Bloom intensity={0.2} width={200} height={200} luminanceThreshold={0.1} luminanceSmoothing={1} />
-            </EffectComposer> */}
+         
             {/* <hemisphereLight position={[-2, 3, -2]} decay={2} intensity={5} args={['#9a2252', '#fff5c2']} /> */}
 
           </group>
 
           <SceneCamera />
           <MainOrbitControl orbitControlRef={orbitControlRef} onCameraMove={handleCameraMove} />
-          <StatsGl />
-          <Stats />
-          {/* <PerformanceMonitor /> */}
+          {/* <StatsGl  position='absolute top-0 left-0' />
+          <Stats position='absolute top-0 left-0'/>
+          <PerformanceMonitor  position='top-0 left-0'/> */}
         </Canvas>
 
       </Suspense>
@@ -536,8 +537,17 @@ function Scene() {
         </div>
       </div>
 
-      <div className={`transition ${!applicationStart ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"} absolute h-[131px] w-full ease-in-out duration-1000 z-50`}>
-        <UserInterface handleTombFocus={handleTombFocus} handleStartApplication={applicationStart} />
+      <div className={`transition ${!applicationStart ? "-translate-y-full opacity-0" : "translate-y-0 opacity-100"} absolute h-[12vh] w-full ease-in-out duration-1000 z-50`}>
+        <UserInterface 
+          handleTombFocus={handleTombFocus} 
+          handleStartApplication={applicationStart} 
+          onInputFocus={() => {
+            setIsModalOpen(false);
+            clearSelectedTomb();
+            resetCameraPosition();
+            setIsShowUi(true);
+          }}
+        />
       </div>
 
       <div className={`w-full ${!isMobile ? 'flex' : 'hidden'} justify-center absolute bottom-[8px]`}>

@@ -120,7 +120,7 @@ const TombModal = ({ isOpen, onClose }) => {
   const customWidth = tombDetails && tombDetails.length > 1 ? '100' : '80';
   const customBackground = tombDetails && tombDetails.length > 1 ? modalRightBackgroundLong : modalRightBackground;
   return (
-    <div id="ui" className={`lg:block lg:w-[26%] w-full absolute ${isMobile ? modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 lg:px-0 pt-4 lg:pt-[139px] lg:pb-0 pb-4 ${modalHeight} z-50 `}>
+    <div id="ui" className={`lg:block lg:w-[26%] w-full absolute ${isMobile ? modalPositionClassMobile : modalPositionClass} transition-all duration-1000 ease-in-out px-4 lg:px-0 pt-4 lg:pt-[13vh] lg:pb-0 pb-4 ${modalHeight} z-50 `}>
       <div className={`w-full lg:pr-2 lg:pb-2 h-full relative ${isMobile ? "bg-white/50 border border-white rounded-lg backdrop-blur-xs drop-shadow-lg" : "bg-transparent border-none"} bg-amber-400`}>
         {/* {(!isMobile && <img src={modalRightBackground} alt="modal droite background " width={400} className="h-full w-full object-fill absolute top-0 left-0 opacity-95" />)} */}
         <div className="modal-shape-container relative flex flex-col items-center h-full text-dark-green ">
