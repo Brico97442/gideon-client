@@ -576,14 +576,14 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
   const createColorBuffers = () => {
     if (!instancedMeshesRef.current || !window.tombsSystem) return;
 
-    console.log("🔄 Creating color buffers for all meshes");
+    // console.log("🔄 Creating color buffers for all meshes");
 
     // Pour chaque maillage instancié
     Object.entries(instancedMeshesRef.current).forEach(([key, mesh]) => {
       if (!mesh) return;
 
       const count = mesh.count || 0;
-      console.log(`🎨 Creating instanceColor for ${key} with ${count} instances`);
+      // console.log(`🎨 Creating instanceColor for ${key} with ${count} instances`);
 
       // Créer le tampon de couleur s'il n'existe pas encore
       if (!mesh.instanceColor) {
@@ -614,7 +614,7 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
       }
 
       mesh.instanceColor.needsUpdate = true;
-      console.log(`✅ Color buffer created for ${key}`);
+      // console.log(`✅ Color buffer created for ${key}`);
     });
   };
 
@@ -709,9 +709,10 @@ const Tombs = ({ onTombClick, selectedTombId, orbitControlRef }) => {
               }}
               args={[null, null, tombs.length]}
               onClick={(event) => {
-                console.log("Tomb clicked:", event);
+                // console.log("Tomb clicked:", event);
                 handleTombClick(event);
                 invalidate();
+
                 // Attendre que toutes les mises à jour soient terminées avant de mettre à jour les contrôles
                 requestAnimationFrame(() => orbitControlRef.current?.update());
               }}
